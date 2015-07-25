@@ -8,20 +8,15 @@
 
 import Cocoa
 
+
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
-
-    @IBOutlet weak var window: NSWindow!
-
-
+    
+    private     let inputManager =                  InputManager()
+    private     var clientSimulationController:     ClientSimulationController?
+    
     func applicationDidFinishLaunching(aNotification: NSNotification) {
-        // Insert code here to initialize your application
+        clientSimulationController = ClientSimulationController(inputManager: inputManager)
+        clientSimulationController?.play()
     }
-
-    func applicationWillTerminate(aNotification: NSNotification) {
-        // Insert code here to tear down your application
-    }
-
-
 }
-

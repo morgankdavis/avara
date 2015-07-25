@@ -8,16 +8,82 @@
 
 /* Begin PBXBuildFile section */
 		417CC38C1B645260006B21F3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC38B1B645260006B21F3 /* AppDelegate.swift */; };
-		417CC38E1B645260006B21F3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 417CC38D1B645260006B21F3 /* Assets.xcassets */; };
 		417CC3911B645260006B21F3 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 417CC38F1B645260006B21F3 /* MainMenu.xib */; };
+		417CC3A71B645310006B21F3 /* Character.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3981B645310006B21F3 /* Character.swift */; };
+		417CC3A81B645310006B21F3 /* ClientSimulationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3991B645310006B21F3 /* ClientSimulationController.swift */; };
+		417CC3A91B645310006B21F3 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39A1B645310006B21F3 /* Configuration.swift */; };
+		417CC3AA1B645310006B21F3 /* FlyoverCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39B1B645310006B21F3 /* FlyoverCamera.swift */; };
+		417CC3AB1B645310006B21F3 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39C1B645310006B21F3 /* GameView.swift */; };
+		417CC3AC1B645310006B21F3 /* GameWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39D1B645310006B21F3 /* GameWindowController.swift */; };
+		417CC3AD1B645310006B21F3 /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39E1B645310006B21F3 /* Globals.swift */; };
+		417CC3AE1B645310006B21F3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 417CC39F1B645310006B21F3 /* Images.xcassets */; };
+		417CC3AF1B645310006B21F3 /* InputManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3A01B645310006B21F3 /* InputManager.swift */; };
+		417CC3B01B645310006B21F3 /* Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3A11B645310006B21F3 /* Map.swift */; };
+		417CC3B11B645310006B21F3 /* Models.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3A21B645310006B21F3 /* Models.scnassets */; };
+		417CC3B31B645310006B21F3 /* ServerSimulationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3A41B645310006B21F3 /* ServerSimulationController.swift */; };
+		417CC3B51B645310006B21F3 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3A61B645310006B21F3 /* Utilities.swift */; };
+		417CC3D11B645507006B21F3 /* floor.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3BF1B645507006B21F3 /* floor.png */; };
+		417CC3D21B645507006B21F3 /* floorBump.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C01B645507006B21F3 /* floorBump.jpg */; };
+		417CC3D31B645507006B21F3 /* grid.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C11B645507006B21F3 /* grid.png */; };
+		417CC3D41B645507006B21F3 /* needlepointSteel_diffuse.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C21B645507006B21F3 /* needlepointSteel_diffuse.png */; };
+		417CC3D51B645507006B21F3 /* needlepointSteel_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C31B645507006B21F3 /* needlepointSteel_normal.png */; };
+		417CC3D61B645507006B21F3 /* sky_interstellar_0.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C41B645507006B21F3 /* sky_interstellar_0.png */; };
+		417CC3D71B645507006B21F3 /* sky_interstellar_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C51B645507006B21F3 /* sky_interstellar_1.png */; };
+		417CC3D81B645507006B21F3 /* sky_interstellar_2.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C61B645507006B21F3 /* sky_interstellar_2.png */; };
+		417CC3D91B645507006B21F3 /* sky_interstellar_3.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C71B645507006B21F3 /* sky_interstellar_3.png */; };
+		417CC3DA1B645507006B21F3 /* sky_interstellar_4.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C81B645507006B21F3 /* sky_interstellar_4.png */; };
+		417CC3DB1B645507006B21F3 /* sky_interstellar_5.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C91B645507006B21F3 /* sky_interstellar_5.png */; };
+		417CC3DC1B645507006B21F3 /* sky_miramar_0.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3CA1B645507006B21F3 /* sky_miramar_0.png */; };
+		417CC3DD1B645507006B21F3 /* sky_miramar_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3CB1B645507006B21F3 /* sky_miramar_1.png */; };
+		417CC3DE1B645507006B21F3 /* sky_miramar_2.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3CC1B645507006B21F3 /* sky_miramar_2.png */; };
+		417CC3DF1B645507006B21F3 /* sky_miramar_3.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3CD1B645507006B21F3 /* sky_miramar_3.png */; };
+		417CC3E01B645507006B21F3 /* sky_miramar_4.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3CE1B645507006B21F3 /* sky_miramar_4.png */; };
+		417CC3E11B645507006B21F3 /* sky_miramar_5.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3CF1B645507006B21F3 /* sky_miramar_5.png */; };
+		417CC3E21B645507006B21F3 /* slateBump.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3D01B645507006B21F3 /* slateBump.png */; };
+		417CC3E51B645515006B21F3 /* sky.frag in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3E31B645515006B21F3 /* sky.frag */; };
+		417CC3E61B645515006B21F3 /* sky.vert in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3E41B645515006B21F3 /* sky.vert */; };
+		417CC3E81B645676006B21F3 /* TODO.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3E71B645676006B21F3 /* TODO.rtf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		417CC3881B645260006B21F3 /* Avara.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Avara.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		417CC38B1B645260006B21F3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		417CC38D1B645260006B21F3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		417CC3901B645260006B21F3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		417CC3921B645260006B21F3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		417CC3981B645310006B21F3 /* Character.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Character.swift; sourceTree = "<group>"; };
+		417CC3991B645310006B21F3 /* ClientSimulationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientSimulationController.swift; sourceTree = "<group>"; };
+		417CC39A1B645310006B21F3 /* Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
+		417CC39B1B645310006B21F3 /* FlyoverCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlyoverCamera.swift; sourceTree = "<group>"; };
+		417CC39C1B645310006B21F3 /* GameView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
+		417CC39D1B645310006B21F3 /* GameWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameWindowController.swift; sourceTree = "<group>"; };
+		417CC39E1B645310006B21F3 /* Globals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
+		417CC39F1B645310006B21F3 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
+		417CC3A01B645310006B21F3 /* InputManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputManager.swift; sourceTree = "<group>"; };
+		417CC3A11B645310006B21F3 /* Map.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Map.swift; sourceTree = "<group>"; };
+		417CC3A21B645310006B21F3 /* Models.scnassets */ = {isa = PBXFileReference; lastKnownFileType = wrapper.scnassets; path = Models.scnassets; sourceTree = "<group>"; };
+		417CC3A41B645310006B21F3 /* ServerSimulationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerSimulationController.swift; sourceTree = "<group>"; };
+		417CC3A61B645310006B21F3 /* Utilities.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Utilities.swift; sourceTree = "<group>"; };
+		417CC3BF1B645507006B21F3 /* floor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = floor.png; path = Textures/floor.png; sourceTree = "<group>"; };
+		417CC3C01B645507006B21F3 /* floorBump.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = floorBump.jpg; path = Textures/floorBump.jpg; sourceTree = "<group>"; };
+		417CC3C11B645507006B21F3 /* grid.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = grid.png; path = Textures/grid.png; sourceTree = "<group>"; };
+		417CC3C21B645507006B21F3 /* needlepointSteel_diffuse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = needlepointSteel_diffuse.png; path = Textures/needlepointSteel_diffuse.png; sourceTree = "<group>"; };
+		417CC3C31B645507006B21F3 /* needlepointSteel_normal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = needlepointSteel_normal.png; path = Textures/needlepointSteel_normal.png; sourceTree = "<group>"; };
+		417CC3C41B645507006B21F3 /* sky_interstellar_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sky_interstellar_0.png; path = Textures/sky_interstellar_0.png; sourceTree = "<group>"; };
+		417CC3C51B645507006B21F3 /* sky_interstellar_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sky_interstellar_1.png; path = Textures/sky_interstellar_1.png; sourceTree = "<group>"; };
+		417CC3C61B645507006B21F3 /* sky_interstellar_2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sky_interstellar_2.png; path = Textures/sky_interstellar_2.png; sourceTree = "<group>"; };
+		417CC3C71B645507006B21F3 /* sky_interstellar_3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sky_interstellar_3.png; path = Textures/sky_interstellar_3.png; sourceTree = "<group>"; };
+		417CC3C81B645507006B21F3 /* sky_interstellar_4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sky_interstellar_4.png; path = Textures/sky_interstellar_4.png; sourceTree = "<group>"; };
+		417CC3C91B645507006B21F3 /* sky_interstellar_5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sky_interstellar_5.png; path = Textures/sky_interstellar_5.png; sourceTree = "<group>"; };
+		417CC3CA1B645507006B21F3 /* sky_miramar_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sky_miramar_0.png; path = Textures/sky_miramar_0.png; sourceTree = "<group>"; };
+		417CC3CB1B645507006B21F3 /* sky_miramar_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sky_miramar_1.png; path = Textures/sky_miramar_1.png; sourceTree = "<group>"; };
+		417CC3CC1B645507006B21F3 /* sky_miramar_2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sky_miramar_2.png; path = Textures/sky_miramar_2.png; sourceTree = "<group>"; };
+		417CC3CD1B645507006B21F3 /* sky_miramar_3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sky_miramar_3.png; path = Textures/sky_miramar_3.png; sourceTree = "<group>"; };
+		417CC3CE1B645507006B21F3 /* sky_miramar_4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sky_miramar_4.png; path = Textures/sky_miramar_4.png; sourceTree = "<group>"; };
+		417CC3CF1B645507006B21F3 /* sky_miramar_5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = sky_miramar_5.png; path = Textures/sky_miramar_5.png; sourceTree = "<group>"; };
+		417CC3D01B645507006B21F3 /* slateBump.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = slateBump.png; path = Textures/slateBump.png; sourceTree = "<group>"; };
+		417CC3E31B645515006B21F3 /* sky.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = sky.frag; path = Shaders/sky.frag; sourceTree = "<group>"; };
+		417CC3E41B645515006B21F3 /* sky.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = sky.vert; path = Shaders/sky.vert; sourceTree = "<group>"; };
+		417CC3E71B645676006B21F3 /* TODO.rtf */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.rtf; path = TODO.rtf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -34,6 +100,7 @@
 		417CC37F1B645260006B21F3 = {
 			isa = PBXGroup;
 			children = (
+				417CC3E71B645676006B21F3 /* TODO.rtf */,
 				417CC38A1B645260006B21F3 /* Avara */,
 				417CC3891B645260006B21F3 /* Products */,
 			);
@@ -50,12 +117,76 @@
 		417CC38A1B645260006B21F3 /* Avara */ = {
 			isa = PBXGroup;
 			children = (
+				417CC3B61B645385006B21F3 /* Configuration */,
 				417CC38B1B645260006B21F3 /* AppDelegate.swift */,
-				417CC38D1B645260006B21F3 /* Assets.xcassets */,
+				417CC3A41B645310006B21F3 /* ServerSimulationController.swift */,
+				417CC3991B645310006B21F3 /* ClientSimulationController.swift */,
+				417CC3981B645310006B21F3 /* Character.swift */,
+				417CC3A11B645310006B21F3 /* Map.swift */,
+				417CC3A01B645310006B21F3 /* InputManager.swift */,
+				417CC39B1B645310006B21F3 /* FlyoverCamera.swift */,
+				417CC39D1B645310006B21F3 /* GameWindowController.swift */,
+				417CC39C1B645310006B21F3 /* GameView.swift */,
+				417CC3B71B6453D2006B21F3 /* Utilities */,
+				417CC39F1B645310006B21F3 /* Images.xcassets */,
+				417CC3A21B645310006B21F3 /* Models.scnassets */,
+				417CC3BE1B6454D1006B21F3 /* Textures */,
+				417CC3BD1B6454C8006B21F3 /* Shaders */,
 				417CC38F1B645260006B21F3 /* MainMenu.xib */,
 				417CC3921B645260006B21F3 /* Info.plist */,
 			);
 			path = Avara;
+			sourceTree = "<group>";
+		};
+		417CC3B61B645385006B21F3 /* Configuration */ = {
+			isa = PBXGroup;
+			children = (
+				417CC39A1B645310006B21F3 /* Configuration.swift */,
+				417CC39E1B645310006B21F3 /* Globals.swift */,
+			);
+			name = Configuration;
+			sourceTree = "<group>";
+		};
+		417CC3B71B6453D2006B21F3 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				417CC3A61B645310006B21F3 /* Utilities.swift */,
+			);
+			name = Utilities;
+			sourceTree = "<group>";
+		};
+		417CC3BD1B6454C8006B21F3 /* Shaders */ = {
+			isa = PBXGroup;
+			children = (
+				417CC3E31B645515006B21F3 /* sky.frag */,
+				417CC3E41B645515006B21F3 /* sky.vert */,
+			);
+			name = Shaders;
+			sourceTree = "<group>";
+		};
+		417CC3BE1B6454D1006B21F3 /* Textures */ = {
+			isa = PBXGroup;
+			children = (
+				417CC3BF1B645507006B21F3 /* floor.png */,
+				417CC3C01B645507006B21F3 /* floorBump.jpg */,
+				417CC3C11B645507006B21F3 /* grid.png */,
+				417CC3C21B645507006B21F3 /* needlepointSteel_diffuse.png */,
+				417CC3C31B645507006B21F3 /* needlepointSteel_normal.png */,
+				417CC3C41B645507006B21F3 /* sky_interstellar_0.png */,
+				417CC3C51B645507006B21F3 /* sky_interstellar_1.png */,
+				417CC3C61B645507006B21F3 /* sky_interstellar_2.png */,
+				417CC3C71B645507006B21F3 /* sky_interstellar_3.png */,
+				417CC3C81B645507006B21F3 /* sky_interstellar_4.png */,
+				417CC3C91B645507006B21F3 /* sky_interstellar_5.png */,
+				417CC3CA1B645507006B21F3 /* sky_miramar_0.png */,
+				417CC3CB1B645507006B21F3 /* sky_miramar_1.png */,
+				417CC3CC1B645507006B21F3 /* sky_miramar_2.png */,
+				417CC3CD1B645507006B21F3 /* sky_miramar_3.png */,
+				417CC3CE1B645507006B21F3 /* sky_miramar_4.png */,
+				417CC3CF1B645507006B21F3 /* sky_miramar_5.png */,
+				417CC3D01B645507006B21F3 /* slateBump.png */,
+			);
+			name = Textures;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -115,8 +246,30 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				417CC38E1B645260006B21F3 /* Assets.xcassets in Resources */,
+				417CC3D81B645507006B21F3 /* sky_interstellar_2.png in Resources */,
+				417CC3AE1B645310006B21F3 /* Images.xcassets in Resources */,
+				417CC3B11B645310006B21F3 /* Models.scnassets in Resources */,
+				417CC3DD1B645507006B21F3 /* sky_miramar_1.png in Resources */,
+				417CC3D51B645507006B21F3 /* needlepointSteel_normal.png in Resources */,
+				417CC3D61B645507006B21F3 /* sky_interstellar_0.png in Resources */,
+				417CC3D71B645507006B21F3 /* sky_interstellar_1.png in Resources */,
+				417CC3DF1B645507006B21F3 /* sky_miramar_3.png in Resources */,
+				417CC3E81B645676006B21F3 /* TODO.rtf in Resources */,
+				417CC3E21B645507006B21F3 /* slateBump.png in Resources */,
+				417CC3D91B645507006B21F3 /* sky_interstellar_3.png in Resources */,
+				417CC3D21B645507006B21F3 /* floorBump.jpg in Resources */,
+				417CC3E51B645515006B21F3 /* sky.frag in Resources */,
+				417CC3DB1B645507006B21F3 /* sky_interstellar_5.png in Resources */,
+				417CC3D11B645507006B21F3 /* floor.png in Resources */,
+				417CC3DC1B645507006B21F3 /* sky_miramar_0.png in Resources */,
 				417CC3911B645260006B21F3 /* MainMenu.xib in Resources */,
+				417CC3E01B645507006B21F3 /* sky_miramar_4.png in Resources */,
+				417CC3E11B645507006B21F3 /* sky_miramar_5.png in Resources */,
+				417CC3D41B645507006B21F3 /* needlepointSteel_diffuse.png in Resources */,
+				417CC3D31B645507006B21F3 /* grid.png in Resources */,
+				417CC3E61B645515006B21F3 /* sky.vert in Resources */,
+				417CC3DE1B645507006B21F3 /* sky_miramar_2.png in Resources */,
+				417CC3DA1B645507006B21F3 /* sky_interstellar_4.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -127,7 +280,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				417CC3B01B645310006B21F3 /* Map.swift in Sources */,
+				417CC3A81B645310006B21F3 /* ClientSimulationController.swift in Sources */,
+				417CC3B31B645310006B21F3 /* ServerSimulationController.swift in Sources */,
 				417CC38C1B645260006B21F3 /* AppDelegate.swift in Sources */,
+				417CC3A91B645310006B21F3 /* Configuration.swift in Sources */,
+				417CC3AA1B645310006B21F3 /* FlyoverCamera.swift in Sources */,
+				417CC3B51B645310006B21F3 /* Utilities.swift in Sources */,
+				417CC3AD1B645310006B21F3 /* Globals.swift in Sources */,
+				417CC3AB1B645310006B21F3 /* GameView.swift in Sources */,
+				417CC3AF1B645310006B21F3 /* InputManager.swift in Sources */,
+				417CC3A71B645310006B21F3 /* Character.swift in Sources */,
+				417CC3AC1B645310006B21F3 /* GameWindowController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
