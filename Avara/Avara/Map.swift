@@ -3,14 +3,14 @@
 //  Avara
 //
 //  Created by Morgan Davis on 5/12/15.
-//  Copyright (c) 2015 goosesensor. All rights reserved.
+//  Copyright (c) 2015 Morgan K Davis. All rights reserved.
 //
 
 import Foundation
 import SceneKit
 
 
-public class Map {
+public class Map : NSObject, SCNProgramDelegate {
     
     /******************************************************************************************************
     MARK:   Properties
@@ -58,18 +58,44 @@ public class Map {
         }
         scene.background.mipFilter = .Linear
 		
+        
+        
+//		let skyBoxGeo = SCNBox(width: 50, height: 50, length: 50, chamferRadius: 0)
+//        let skyBoxNode = SCNNode(geometry: skyBoxGeo)
+//        scene.rootNode.addChildNode(skyBoxNode)
+//        
+//        
+//		let skyProgram = SCNProgram()
+//        
+//        if let vshPath = NSBundle.mainBundle().pathForResource("sky", ofType: "vsh") {
+//            do {
+//                let vshString = try NSString(contentsOfFile: vshPath, encoding: NSUTF8StringEncoding)
+//                skyProgram.vertexShader = vshString as String
+//            }
+//            catch {
+//                NSLog("Exception loading vsh file.")
+//            }
+//        }
+//        
+//        if let fshPath = NSBundle.mainBundle().pathForResource("sky", ofType: "fsh") {
+//            do {
+//                let fshString = try NSString(contentsOfFile: fshPath, encoding: NSUTF8StringEncoding)
+//                skyProgram.fragmentShader = fshString as String
+//            }
+//            catch {
+//                NSLog("Exception loading fsh file.")
+//            }
+//        }
+//        
+//        skyProgram.setSemantic(SCNGeometrySourceSemanticVertex, forSymbol: "vtx_position", options: nil)
+//        skyProgram.setSemantic(SCNModelViewProjectionTransform, forSymbol: "l_vector", options: nil)
+//        
+//        skyProgram.delegate = self
+//        
+//        skyBoxGeo.program = skyProgram
 		
-		
-		
-		
-		
-		// assign program to scene.background?
-//		// attempt sky gradient shader...
-//		let skyShader = SCNProgram()
-//		//skyShader.vertexShader = 
-//		let skyMaterial = SCNMaterial()
-//		skyMaterial.program = skyShader
-		
+
+        
 		
         
         // ambient light
@@ -298,11 +324,24 @@ public class Map {
     }
     
     /******************************************************************************************************
+    MARK:   SCNProgramDelegate
+    ******************************************************************************************************/
+    
+    @objc public func program(program: SCNProgram, handleError error: NSError) {
+        NSLog("program(%@, handleError: %@", program, error)
+    }
+    
+//    func program(program: SCNProgram, bindValueForSymbol symbol: String, atLocation location: UInt32, programID: UInt32, renderer: SCNRenderer) -> Bool {
+//        NSLog("program(program: %@, bindValueForSymbol: %@, atLocation: %d, programID: %d, renderer: %@", program, symbol, location, programID ,renderer)
+//    }
+    
+    /******************************************************************************************************
     MARK:   Object
     ******************************************************************************************************/
     
     init(scene: SCNScene) {
         self.scene = scene
+        super.init()
         self.load()
     }
 }

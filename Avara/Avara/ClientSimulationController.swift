@@ -3,7 +3,7 @@
 //  Avara
 //
 //  Created by Morgan Davis on 5/12/15.
-//  Copyright (c) 2015 goosesensor. All rights reserved.
+//  Copyright (c) 2015 Morgan K Davis. All rights reserved.
 //
 
 import Foundation
@@ -77,24 +77,13 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     MARK:   Private
     ******************************************************************************************************/
     
-    private func gameLoop(dT: CGFloat) {
-        //NSLog("dT: %.4f", dT)
-        
-        if isFlyoverMode {
-            flyoverCamera.gameLoopWithKeysPressed(inputManager.keysPressed, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
-            gameWindowController?.gameView?.play(self) // why the fuck must we do this?? (force re-render)
-        } else {
-            localCharacter?.gameLoopWithKeysPressed(inputManager.keysPressed, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
-        }
-    }
-    
     private func setup() {
         NSLog("ClientSimulationController.setup()")
         
         map = Map(scene: scene)
         localCharacter = Character(scene: scene)
         
-        scene.physicsWorld.timeStep = 1.0/120.0
+        scene.physicsWorld.timeStep = PHYSICS_TIMESTEP
         scene.physicsWorld.contactDelegate = self
         
         flyoverCamera.node.position = SCNVector3(x: 0, y: 0.5, z: 10)
@@ -104,6 +93,17 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             selector: "inputManagerDidPressKeyNotification:",
             name: InputManager.Notifications.DidPressKey.name,
             object: nil)
+    }
+    
+    private func gameLoop(dT: CGFloat) {
+        //NSLog("dT: %.4f", dT)
+        
+        if isFlyoverMode {
+            flyoverCamera.gameLoopWithKeysPressed(inputManager.keysPressed, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
+            gameWindowController?.gameView?.play(self) // why the fuck must we do this?? (force re-render)
+        } else {
+            localCharacter?.gameLoopWithKeysPressed(inputManager.keysPressed, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
+        }
     }
     
     func switchToCameraNode(cameraNode: SCNNode) {
@@ -122,6 +122,25 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         else {
             isFlyoverMode = true
             switchToCameraNode(flyoverCamera.node)
+        }
+    }
+    
+    public func physicsWorld(world: SCNPhysicsWorld, didBeginOrUpdateContact contact: SCNPhysicsContact) {
+        //NSLog("physicsWorld(didBeginOrUpdateContact: %@)", contact)
+        
+        // WARN: this is stupid. should be taken are of automatically with floor's collisionBitmask
+        guard contact.nodeA.physicsBody?.categoryBitMask != CollisionCategory.Floor.rawValue
+            && contact.nodeB.physicsBody?.categoryBitMask != CollisionCategory.Floor.rawValue else {
+                return
+        }
+        
+        if let character = localCharacter {
+            if (contact.nodeA.physicsBody?.categoryBitMask == CollisionCategory.Character.rawValue) {
+                character.bodyPart(contact.nodeA, mayHaveHitWall:contact.nodeB, withContact:contact)
+            }
+            if (contact.nodeB.physicsBody?.categoryBitMask == CollisionCategory.Character.rawValue) {
+                character.bodyPart(contact.nodeB, mayHaveHitWall:contact.nodeA, withContact:contact)
+            }
         }
     }
     
@@ -153,39 +172,13 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     public func physicsWorld(world: SCNPhysicsWorld, didUpdateContact contact: SCNPhysicsContact) {
         //NSLog("physicsWorld(didUpdateContact: %@)", contact)
         
-        // WARN: this is stupid. should be taken are of automatically with floor's collisionBitmask
-        guard contact.nodeA.physicsBody?.categoryBitMask != CollisionCategory.Floor.rawValue
-            && contact.nodeB.physicsBody?.categoryBitMask != CollisionCategory.Floor.rawValue else {
-                return
-        }
-        
-        if let character = localCharacter {
-            if (contact.nodeA.physicsBody?.categoryBitMask == CollisionCategory.Character.rawValue) {
-                character.bodyPart(contact.nodeA, mayHaveHitWall:contact.nodeB, withContact:contact)
-            }
-            if (contact.nodeB.physicsBody?.categoryBitMask == CollisionCategory.Character.rawValue) {
-                character.bodyPart(contact.nodeB, mayHaveHitWall:contact.nodeA, withContact:contact)
-            }
-        }
+        physicsWorld(world, didBeginOrUpdateContact: contact);
     }
     
     public func physicsWorld(world: SCNPhysicsWorld, didBeginContact contact: SCNPhysicsContact) {
         //NSLog("physicsWorld(didBeginContact: %@)", contact)
         
-        // WARN: this is stupid. should be taken are of automatically with floor's collisionBitmask
-        guard contact.nodeA.physicsBody?.categoryBitMask != CollisionCategory.Floor.rawValue
-            && contact.nodeB.physicsBody?.categoryBitMask != CollisionCategory.Floor.rawValue else {
-                return
-        }
-        
-        if let character = localCharacter {
-            if (contact.nodeA.physicsBody?.categoryBitMask == CollisionCategory.Character.rawValue) {
-                character.bodyPart(contact.nodeA, mayHaveHitWall:contact.nodeB, withContact:contact)
-            }
-            if (contact.nodeB.physicsBody?.categoryBitMask == CollisionCategory.Character.rawValue) {
-                character.bodyPart(contact.nodeB, mayHaveHitWall:contact.nodeA, withContact:contact)
-            }
-        }
+        physicsWorld(world, didBeginOrUpdateContact: contact);
     }
     
     public func physicsWorld(world: SCNPhysicsWorld, didEndContact contact: SCNPhysicsContact) {
