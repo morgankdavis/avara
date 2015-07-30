@@ -10,9 +10,9 @@ import Foundation
 import SceneKit
 
 
-func ConfigureCamera(camera: SCNCamera, fov: Double) {
+func ConfigureCamera(camera: SCNCamera, screenSize: CGSize, fov: Double) {
     // set FOV according to view aspect ratio
-    let viewSize: CGSize = WINDOW_SIZE
+    let viewSize: CGSize = screenSize
     let ratio: CGFloat  = CGFloat(viewSize.height / viewSize.width)
     camera.xFov = fov
     let yFov = camera.xFov * Double(ratio)

@@ -10,13 +10,13 @@ import Foundation
 import SceneKit
 
 
-public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCNPhysicsContactDelegate {
+public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCNPhysicsContactDelegate, MKDNetClientDelegate {
     
     /******************************************************************************************************
     MARK:   Properties
     ******************************************************************************************************/
     
-    private         var gameWindowController:       GameWindowController?
+    private         var clientWindowController:     ClientWindowController?
     private(set)    var inputManager:               InputManager
     private(set)    var scene =                     SCNScene()
     private         var map:                        Map?
@@ -27,6 +27,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private         var isFlyoverMode =             false
 //    private         var lastUpdateTime =            Double(0)
 //    private         var deltaTime =                 Double(0)
+    private         var netClient:                  MKDNetClient?
     
     /******************************************************************************************************
     MARK:   Public
@@ -35,7 +36,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     public func play() {
         NSLog("play()")
         
-        gameWindowController?.showWindow(self)
+        clientWindowController?.showWindow(self)
         switchToCameraNode(localCharacter!.cameraNode)
         
         gameLoopTimer = NSTimer.scheduledTimerWithTimeInterval(
@@ -44,6 +45,8 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             selector: "gameLoop",
             userInfo: nil,
             repeats: true)
+        
+        netClient?.connect()
     }
     
     /******************************************************************************************************
@@ -64,7 +67,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 switch key {
                 case .NumPad0:                  switchToCameraNode(flyoverCamera.node)
                 case .NumPad1, .One:            switchToCameraNode(localCharacter!.cameraNode)
-                case .NumPadClear, .Tilda:      gameWindowController?.toggleIsCursorCaptured()
+                case .NumPadClear, .Tilda:      clientWindowController?.toggleIsCursorCaptured()
                 case .NumPadStar, .Equal:       toggleFlyoverMode()
                 case .W, .A, .S, .D, .Space:    break // game loop will see this
                 default: break
@@ -93,6 +96,8 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             selector: "inputManagerDidPressKeyNotification:",
             name: InputManager.Notifications.DidPressKey.name,
             object: nil)
+        
+        netClient = MKDNetClient(destinationAddress: "127.0.0.1", port: NET_SERVER_PORT, maxChannels: NET_MAX_CHANNELS, delegate: self)
     }
     
     private func gameLoop(dT: CGFloat) {
@@ -100,8 +105,9 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         if isFlyoverMode {
             flyoverCamera.gameLoopWithKeysPressed(inputManager.keysPressed, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
-            gameWindowController?.gameView?.play(self) // why the fuck must we do this?? (force re-render)
-        } else {
+            clientWindowController?.renderView?.play(self) // why the fuck must we do this?? (force re-render)
+        }
+        else {
             localCharacter?.gameLoopWithKeysPressed(inputManager.keysPressed, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
         }
     }
@@ -109,7 +115,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     func switchToCameraNode(cameraNode: SCNNode) {
         NSLog("switchToCameraNode() %@", cameraNode.name!)
         
-        gameWindowController?.gameView?.pointOfView = cameraNode
+        clientWindowController?.renderView?.pointOfView = cameraNode
         if cameraNode != flyoverCamera.node {
             isFlyoverMode = false
         }
@@ -186,6 +192,30 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     }
     
     /******************************************************************************************************
+    MARK:   MKDNetClientDelegate
+    ******************************************************************************************************/
+    
+    public func clientDidConnect(client: MKDNetClient!) {
+        NSLog("clientDidConnect(%@)", client)
+        
+        let hellMessage = ClientHelloNetMessage(name: "gatsby")
+        let packtData = hellMessage.encodedWithSequenceNumber(4)
+        netClient?.sendPacket(packtData, channel: 0, flags: .Reliable)
+    }
+    
+    public func client(client: MKDNetClient!, didFailToConnect error: NSError!) {
+        NSLog("client(%@, didFailToConnect: %@)", client, error)
+    }
+    
+    public func clientDidDisconnect(client: MKDNetClient!) {
+        NSLog("clientDidDisconnect(%@)")
+    }
+    
+    public func client(client: MKDNetClient!, didRecievePacket packetData: NSData!, channel: UInt8) {
+        NSLog("client(%@, didRecievePacket: %@, channel: %d", channel)
+    }
+
+    /******************************************************************************************************
     MARK:   Object
     ******************************************************************************************************/
     
@@ -193,6 +223,6 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         self.inputManager = inputManager
         super.init()
         setup()
-        self.gameWindowController = GameWindowController(clientSimulationController: self)
+        self.clientWindowController = ClientWindowController(clientSimulationController: self)
     }
 }

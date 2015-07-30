@@ -1,5 +1,5 @@
 //
-//  GameView.swift
+//  RenderView.swift
 //  Avara
 //
 //  Created by Morgan Davis on 2/27/15.
@@ -9,6 +9,6 @@
 import SceneKit
 
 
-class GameView: SCNView {
+class RenderView: SCNView {
 
 }

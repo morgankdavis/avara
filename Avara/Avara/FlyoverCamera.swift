@@ -153,7 +153,7 @@ public class FlyoverCamera {
     
     func setup() {
         let camera = SCNCamera()
-        ConfigureCamera(camera, fov:90.0)
+        ConfigureCamera(camera, screenSize: CLIENT_WINDOW_SIZE, fov:90.0)
         camera.zNear = 0.1
         camera.zFar = 1000.0
         node.name = "Fly camera node"

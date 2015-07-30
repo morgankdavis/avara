@@ -13,8 +13,8 @@
 		417CC3A81B645310006B21F3 /* ClientSimulationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3991B645310006B21F3 /* ClientSimulationController.swift */; };
 		417CC3A91B645310006B21F3 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39A1B645310006B21F3 /* Configuration.swift */; };
 		417CC3AA1B645310006B21F3 /* FlyoverCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39B1B645310006B21F3 /* FlyoverCamera.swift */; };
-		417CC3AB1B645310006B21F3 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39C1B645310006B21F3 /* GameView.swift */; };
-		417CC3AC1B645310006B21F3 /* GameWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39D1B645310006B21F3 /* GameWindowController.swift */; };
+		417CC3AB1B645310006B21F3 /* RenderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39C1B645310006B21F3 /* RenderView.swift */; };
+		417CC3AC1B645310006B21F3 /* ClientWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39D1B645310006B21F3 /* ClientWindowController.swift */; };
 		417CC3AD1B645310006B21F3 /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39E1B645310006B21F3 /* Globals.swift */; };
 		417CC3AE1B645310006B21F3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 417CC39F1B645310006B21F3 /* Images.xcassets */; };
 		417CC3AF1B645310006B21F3 /* InputManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3A01B645310006B21F3 /* InputManager.swift */; };
@@ -53,9 +53,10 @@
 		417CC4091B688232006B21F3 /* peer.c in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3FC1B688232006B21F3 /* peer.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		417CC40A1B688232006B21F3 /* protocol.c in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3FD1B688232006B21F3 /* protocol.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		417CC40B1B688232006B21F3 /* unix.c in Sources */ = {isa = PBXBuildFile; fileRef = 417CC4011B688232006B21F3 /* unix.c */; settings = {COMPILER_FLAGS = "-w"; }; };
-		417CC40D1B68A305006B21F3 /* Client.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC40C1B68A305006B21F3 /* Client.swift */; };
+		417CC40D1B68A305006B21F3 /* NetPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC40C1B68A305006B21F3 /* NetPlayer.swift */; };
 		417CC40F1B68A9E6006B21F3 /* NetMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC40E1B68A9E6006B21F3 /* NetMessage.swift */; };
 		417CC4121B68AA2F006B21F3 /* ClientHelloNetMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC4111B68AA2F006B21F3 /* ClientHelloNetMessage.swift */; };
+		417CC4141B69B98C006B21F3 /* ServerWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC4131B69B98C006B21F3 /* ServerWindowController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -67,8 +68,8 @@
 		417CC3991B645310006B21F3 /* ClientSimulationController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientSimulationController.swift; sourceTree = "<group>"; };
 		417CC39A1B645310006B21F3 /* Configuration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
 		417CC39B1B645310006B21F3 /* FlyoverCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlyoverCamera.swift; sourceTree = "<group>"; };
-		417CC39C1B645310006B21F3 /* GameView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
-		417CC39D1B645310006B21F3 /* GameWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameWindowController.swift; sourceTree = "<group>"; };
+		417CC39C1B645310006B21F3 /* RenderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RenderView.swift; sourceTree = "<group>"; };
+		417CC39D1B645310006B21F3 /* ClientWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientWindowController.swift; sourceTree = "<group>"; };
 		417CC39E1B645310006B21F3 /* Globals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
 		417CC39F1B645310006B21F3 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		417CC3A01B645310006B21F3 /* InputManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputManager.swift; sourceTree = "<group>"; };
@@ -119,9 +120,10 @@
 		417CC4011B688232006B21F3 /* unix.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unix.c; sourceTree = "<group>"; };
 		417CC4021B688232006B21F3 /* unix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unix.h; sourceTree = "<group>"; };
 		417CC4031B688232006B21F3 /* utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utility.h; sourceTree = "<group>"; };
-		417CC40C1B68A305006B21F3 /* Client.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Client.swift; sourceTree = "<group>"; };
+		417CC40C1B68A305006B21F3 /* NetPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetPlayer.swift; sourceTree = "<group>"; };
 		417CC40E1B68A9E6006B21F3 /* NetMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetMessage.swift; sourceTree = "<group>"; };
 		417CC4111B68AA2F006B21F3 /* ClientHelloNetMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientHelloNetMessage.swift; sourceTree = "<group>"; };
+		417CC4131B69B98C006B21F3 /* ServerWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerWindowController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -159,14 +161,15 @@
 				417CC39E1B645310006B21F3 /* Globals.swift */,
 				417CC38B1B645260006B21F3 /* AppDelegate.swift */,
 				417CC3A41B645310006B21F3 /* ServerSimulationController.swift */,
-				417CC40C1B68A305006B21F3 /* Client.swift */,
+				417CC40C1B68A305006B21F3 /* NetPlayer.swift */,
 				417CC3991B645310006B21F3 /* ClientSimulationController.swift */,
 				417CC3981B645310006B21F3 /* Character.swift */,
 				417CC3A11B645310006B21F3 /* Map.swift */,
 				417CC3A01B645310006B21F3 /* InputManager.swift */,
 				417CC39B1B645310006B21F3 /* FlyoverCamera.swift */,
-				417CC39D1B645310006B21F3 /* GameWindowController.swift */,
-				417CC39C1B645310006B21F3 /* GameView.swift */,
+				417CC39D1B645310006B21F3 /* ClientWindowController.swift */,
+				417CC4131B69B98C006B21F3 /* ServerWindowController.swift */,
+				417CC39C1B645310006B21F3 /* RenderView.swift */,
 				417CC4101B68A9EA006B21F3 /* NetMessages */,
 				417CC3F21B688063006B21F3 /* MKDNet */,
 				417CC3B71B6453D2006B21F3 /* Utilities */,
@@ -370,6 +373,7 @@
 			files = (
 				417CC40A1B688232006B21F3 /* protocol.c in Sources */,
 				417CC3B01B645310006B21F3 /* Map.swift in Sources */,
+				417CC4141B69B98C006B21F3 /* ServerWindowController.swift in Sources */,
 				417CC3A81B645310006B21F3 /* ClientSimulationController.swift in Sources */,
 				417CC3B31B645310006B21F3 /* ServerSimulationController.swift in Sources */,
 				417CC4071B688232006B21F3 /* list.c in Sources */,
@@ -381,17 +385,17 @@
 				417CC4051B688232006B21F3 /* compress.c in Sources */,
 				417CC4041B688232006B21F3 /* callbacks.c in Sources */,
 				417CC3F01B68804B006B21F3 /* MKDNetServer.m in Sources */,
-				417CC40D1B68A305006B21F3 /* Client.swift in Sources */,
+				417CC40D1B68A305006B21F3 /* NetPlayer.swift in Sources */,
 				417CC4121B68AA2F006B21F3 /* ClientHelloNetMessage.swift in Sources */,
 				417CC4081B688232006B21F3 /* packet.c in Sources */,
 				417CC3AD1B645310006B21F3 /* Globals.swift in Sources */,
-				417CC3AB1B645310006B21F3 /* GameView.swift in Sources */,
+				417CC3AB1B645310006B21F3 /* RenderView.swift in Sources */,
 				417CC3AF1B645310006B21F3 /* InputManager.swift in Sources */,
 				417CC4091B688232006B21F3 /* peer.c in Sources */,
 				417CC3EF1B68804B006B21F3 /* MKDNetClient.m in Sources */,
 				417CC4061B688232006B21F3 /* host.c in Sources */,
 				417CC3A71B645310006B21F3 /* Character.swift in Sources */,
-				417CC3AC1B645310006B21F3 /* GameWindowController.swift in Sources */,
+				417CC3AC1B645310006B21F3 /* ClientWindowController.swift in Sources */,
 				417CC40B1B688232006B21F3 /* unix.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

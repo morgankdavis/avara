@@ -247,7 +247,7 @@ public class Character {
         
         // camera
         let camera = SCNCamera()
-        ConfigureCamera(camera, fov: 80.0)
+        ConfigureCamera(camera, screenSize: CLIENT_WINDOW_SIZE, fov: 80.0)
         camera.zNear = 0.01
         camera.zFar = 1000.0
         cameraNode.camera = camera

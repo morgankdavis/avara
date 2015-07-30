@@ -72,7 +72,7 @@
 	enet_address_set_host(&address, [self.address cStringUsingEncoding:NSASCIIStringEncoding]);
 	address.port = self.port;
 
-	u_int32_t peerID = arc4random_uniform(SHRT_MAX);// >> 16;
+	u_int32_t peerID = arc4random_uniform(SHRT_MAX);
 	NSLog(@"peerID: %d", peerID);
 	
 	self.peer = enet_host_connect(self.host,

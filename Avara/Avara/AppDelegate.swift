@@ -19,8 +19,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(aNotification: NSNotification) {
         
         serverSimulationController = ServerSimulationController()
+        serverSimulationController?.start()
         
-//        clientSimulationController = ClientSimulationController(inputManager: inputManager)
-//        clientSimulationController?.play()
+        clientSimulationController = ClientSimulationController(inputManager: inputManager)
+        clientSimulationController?.play()
+        
+//        let msg = ClientHelloNetMessage(name: "gatsby")
+//        let data = msg.encodedWithSequenceNumber(4)
+        
+//        let strData = data!.subdataWithRange(NSMakeRange(8, data!.length-8))
+//        let str = NSString(data: strData, encoding: NSUTF16StringEncoding)
+        
     }
 }

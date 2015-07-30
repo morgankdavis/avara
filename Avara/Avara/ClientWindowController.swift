@@ -1,5 +1,5 @@
 
-//  GameWindowController.swift
+//  ClientWindowController.swift
 //  Avara
 //
 //  Created by Morgan Davis on 2/27/15.
@@ -10,7 +10,7 @@ import AppKit
 import SceneKit
 
 
-public class GameWindowController: NSWindowController, NSWindowDelegate {
+public class ClientWindowController: NSWindowController, NSWindowDelegate {
 
     /******************************************************************************************************
     MARK:   Properties
@@ -18,7 +18,7 @@ public class GameWindowController: NSWindowController, NSWindowDelegate {
     
     private         var clientSimulationController: ClientSimulationController
     private         let inputManager:               InputManager
-    private(set)    var gameView:                   GameView?
+    private(set)    var renderView:                 RenderView?
     private(set)    var isCursorCaptured =          false
     private         var scene:                      SCNScene
     private         var stashedCursorPoint =        CGPointZero
@@ -100,20 +100,20 @@ public class GameWindowController: NSWindowController, NSWindowDelegate {
     private func setup() {
         NSLog("GameViewController.setup()")
         
-        gameView = GameView(frame: CGRect(origin: CGPointZero, size: WINDOW_SIZE) as NSRect)
-        gameView?.scene = scene
-        gameView?.allowsCameraControl = false
-        gameView?.showsStatistics = true
-        gameView?.debugOptions = SCN_DEBUG_OPTIONS
+        renderView = RenderView(frame: CGRect(origin: CGPointZero, size: CLIENT_WINDOW_SIZE) as NSRect)
+        renderView?.scene = scene
+        renderView?.allowsCameraControl = false
+        renderView?.showsStatistics = true
+        renderView?.debugOptions = SCN_DEBUG_OPTIONS
         // WARNING: Temporary
         if (NSProcessInfo.processInfo().hostName == "goosebox.local") {
-            gameView?.antialiasingMode = .Multisampling16X
+            renderView?.antialiasingMode = .Multisampling16X
         } else {
-            gameView?.antialiasingMode = .None
+            renderView?.antialiasingMode = .None
         }
-        gameView?.backgroundColor = NSColor.blackColor()
-        gameView?.delegate = clientSimulationController
-        window?.contentView.addSubview(gameView!)
+        renderView?.backgroundColor = NSColor.blackColor()
+        renderView?.delegate = clientSimulationController
+        window?.contentView.addSubview(renderView!)
         window?.title = "Avara"
         window?.delegate = self
         window?.center()
@@ -188,7 +188,7 @@ public class GameWindowController: NSWindowController, NSWindowDelegate {
     
     required public init(clientSimulationController: ClientSimulationController) {
         let newWindow = NSWindow(
-            contentRect: CGRect(origin: CGPointZero, size: WINDOW_SIZE) as NSRect,
+            contentRect: CGRect(origin: CGPointZero, size: CLIENT_WINDOW_SIZE) as NSRect,
             styleMask: (NSTitledWindowMask | NSMiniaturizableWindowMask),
             backing: .Buffered,
             `defer`: false)
