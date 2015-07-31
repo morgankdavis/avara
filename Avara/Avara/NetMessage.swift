@@ -11,8 +11,9 @@ import SceneKit
 
 
 public enum NetMessageOpcode : UInt16 {
-    case None =             0
-    case ClientHello =      1
+    case None =                 0
+    case ClientHello =          1
+    case ClientUpdate =         2
 }
 
 
@@ -27,10 +28,9 @@ public func MessageFromPayloadData(payloadData: NSData) -> NetMessage? {
     let opcodeInt = NetMessageOpcodeRawValueFromPayloadData(payloadData)
     if let opcode = NetMessageOpcode(rawValue: opcodeInt) {
         switch opcode {
-        case NetMessageOpcode.ClientHello:
-            return ClientHelloNetMessage(payloadData: payloadData)
-        default:
-            return nil
+        case NetMessageOpcode.ClientHello:              return ClientHelloNetMessage(payloadData: payloadData)
+        case NetMessageOpcode.ClientUpdate:             return ClientUpdateNetMessage(payloadData: payloadData)
+        default:                                        return nil
         }
     }
     else {
@@ -45,14 +45,9 @@ public class NetMessage {
     MARK:   Properties
     ******************************************************************************************************/
     
+    public          var     opcode:             NetMessageOpcode { get { return .None } }
     public          var     sequenceNumber:     UInt32?
     private(set)    var     payloadData:        NSMutableData?
-    
-    public          var     opcode:             NetMessageOpcode {
-        get {
-            return .None
-        }
-    }
     
     /******************************************************************************************************
     MARK:   Public
@@ -97,6 +92,17 @@ public class NetMessage {
         data.appendBytes(&numArray[0], length: sizeof(UInt32))
     }
     
+    internal func appendUInt8Array(array: [UInt8], inout toData data: NSMutableData) {
+        var numArray = [UInt16]()
+        numArray.append(UInt16(array.count))
+        data.appendBytes(&numArray[0], length: sizeof(UInt16))
+        
+        var arrayCopy = array // must be declared "var" for inout reference in appendBytes()
+        for i in 0..<array.count {
+            data.appendBytes(&arrayCopy[i], length: sizeof(UInt8))
+        }
+    }
+    
     internal func dataFromNSString(str: NSString) -> NSMutableData? {
         if let strData = str.dataUsingEncoding(NSUTF16StringEncoding) {
             let strLen = UInt16(strData.length)
@@ -112,6 +118,17 @@ public class NetMessage {
         }
     }
     
+    internal func pullUInt16FromPayload() -> UInt16 {
+        let numData = payloadData!.subdataWithRange(NSMakeRange(0, sizeof(UInt16)))
+        var numArray = [UInt16](count: 1, repeatedValue: 0)
+        numData.getBytes(&numArray, length: sizeof(UInt16))
+        let num = numArray[0]
+        
+        payloadData!.replaceBytesInRange(NSMakeRange(0, sizeof(UInt16)), withBytes: nil, length:0)
+        
+        return num
+    }
+    
     internal func pullUInt32FromPayload() -> UInt32 {
         let numData = payloadData!.subdataWithRange(NSMakeRange(0, sizeof(UInt32)))
         var numArray = [UInt32](count: 1, repeatedValue: 0)
@@ -121,6 +138,19 @@ public class NetMessage {
         payloadData!.replaceBytesInRange(NSMakeRange(0, sizeof(UInt32)), withBytes: nil, length:0)
         
         return num
+    }
+    
+    internal func pullUInt8ArrayFromPayload() -> [UInt8] {
+        let count = pullUInt16FromPayload()
+        
+        let dataLen = sizeof(UInt8) * Int(count)
+        let arrayData = payloadData!.subdataWithRange(NSMakeRange(0, dataLen))
+        var array = [UInt8](count: Int(count), repeatedValue: 0)
+        arrayData.getBytes(&array, length: dataLen)
+        
+        payloadData!.replaceBytesInRange(NSMakeRange(0, dataLen), withBytes: nil, length:0)
+        
+        return array
     }
     
     internal func pullStringFromPayload() -> NSString? {

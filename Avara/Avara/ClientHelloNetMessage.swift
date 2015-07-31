@@ -5,6 +5,10 @@
 //  Created by Morgan Davis on 7/28/15.
 //  Copyright © 2015 Morgan K Davis. All rights reserved.
 //
+//  Sent after socket connection to establish player identifiy and start sequence number.
+//
+//  FORMAT: [STRING]<name>
+//
 
 import Foundation
 
@@ -15,13 +19,8 @@ public class ClientHelloNetMessage: NetMessage {
     MARK:   Properties
     ******************************************************************************************************/
     
+    override public var     opcode:     NetMessageOpcode { get { return .ClientHello } }
     private(set)    var     name:       NSString?
-    
-    override public var opcode: NetMessageOpcode {
-        get {
-            return .ClientHello
-        }
-    }
     
     /******************************************************************************************************
     MARK:   Public, NetMessage

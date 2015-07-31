@@ -16,6 +16,7 @@ public class NetPlayer {
     ******************************************************************************************************/
     
     public          var     lastSequenceNumber:     UInt32 // stores last sent OR received sequence number for this particular player
+    public          var     activeActions =         Set<InputAction>()
     private(set)    var     name:                   String
     private(set)    var     id:                     UInt32
     private(set)    var     character:              Character

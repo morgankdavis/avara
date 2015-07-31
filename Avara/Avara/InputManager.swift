@@ -9,7 +9,7 @@
 import Foundation
 
 
-// WARN: Temporary. This will eventually reside as a user preference
+// WARN: Temporary. This mapping will eventually reside as a user preference
 public func InputActionForKey(key: Key) -> InputAction? {
     switch key {
     case .W:                        return .MoveForward
@@ -32,10 +32,8 @@ public enum InputAction: UInt8, CustomStringConvertible {
     case TurnLeft =         3
     case TurnRight =        4
     case CrouchJump =       5
-    
     case ToggleFocus =      100
     case ToggleFlyover =    101
-    
     case HeadCamera =       150
     case FlyoverCamera =    151
     
@@ -47,10 +45,8 @@ public enum InputAction: UInt8, CustomStringConvertible {
             case .TurnLeft:         return "TurnLeft"
             case .TurnRight:        return "TurnRight"
             case .CrouchJump:       return "CrouchJump"
-                
             case .ToggleFocus:      return "ToggleFocus"
             case .ToggleFlyover:    return "ToggleFlyover"
-                
             case .HeadCamera:       return "HeadCamera"
             case .FlyoverCamera:    return "FlyoverCamera"
             default:                return "[unknown]"

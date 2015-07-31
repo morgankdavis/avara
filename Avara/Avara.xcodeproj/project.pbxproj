@@ -57,6 +57,7 @@
 		417CC40F1B68A9E6006B21F3 /* NetMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC40E1B68A9E6006B21F3 /* NetMessage.swift */; };
 		417CC4121B68AA2F006B21F3 /* ClientHelloNetMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC4111B68AA2F006B21F3 /* ClientHelloNetMessage.swift */; };
 		417CC4141B69B98C006B21F3 /* ServerWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC4131B69B98C006B21F3 /* ServerWindowController.swift */; };
+		41D922501B6B459600CCE9CA /* ClientUpdateNetMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D9224F1B6B459600CCE9CA /* ClientUpdateNetMessage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -124,6 +125,7 @@
 		417CC40E1B68A9E6006B21F3 /* NetMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetMessage.swift; sourceTree = "<group>"; };
 		417CC4111B68AA2F006B21F3 /* ClientHelloNetMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientHelloNetMessage.swift; sourceTree = "<group>"; };
 		417CC4131B69B98C006B21F3 /* ServerWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerWindowController.swift; sourceTree = "<group>"; };
+		41D9224F1B6B459600CCE9CA /* ClientUpdateNetMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientUpdateNetMessage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -275,6 +277,7 @@
 			children = (
 				417CC40E1B68A9E6006B21F3 /* NetMessage.swift */,
 				417CC4111B68AA2F006B21F3 /* ClientHelloNetMessage.swift */,
+				41D9224F1B6B459600CCE9CA /* ClientUpdateNetMessage.swift */,
 			);
 			name = NetMessages;
 			sourceTree = "<group>";
@@ -376,6 +379,7 @@
 				417CC4141B69B98C006B21F3 /* ServerWindowController.swift in Sources */,
 				417CC3A81B645310006B21F3 /* ClientSimulationController.swift in Sources */,
 				417CC3B31B645310006B21F3 /* ServerSimulationController.swift in Sources */,
+				41D922501B6B459600CCE9CA /* ClientUpdateNetMessage.swift in Sources */,
 				417CC4071B688232006B21F3 /* list.c in Sources */,
 				417CC38C1B645260006B21F3 /* AppDelegate.swift in Sources */,
 				417CC3A91B645310006B21F3 /* Configuration.swift in Sources */,
@@ -542,6 +546,7 @@
 				417CC3971B645260006B21F3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

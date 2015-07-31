@@ -28,6 +28,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
 //    private         var lastUpdateTime =            Double(0)
 //    private         var deltaTime =                 Double(0)
     private         var netClient:                  MKDNetClient?
+    private         var netSequenceNumber =         UInt32(0)
     
     /******************************************************************************************************
     MARK:   Public
@@ -109,6 +110,15 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             clientWindowController?.renderView?.play(self) // why the fuck must we do this?? (force re-render)
         }
         else {
+            if let client = netClient {
+                if client.isConnected {
+                    let updateMessage = ClientUpdateNetMessage(activeActions: inputManager.activeActions)
+                    
+                    let packtData = updateMessage.encodedWithSequenceNumber(netSequenceNumber++)
+                    client.sendPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable) // WARN: change to unreliable
+                }
+            }
+            
             localCharacter?.gameLoopWithActions(inputManager.activeActions, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
         }
     }
@@ -199,9 +209,9 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     public func clientDidConnect(client: MKDNetClient!) {
         NSLog("clientDidConnect(%@)", client)
         
-        let hellMessage = ClientHelloNetMessage(name: "gatsby")
-        let packtData = hellMessage.encodedWithSequenceNumber(4)
-        netClient?.sendPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable)
+        let helloMessage = ClientHelloNetMessage(name: "gatsby")
+        let packtData = helloMessage.encodedWithSequenceNumber(netSequenceNumber++)
+        client.sendPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable)
     }
     
     public func client(client: MKDNetClient!, didFailToConnect error: NSError!) {

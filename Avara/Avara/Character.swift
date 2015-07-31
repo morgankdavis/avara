@@ -28,12 +28,12 @@ public class Character {
     ******************************************************************************************************/
     
     public          let cameraNode =                SCNNode()
+    private(set)    var bodyNode =                  SCNNode()
     private         var scene:                      SCNScene
-    private         let bodyNode =                  SCNNode()
     private         var headNode:                   SCNNode?
     private         var legsNode:                   SCNNode?
     private         var accelerationY =             CGFloat(0)
-    private         var maxPenetrationDistance =    CGFloat(0)
+    private         var largestWallPenetration =    CGFloat(0)
     private         var replacementPosition:        SCNVector3?
     
     /******************************************************************************************************
@@ -156,7 +156,7 @@ public class Character {
         
         // collisions
         
-        maxPenetrationDistance = 0
+        largestWallPenetration = 0
         replacementPosition = nil
     }
     
@@ -189,14 +189,14 @@ public class Character {
             return
         }
         
-        guard contact.penetrationDistance > maxPenetrationDistance else {
+        guard contact.penetrationDistance > largestWallPenetration else {
             //NSLog("Low penetration")
             return
         }
         
         //NSLog("*** WALL CONTACT ***")
         
-        maxPenetrationDistance = contact.penetrationDistance;
+        largestWallPenetration = contact.penetrationDistance;
         
         let scaledNormal = SCNVector3(
             x: contact.contactNormal.x * contact.penetrationDistance,

@@ -21,7 +21,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private(set)    var scene =                     SCNScene()
     private(set)    var renderView:                 RenderView? // *** TEMPORARY ***
     private         var map:                        Map?
-    private         var players =                   [UInt32:NetPlayer]()
+    private         var netPlayers =                [UInt32:NetPlayer]()
     private         var gameLoopTimer:              NSTimer? // temporary
     private         var networkTickTimer:           NSTimer?
     private         var netServer:                  MKDNetServer?
@@ -38,7 +38,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         cameraNode = SCNNode()
         cameraNode?.name = "Server camera node"
-        cameraNode?.position = SCNVector3(x: 0, y: 40, z: 0)
+        cameraNode?.position = SCNVector3(x: 0, y: 20, z: 0)
         cameraNode?.rotation = SCNVector4(x: 1, y: 0, z: 0, w: -CGFloat(M_PI)/2.0)
         scene.rootNode.addChildNode(cameraNode!)
         switchToCameraNode(cameraNode!)
@@ -100,6 +100,12 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         
         
+        for (_,p) in netPlayers {
+            let character = p.character
+            // WARN: No mouse delta
+            character.gameLoopWithActions(p.activeActions, mouseDelta: CGPointZero, dT: dT)
+        }
+        
         // check for input and move characters
         //localCharacter?.gameLoopWithKeysPressed(inputManager.keysPressed, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
     }
@@ -135,11 +141,31 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         if let message = MessageFromPayloadData(packetData) {
             switch message.opcode {
+                
             case .ClientHello:
                 // well hello! lets create a new "NetPlayer" opject and populate it with what we go so far
                 let helloMessage = message as! ClientHelloNetMessage
-                NSLog("Client hello message! Name: %@, Sequence Number: %d", helloMessage.name!, helloMessage.sequenceNumber!)
+                let name = helloMessage.name!
+                let sequenceNumber = helloMessage.sequenceNumber!
+                NSLog("Client hello message! Name: %@, Sequence Number: %d", name, sequenceNumber)
+                
+                let character = Character(scene: scene) // adds itself to the scene
+                netPlayers[clientID] = NetPlayer(id: clientID, name: name as String, character: character, lastSequenceNumber: sequenceNumber)
                 break
+                
+            case .ClientUpdate:
+                if let player = netPlayers[clientID] {
+                    let updateMessage = message as! ClientUpdateNetMessage
+                    let activeActions = updateMessage.activeActions
+                    let sequenceNumber = updateMessage.sequenceNumber!
+                    player.activeActions = activeActions
+                    NSLog("Client update message! Active actions: %@, Sequence Number: %d", activeActions.description, sequenceNumber)
+                }
+                else {
+                    NSLog("No player for that ID!")
+                }
+                break
+                
             default:
                 break
             }
