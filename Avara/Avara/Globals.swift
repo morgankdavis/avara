@@ -19,4 +19,3 @@ enum CollisionCategory: Int {
     case Floor =        0b00000100
     case Movable =      0b00001000
 }
-

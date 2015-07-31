@@ -90,6 +90,15 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
 //        switchToCameraNode(cameraNode!)
 //        serverWindowController?.renderView?.play(self)
         
+//        let sphere = SCNSphere(radius: 1)
+//        let sphereNode = SCNNode(geometry: sphere)
+//        scene.rootNode.addChildNode(sphereNode)
+//        
+//        let sphereMaterial = SCNMaterial()
+//        sphereMaterial.diffuse.contents = NSColor.whiteColor()
+//        sphere.firstMaterial = sphereMaterial
+        
+        
         
         // check for input and move characters
         //localCharacter?.gameLoopWithKeysPressed(inputManager.keysPressed, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)

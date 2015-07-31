@@ -40,12 +40,12 @@ public class Character {
     MARK:   Public
     ******************************************************************************************************/
     
-    public func gameLoopWithKeysPressed(keys: Set<Key>, mouseDelta: CGPoint, dT: CGFloat) {
+    public func gameLoopWithActions(actions: Set<InputAction>, mouseDelta: CGPoint, dT: CGFloat) {
         
         let initialPosition = bodyNode.position
         
         // body
-        if keys.contains(.W) { // move forward
+        if actions.contains(.MoveForward) {
             let positionDelta = WALK_VELOCITY * dT
             
             let transform = bodyNode.transform
@@ -60,7 +60,7 @@ public class Character {
                 y: bodyNode.position.y,
                 z: bodyNode.position.z - dz)
         }
-        else if keys.contains(.S) { // move backward
+        else if actions.contains(.MoveBackward) {
             let positionDelta = WALK_VELOCITY * dT
             
             let transform = bodyNode.transform
@@ -76,7 +76,7 @@ public class Character {
                 z: bodyNode.position.z + dz)
         }
         
-        if keys.contains(.A) { // turn left
+        if actions.contains(.TurnLeft) {
             let rotationDelta = TURN_ANG_VELOCITY * dT
             bodyNode.rotation = SCNVector4(
                 x: 0,
@@ -84,7 +84,7 @@ public class Character {
                 z: 0,
                 w: bodyNode.rotation.w + CGFloat(rotationDelta))
         }
-        else if keys.contains(.D) { // turn right
+        else if actions.contains(.TurnRight) {
             let rotationDelta = TURN_ANG_VELOCITY * dT
             bodyNode.rotation = SCNVector4(
                 x: 0,

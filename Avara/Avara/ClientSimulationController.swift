@@ -57,19 +57,20 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         gameLoop(1.0/60.0)
     }
     
-    internal func inputManagerDidPressKeyNotification(note: NSNotification) {
-        //NSLog("inputManagerDidPressKeyNotification()")
+    internal func inputManagerDidBeginInputActionNotification(note: NSNotification) {
+        //NSLog("inputManagerDidBeginInputActionNotification()")
         
-        if let keyCode = note.userInfo?[InputManager.Notifications.DidPressKey.UserInfoKeys.keyCode] as? Int {
-            if let key = Key(rawValue: keyCode) {
-                NSLog("Key pressed: %@", key.description)
+        if let actionRawValue = note.userInfo?[InputManager.Notifications.DidBeginInputAction.UserInfoKeys.actionRawValue] as? Int {
+            if let action = InputAction(rawValue: UInt8(actionRawValue)) {
+                NSLog("Action began: %@", action.description)
                 
-                switch key {
-                case .NumPad0:                  switchToCameraNode(flyoverCamera.node)
-                case .NumPad1, .One:            switchToCameraNode(localCharacter!.cameraNode)
-                case .NumPadClear, .Tilda:      clientWindowController?.toggleIsCursorCaptured()
-                case .NumPadStar, .Equal:       toggleFlyoverMode()
-                case .W, .A, .S, .D, .Space:    break // game loop will see this
+                switch action {
+                case .ToggleFocus:      clientWindowController?.toggleIsCursorCaptured()
+                case .ToggleFlyover:    toggleFlyoverMode()
+                case .HeadCamera:       switchToCameraNode(localCharacter!.cameraNode)
+                case .FlyoverCamera:    switchToCameraNode(flyoverCamera.node)
+                case .MoveForward, .MoveBackward, .TurnLeft, .TurnRight:
+                    break // game loop will process
                 default: break
                 }
             }
@@ -93,8 +94,8 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         NSNotificationCenter.defaultCenter().addObserver(
             self,
-            selector: "inputManagerDidPressKeyNotification:",
-            name: InputManager.Notifications.DidPressKey.name,
+            selector: "inputManagerDidBeginInputActionNotification:",
+            name: InputManager.Notifications.DidBeginInputAction.name,
             object: nil)
         
         netClient = MKDNetClient(destinationAddress: "127.0.0.1", port: NET_SERVER_PORT, maxChannels: NET_MAX_CHANNELS, delegate: self)
@@ -104,11 +105,11 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         //NSLog("dT: %.4f", dT)
         
         if isFlyoverMode {
-            flyoverCamera.gameLoopWithKeysPressed(inputManager.keysPressed, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
+            flyoverCamera.gameLoopWithActions(inputManager.activeActions, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
             clientWindowController?.renderView?.play(self) // why the fuck must we do this?? (force re-render)
         }
         else {
-            localCharacter?.gameLoopWithKeysPressed(inputManager.keysPressed, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
+            localCharacter?.gameLoopWithActions(inputManager.activeActions, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
         }
     }
     
@@ -200,7 +201,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         let hellMessage = ClientHelloNetMessage(name: "gatsby")
         let packtData = hellMessage.encodedWithSequenceNumber(4)
-        netClient?.sendPacket(packtData, channel: 0, flags: .Reliable)
+        netClient?.sendPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable)
     }
     
     public func client(client: MKDNetClient!, didFailToConnect error: NSError!) {

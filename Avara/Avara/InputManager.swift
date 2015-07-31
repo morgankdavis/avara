@@ -9,6 +9,56 @@
 import Foundation
 
 
+// WARN: Temporary. This will eventually reside as a user preference
+public func InputActionForKey(key: Key) -> InputAction? {
+    switch key {
+    case .W:                        return .MoveForward
+    case .A:                        return .TurnLeft
+    case .S:                        return .MoveBackward
+    case .D:                        return .TurnRight
+    case .Space:                    return .CrouchJump
+    case .NumPadClear, .Tilda:      return .ToggleFocus
+    case .NumPadStar, .Equal:       return .ToggleFlyover
+    case .NumPad0:                  return .FlyoverCamera
+    case .NumPad1, .One:            return .HeadCamera
+    default:                        return nil
+    }
+}
+
+
+public enum InputAction: UInt8, CustomStringConvertible {
+    case MoveForward =      1
+    case MoveBackward =     2
+    case TurnLeft =         3
+    case TurnRight =        4
+    case CrouchJump =       5
+    
+    case ToggleFocus =      100
+    case ToggleFlyover =    101
+    
+    case HeadCamera =       150
+    case FlyoverCamera =    151
+    
+    public var description : String {
+        get {
+            switch self {
+            case .MoveForward:      return "MoveForward"
+            case .MoveBackward:     return "MoveBackward"
+            case .TurnLeft:         return "TurnLeft"
+            case .TurnRight:        return "TurnRight"
+            case .CrouchJump:       return "CrouchJump"
+                
+            case .ToggleFocus:      return "ToggleFocus"
+            case .ToggleFlyover:    return "ToggleFlyover"
+                
+            case .HeadCamera:       return "HeadCamera"
+            case .FlyoverCamera:    return "FlyoverCamera"
+            default:                return "[unknown]"
+            }
+        }
+    }
+}
+
 public enum Key: Int, CustomStringConvertible {
     case W =                13
     case A =                0
@@ -88,10 +138,10 @@ public class InputManager {
     ******************************************************************************************************/
     
     public struct Notifications {
-        struct DidPressKey {
-            static let name = "DidPressKeyNotification"
+        struct DidBeginInputAction {
+            static let name = "DidBeginInputActionNotification"
             struct UserInfoKeys {
-                static let keyCode = "keyCode"
+                static let actionRawValue = "actionRawValue"
             }
         }
     }
@@ -100,15 +150,15 @@ public class InputManager {
     MARK:   Properties
     ******************************************************************************************************/
     
-    private(set)    var keysPressed =                   Set<Key>()
+    private(set)    var activeActions =                 Set<InputAction>()
     private         var accumulatedCursorDelta =        CGPointZero
     
     /******************************************************************************************************
     MARK:   Public
     ******************************************************************************************************/
     
-    public func isKeyPressed(key: Key) -> Bool {
-        return keysPressed.contains(key)
+    public func isActionActive(action: InputAction) -> Bool {
+        return activeActions.contains(action)
     }
     
     public func readMouseDeltaAndClear() -> CGPoint {
@@ -123,30 +173,41 @@ public class InputManager {
             y: accumulatedCursorDelta.y + delta.y)
     }
     
-    public func updateKey(key: Key, pressed: Bool) {
-        var prevKeys = Set<Key>()
-        // this is super lame but can't seem to find a better copy/clone method
-        for k in keysPressed {
-            prevKeys.insert(k)
-        }
-        
-        if pressed {
-            keysPressed.insert(key)
+    public func updateKeyCode(keyCode: UInt16, pressed: Bool) {
+        if let key = Key(rawValue: Int(keyCode)) {
+            if let action = InputActionForKey(key) {
+                
+                var prevActions = Set<InputAction>()
+                // this is super lame but can't seem to find a better copy/clone method
+                for a in activeActions {
+                    prevActions.insert(a)
+                }
+                
+                if pressed {
+                    activeActions.insert(action)
+                }
+                else {
+                    activeActions.remove(action)
+                }
+                
+                if activeActions != prevActions {
+                    let str = NSMutableString()
+                    for a in activeActions {
+                        str.appendString(NSString(format: "%@, ", a.description) as String)
+                    }
+                    NSLog("Active input actions: %@", str)
+                }
+                
+                if !prevActions.contains(action) {
+                    didBeginInputAction(action)
+                }
+            }
+            else {
+                NSLog("No action bound to key: %@", key.description)
+            }
         }
         else {
-            keysPressed.remove(key)
-        }
-        
-        if keysPressed != prevKeys {
-            let str = NSMutableString()
-            for k in keysPressed {
-                str.appendString(NSString(format: "%@, ", k.description) as String)
-            }
-           // NSLog("Pressed keys: %@", str)
-        }
-        
-        if !prevKeys.contains(key) {
-            didPressKey(key)
+            NSLog("Unknown key code: %d", keyCode)
         }
     }
     
@@ -154,10 +215,10 @@ public class InputManager {
     MARK:   Private
     ******************************************************************************************************/
     
-    private func didPressKey(key: Key) {
+    private func didBeginInputAction(action: InputAction) {
         NSNotificationCenter.defaultCenter().postNotificationName(
-            Notifications.DidPressKey.name,
+            Notifications.DidBeginInputAction.name,
             object: nil,
-            userInfo: [Notifications.DidPressKey.UserInfoKeys.keyCode: Int(key.rawValue)])
+            userInfo: [Notifications.DidBeginInputAction.UserInfoKeys.actionRawValue: Int(action.rawValue)])
     }
 }

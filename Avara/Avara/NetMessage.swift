@@ -117,7 +117,6 @@ public class NetMessage {
         var numArray = [UInt32](count: 1, repeatedValue: 0)
         numData.getBytes(&numArray, length: sizeof(UInt32))
         let num = numArray[0]
-        //let num = CFSwapInt32HostToBig(numArray[0])
         
         payloadData!.replaceBytesInRange(NSMakeRange(0, sizeof(UInt32)), withBytes: nil, length:0)
         

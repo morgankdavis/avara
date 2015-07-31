@@ -21,3 +21,8 @@ let MOUSE_SENSITIVITY =                     CGFloat(400.0)
 let NET_SERVER_PORT =                       UInt16(33777)
 let NET_MAX_CLIENTS =                       Int(12)
 let NET_MAX_CHANNELS =                      UInt8(4)
+
+enum NetChannel: UInt8 {
+    case Control =      0
+    case Live =         1
+}
