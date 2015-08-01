@@ -38,7 +38,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         cameraNode = SCNNode()
         cameraNode?.name = "Server camera node"
-        cameraNode?.position = SCNVector3(x: 0, y: 20, z: 0)
+        cameraNode?.position = SCNVector3(x: 0, y: 10, z: 0)
         cameraNode?.rotation = SCNVector4(x: 1, y: 0, z: 0, w: -CGFloat(M_PI)/2.0)
         scene.rootNode.addChildNode(cameraNode!)
         switchToCameraNode(cameraNode!)
@@ -103,7 +103,8 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         for (_,p) in netPlayers {
             let character = p.character
             // WARN: No mouse delta
-            character.gameLoopWithActions(p.activeActions, mouseDelta: CGPointZero, dT: dT)
+            character.gameLoopWithInputs(p.activeInputs, mouseDelta: p.readMouseDeltaAndClear(), dT: dT)
+            //cameraNode?.position = SCNVector3(x: character.bodyNode.position.x, y: cameraNode!.position.y, z: character.bodyNode.position.z)
         }
         
         // check for input and move characters
@@ -147,7 +148,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 let helloMessage = message as! ClientHelloNetMessage
                 let name = helloMessage.name!
                 let sequenceNumber = helloMessage.sequenceNumber!
-                NSLog("Client hello message! Name: %@, Sequence Number: %d", name, sequenceNumber)
+                NSLog("Client hello message! name: %@, sq: %d", name, sequenceNumber)
                 
                 let character = Character(scene: scene) // adds itself to the scene
                 netPlayers[clientID] = NetPlayer(id: clientID, name: name as String, character: character, lastSequenceNumber: sequenceNumber)
@@ -156,10 +157,15 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             case .ClientUpdate:
                 if let player = netPlayers[clientID] {
                     let updateMessage = message as! ClientUpdateNetMessage
-                    let activeActions = updateMessage.activeActions
+                    let activeInputs = updateMessage.activeInputs
+                    let mouseDelta = updateMessage.mouseDelta
                     let sequenceNumber = updateMessage.sequenceNumber!
-                    player.activeActions = activeActions
-                    NSLog("Client update message! Active actions: %@, Sequence Number: %d", activeActions.description, sequenceNumber)
+                    
+                    NSLog("Client update message! active inputs: %@, mouse delta: (%.2f %.2f), sq: %d",
+                        activeInputs.description, mouseDelta.x, mouseDelta.y, sequenceNumber)
+                    
+                    player.activeInputs = activeInputs
+                    player.addMouseDelta(mouseDelta)
                 }
                 else {
                     NSLog("No player for that ID!")

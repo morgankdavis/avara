@@ -29,12 +29,12 @@ public class FlyoverCamera {
     MARK:   Public
     ******************************************************************************************************/
     
-    public func gameLoopWithActions(actions: Set<InputAction>, mouseDelta: CGPoint, dT: CGFloat) {
+    public func gameLoopWithInputs(inputs: Set<UserInput>, mouseDelta: CGPoint, dT: CGFloat) {
         // keys
         let positionDelta = MOVE_RATE * dT
         let transform = node.transform
         
-        if actions.contains(.MoveForward) {
+        if inputs.contains(.MoveForward) {
             let sinYRot = transform.m13
             let cosYRot = transform.m33
             let sinXRot = transform.m32
@@ -48,7 +48,7 @@ public class FlyoverCamera {
                 y: node.position.y - dy,
                 z: node.position.z - dz)
         }
-        else if actions.contains(.MoveBackward) {
+        else if inputs.contains(.MoveBackward) {
             let sinYRot = transform.m13
             let cosYRot = transform.m33
             let sinXRot = transform.m32
@@ -63,7 +63,7 @@ public class FlyoverCamera {
                 z: node.position.z + dz)
         }
         
-        if actions.contains(.TurnLeft) { // move left
+        if inputs.contains(.TurnLeft) { // move left
             let sinYRot = transform.m13
             let cosYRot = transform.m33
             
@@ -85,7 +85,7 @@ public class FlyoverCamera {
                 y: node.position.y,
                 z: node.position.z + CGFloat(scaledVector.z))
         }
-        else if actions.contains(.TurnRight) { // move right
+        else if inputs.contains(.TurnRight) { // move right
             let sinYRot = transform.m13
             let cosYRot = transform.m33
             
@@ -108,7 +108,7 @@ public class FlyoverCamera {
                 z: node.position.z + CGFloat(scaledVector.z))
         }
         
-        if actions.contains(.CrouchJump) { // move up
+        if inputs.contains(.CrouchJump) { // move up
             let sinYRot = transform.m13
             let cosYRot = transform.m33
             let sinXRot = transform.m32

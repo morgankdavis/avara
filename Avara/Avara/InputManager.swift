@@ -10,7 +10,7 @@ import Foundation
 
 
 // WARN: Temporary. This mapping will eventually reside as a user preference
-public func InputActionForKey(key: Key) -> InputAction? {
+public func UserInputForKey(key: Key) -> UserInput? {
     switch key {
     case .W:                        return .MoveForward
     case .A:                        return .TurnLeft
@@ -26,7 +26,7 @@ public func InputActionForKey(key: Key) -> InputAction? {
 }
 
 
-public enum InputAction: UInt8, CustomStringConvertible {
+public enum UserInput: UInt8, CustomStringConvertible {
     case MoveForward =      1
     case MoveBackward =     2
     case TurnLeft =         3
@@ -134,10 +134,10 @@ public class InputManager {
     ******************************************************************************************************/
     
     public struct Notifications {
-        struct DidBeginInputAction {
-            static let name = "DidBeginInputActionNotification"
+        struct DidBeginUserInput {
+            static let name = "DidBeginUserInputNotification"
             struct UserInfoKeys {
-                static let actionRawValue = "actionRawValue"
+                static let inputRawValue = "inputRawValue"
             }
         }
     }
@@ -146,60 +146,60 @@ public class InputManager {
     MARK:   Properties
     ******************************************************************************************************/
     
-    private(set)    var activeActions =                 Set<InputAction>()
-    private         var accumulatedCursorDelta =        CGPointZero
+    private(set)    var activeInputs =                  Set<UserInput>()
+    private         var accumulatedMouseDelta =         CGPointZero
     
     /******************************************************************************************************
     MARK:   Public
     ******************************************************************************************************/
     
-    public func isActionActive(action: InputAction) -> Bool {
-        return activeActions.contains(action)
+    public func isInputActive(action: UserInput) -> Bool {
+        return activeInputs.contains(action)
     }
     
     public func readMouseDeltaAndClear() -> CGPoint {
-        let delta = accumulatedCursorDelta
-        accumulatedCursorDelta = CGPointZero
+        let delta = accumulatedMouseDelta
+        accumulatedMouseDelta = CGPointZero
         return delta
     }
     
     public func addMouseDelta(delta: CGPoint) {
-        accumulatedCursorDelta = CGPoint(
-            x: accumulatedCursorDelta.x + delta.x,
-            y: accumulatedCursorDelta.y + delta.y)
+        accumulatedMouseDelta = CGPoint(
+            x: accumulatedMouseDelta.x + delta.x,
+            y: accumulatedMouseDelta.y + delta.y)
     }
     
     public func updateKeyCode(keyCode: UInt16, pressed: Bool) {
         if let key = Key(rawValue: Int(keyCode)) {
-            if let action = InputActionForKey(key) {
+            if let action = UserInputForKey(key) {
                 
-                var prevActions = Set<InputAction>()
+                var prevInputs = Set<UserInput>()
                 // this is super lame but can't seem to find a better copy/clone method
-                for a in activeActions {
-                    prevActions.insert(a)
+                for a in activeInputs {
+                    prevInputs.insert(a)
                 }
                 
                 if pressed {
-                    activeActions.insert(action)
+                    activeInputs.insert(action)
                 }
                 else {
-                    activeActions.remove(action)
+                    activeInputs.remove(action)
                 }
                 
-                if activeActions != prevActions {
+                if activeInputs != prevInputs {
                     let str = NSMutableString()
-                    for a in activeActions {
+                    for a in activeInputs {
                         str.appendString(NSString(format: "%@, ", a.description) as String)
                     }
-                    NSLog("Active input actions: %@", str)
+                    NSLog("Active user inputs: %@", str)
                 }
                 
-                if !prevActions.contains(action) {
-                    didBeginInputAction(action)
+                if !prevInputs.contains(action) {
+                    didBeginUserInput(action)
                 }
             }
             else {
-                NSLog("No action bound to key: %@", key.description)
+                NSLog("No user input bound to key: %@", key.description)
             }
         }
         else {
@@ -211,10 +211,10 @@ public class InputManager {
     MARK:   Private
     ******************************************************************************************************/
     
-    private func didBeginInputAction(action: InputAction) {
+    private func didBeginUserInput(action: UserInput) {
         NSNotificationCenter.defaultCenter().postNotificationName(
-            Notifications.DidBeginInputAction.name,
+            Notifications.DidBeginUserInput.name,
             object: nil,
-            userInfo: [Notifications.DidBeginInputAction.UserInfoKeys.actionRawValue: Int(action.rawValue)])
+            userInfo: [Notifications.DidBeginUserInput.UserInfoKeys.inputRawValue: Int(action.rawValue)])
     }
 }

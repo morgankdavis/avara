@@ -25,6 +25,7 @@ public func NetMessageOpcodeRawValueFromPayloadData(payloadData: NSData) -> UInt
 
 public func MessageFromPayloadData(payloadData: NSData) -> NetMessage? {
     
+    // TODO: There is no doubt a better way to do this.
     let opcodeInt = NetMessageOpcodeRawValueFromPayloadData(payloadData)
     if let opcode = NetMessageOpcode(rawValue: opcodeInt) {
         switch opcode {
@@ -80,6 +81,12 @@ public class NetMessage {
         sequenceNumber = pullUInt32FromPayload()
     }
     
+    internal func appendInt16(num: Int16, inout toData data: NSMutableData) {
+        var numArray = [Int16]()
+        numArray.append(num)
+        data.appendBytes(&numArray[0], length: sizeof(Int16))
+    }
+    
     internal func appendUInt16(num: UInt16, inout toData data: NSMutableData) {
         var numArray = [UInt16]()
         numArray.append(num)
@@ -90,6 +97,25 @@ public class NetMessage {
         var numArray = [UInt32]()
         numArray.append(num)
         data.appendBytes(&numArray[0], length: sizeof(UInt32))
+    }
+    
+    internal func appendFloat32(num: Float32, inout toData data: NSMutableData) {
+        let whole = Int16(num)
+        let fraction = UInt16(Float32(fabs(num - Float32(whole))) * Float32(UINT16_MAX))
+        
+        var wholeArray = [Int16]()
+        var fractionArray = [UInt16]()
+        
+        wholeArray.append(whole)
+        fractionArray.append(fraction)
+        
+        data.appendBytes(&wholeArray[0], length: sizeof(Int16))
+        data.appendBytes(&fractionArray[0], length: sizeof(UInt16))
+    }
+    
+    internal func appendCGPoint(point: CGPoint, inout toData data: NSMutableData) {
+        appendFloat32(Float32(point.x), toData: &data)
+        appendFloat32(Float32(point.y), toData: &data)
     }
     
     internal func appendUInt8Array(array: [UInt8], inout toData data: NSMutableData) {
@@ -118,6 +144,19 @@ public class NetMessage {
         }
     }
     
+    internal func pullUInt8ArrayFromPayload() -> [UInt8] {
+        let count = pullUInt16FromPayload()
+        
+        let dataLen = sizeof(UInt8) * Int(count)
+        let arrayData = payloadData!.subdataWithRange(NSMakeRange(0, dataLen))
+        var array = [UInt8](count: Int(count), repeatedValue: 0)
+        arrayData.getBytes(&array, length: dataLen)
+        
+        payloadData!.replaceBytesInRange(NSMakeRange(0, dataLen), withBytes: nil, length:0)
+        
+        return array
+    }
+    
     internal func pullUInt16FromPayload() -> UInt16 {
         let numData = payloadData!.subdataWithRange(NSMakeRange(0, sizeof(UInt16)))
         var numArray = [UInt16](count: 1, repeatedValue: 0)
@@ -140,18 +179,44 @@ public class NetMessage {
         return num
     }
     
-    internal func pullUInt8ArrayFromPayload() -> [UInt8] {
-        let count = pullUInt16FromPayload()
+    internal func pullFloat32FromPayload() -> Float32 {
+        let wholeData = payloadData!.subdataWithRange(NSMakeRange(0, sizeof(Int16)))
+        let fractionData = payloadData!.subdataWithRange(NSMakeRange(sizeof(Int16), sizeof(UInt16)))
         
-        let dataLen = sizeof(UInt8) * Int(count)
-        let arrayData = payloadData!.subdataWithRange(NSMakeRange(0, dataLen))
-        var array = [UInt8](count: Int(count), repeatedValue: 0)
-        arrayData.getBytes(&array, length: dataLen)
+        var wholeArray = [Int16](count: 1, repeatedValue: 0)
+        var fractionArray = [UInt16](count: 1, repeatedValue: 0)
         
-        payloadData!.replaceBytesInRange(NSMakeRange(0, dataLen), withBytes: nil, length:0)
+        wholeData.getBytes(&wholeArray, length: sizeof(Int16))
         
-        return array
+        payloadData!.replaceBytesInRange(NSMakeRange(0, sizeof(Int16)), withBytes: nil, length:0)
+        
+        fractionData.getBytes(&fractionArray, length: sizeof(UInt16))
+        
+        payloadData!.replaceBytesInRange(NSMakeRange(0, sizeof(UInt16)), withBytes: nil, length:0)
+        
+        let whole = wholeArray[0]
+        let fraction = fractionArray[0]
+        
+        return Float32(Float32(whole) + (Float32(fraction) / Float32(UINT16_MAX)))
     }
+    
+    internal func pullCGPointFromPayload() -> CGPoint {
+        return CGPoint(x: CGFloat(pullFloat32FromPayload()), y: CGFloat(pullFloat32FromPayload()))
+    }
+    
+//    internal func appendFloat32(num: Float32, inout toData data: NSMutableData) {
+//        let whole = Int16(num)
+//        let fraction = UInt16(Float32(fabs(num - Float32(whole))) * Float32(UINT16_MAX))
+//        
+//        var wholeArray = [Int16]()
+//        var fractionArray = [UInt16]()
+//        
+//        wholeArray.append(whole)
+//        fractionArray.append(fraction)
+//        
+//        data.appendBytes(&wholeArray[0], length: sizeof(Int16))
+//        data.appendBytes(&fractionArray[0], length: sizeof(UInt16))
+//    }
     
     internal func pullStringFromPayload() -> NSString? {
         
@@ -170,26 +235,6 @@ public class NetMessage {
         
         return str
     }
-    
-    /******************************************************************************************************
-    MARK:   Private
-    ******************************************************************************************************/
-    
-//    private func encodedOpcodeAndSequenceNumber(sequenceNumber: UInt32) -> NSMutableData {
-//        // called from encode(). creates the first big of payload data containing <opcode><sequenceNumber>
-//        let encodedData = NSMutableData()
-//        
-//        var opcodeArray = [UInt16]()
-//        opcodeArray.append(opcode.rawValue)
-//        
-//        var sqNumArray = [UInt32]()
-//        sqNumArray.append(sequenceNumber)
-//        
-//        encodedData.appendBytes(&opcodeArray[0], length: sizeof(UInt16))
-//        encodedData.appendBytes(&sqNumArray[0], length: sizeof(UInt32))
-//        
-//        return encodedData
-//    }
     
     /******************************************************************************************************
     MARK:   Object

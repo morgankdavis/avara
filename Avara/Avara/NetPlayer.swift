@@ -15,11 +15,28 @@ public class NetPlayer {
     MARK:   Properties
     ******************************************************************************************************/
     
-    public          var     lastSequenceNumber:     UInt32 // stores last sent OR received sequence number for this particular player
-    public          var     activeActions =         Set<InputAction>()
+    public          var     lastSequenceNumber:     UInt32 // sequence numbers are unique to each server<->client relationship
+    public          var     activeInputs =          Set<UserInput>()
     private(set)    var     name:                   String
     private(set)    var     id:                     UInt32
     private(set)    var     character:              Character
+    private         var     accumulatedMouseDelta = CGPointZero
+    
+    /******************************************************************************************************
+    MARK:   Public
+    ******************************************************************************************************/
+    
+    public func readMouseDeltaAndClear() -> CGPoint {
+        let delta = accumulatedMouseDelta
+        accumulatedMouseDelta = CGPointZero
+        return delta
+    }
+    
+    public func addMouseDelta(delta: CGPoint) {
+        accumulatedMouseDelta = CGPoint(
+            x: accumulatedMouseDelta.x + delta.x,
+            y: accumulatedMouseDelta.y + delta.y)
+    }
     
     /******************************************************************************************************
     MARK:   Object

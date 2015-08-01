@@ -7,7 +7,7 @@
 //
 //  The ganddaddy unreliable message. Sends player input to server.
 //
-//  FORMAT: [UINT16ARRAY]<inputActions>
+//  FORMAT: [UINT16ARRAY]<UserInputs>
 //
 
 import Foundation
@@ -20,7 +20,8 @@ public class ClientUpdateNetMessage: NetMessage {
     ******************************************************************************************************/
     
     override public var     opcode:             NetMessageOpcode { get { return .ClientUpdate } }
-    private(set)    var     activeActions =     Set<InputAction>()
+    private(set)    var     activeInputs =      Set<UserInput>()
+    private(set)    var     mouseDelta =        CGPointZero
     
     /******************************************************************************************************
     MARK:   Public, NetMessage
@@ -29,18 +30,15 @@ public class ClientUpdateNetMessage: NetMessage {
     override public func encodedWithSequenceNumber(sequenceNumber: UInt32) -> NSData? {
         var encodedData = super.encodedWithSequenceNumber(sequenceNumber) as! NSMutableData
         
-//        guard inputActions != nil else {
-//            NSLog("'inputActions' is nil")
-//            return nil
-//        }
-        
-        // convert InputAction set into UInt8 array
+        // convert UserInput set into UInt8 array
         var actionsRawArray = [UInt8]()
-        for a in activeActions {
+        for a in activeInputs {
             actionsRawArray.append(a.rawValue)
         }
         
         appendUInt8Array(actionsRawArray, toData: &encodedData)
+        
+        appendCGPoint(mouseDelta, toData: &encodedData)
         
         return encodedData as NSData
     }
@@ -52,21 +50,24 @@ public class ClientUpdateNetMessage: NetMessage {
         
         let actionsRawArray = pullUInt8ArrayFromPayload()
         for a in actionsRawArray {
-            if let action = InputAction(rawValue: a) {
-                activeActions.insert(action)
+            if let action = UserInput(rawValue: a) {
+                activeInputs.insert(action)
             }
             else {
-                NSLog("Unknown InputAction raw value: %d", a) // this would likely only happen due to encoding/transport error...
+                NSLog("Unknown UserInput raw value: %d", a) // this would likely only happen due to encoding/transport error...
             }
         }
+        
+        mouseDelta = pullCGPointFromPayload()
     }
     
     /******************************************************************************************************
     MARK:   Object
     ******************************************************************************************************/
     
-    public required init(activeActions: Set<InputAction>) {
-        self.activeActions = activeActions
+    public required init(activeActions: Set<UserInput>, mouseDelta: CGPoint) {
+        self.activeInputs = activeActions
+        self.mouseDelta = mouseDelta
         super.init()
     }
     
