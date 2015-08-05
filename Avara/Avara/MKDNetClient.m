@@ -23,6 +23,7 @@
 @property(atomic, assign)				ENetPeer					*peer;
 @property(atomic, strong)				dispatch_queue_t			eventQueue;
 @property(atomic, assign, readwrite)	BOOL						isConnected;
+@property(atomic, assign, readwrite)    u_int32_t                   peerID;
 
 @end
 
@@ -73,6 +74,7 @@
 	address.port = self.port;
 
 	u_int32_t peerID = arc4random_uniform(SHRT_MAX);
+    self.peerID = peerID;
 	NSLog(@"peerID: %d", peerID);
 	
 	self.peer = enet_host_connect(self.host,
@@ -119,7 +121,7 @@
 					
 				case ENET_EVENT_TYPE_CONNECT:
 					self.isConnected = YES;
-					[self.delegate clientDidConnect:self];
+                    [self.delegate client:self didConnectWithID:self.peerID];
 					break;
 					
 				case ENET_EVENT_TYPE_RECEIVE: {

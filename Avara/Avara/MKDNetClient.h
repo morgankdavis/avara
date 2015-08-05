@@ -25,13 +25,14 @@
 @property(atomic, readonly)			uint8_t                     maxChannels;
 @property(atomic, weak, readonly)	id<MKDNetClientDelegate>    delegate;
 @property(atomic, readonly)			BOOL                        isConnected;
+@property(atomic, readonly)			u_int32_t                   peerID;
 
 @end
 
 
 @protocol MKDNetClientDelegate <NSObject>
 
-- (void)clientDidConnect:(MKDNetClient *)client;
+- (void)client:(MKDNetClient *)client didConnectWithID:(u_int32_t)clientID;
 - (void)client:(MKDNetClient *)client didFailToConnect:(NSError *)error;
 - (void)clientDidDisconnect:(MKDNetClient *)client;
 - (void)client:(MKDNetClient *)client didRecievePacket:(NSData *)packetData channel:(uint8_t)channel;

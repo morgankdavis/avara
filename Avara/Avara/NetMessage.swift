@@ -14,6 +14,7 @@ public enum NetMessageOpcode : UInt16 {
     case None =                 0
     case ClientHello =          1
     case ClientUpdate =         2
+    case ServerUpdate =         3
 }
 
 
@@ -41,20 +42,20 @@ public func MessageFromPayloadData(payloadData: NSData) -> NetMessage? {
 
 
 public class NetMessage {
-    
-    /******************************************************************************************************
-    MARK:   Properties
-    ******************************************************************************************************/
+
+    /*****************************************************************************************************/
+    // MARK:   Properties
+    /*****************************************************************************************************/
     
     public          var     opcode:             NetMessageOpcode { get { return .None } }
-    public          var     sequenceNumber:     UInt32?
+    //public          var     sequenceNumber:     UInt32?
     private(set)    var     payloadData:        NSMutableData?
     
-    /******************************************************************************************************
-    MARK:   Public
-    ******************************************************************************************************/
+    /*****************************************************************************************************/
+    // MARK:   Public
+    /*****************************************************************************************************/
     
-    public func encodedWithSequenceNumber(sequenceNumber: UInt32) -> NSData? {
+    public func encoded() -> NSData? {
         // returns its on-the-wire packet data (before enet molests it)
         // since this is the base class we jsut pack up the opcode and sequenceNumber.
         // subclasses should call this as a starting point and build on it.
@@ -62,14 +63,14 @@ public class NetMessage {
         var encodedData = NSMutableData()
 
         appendUInt16(opcode.rawValue, toData: &encodedData)
-        appendUInt32(sequenceNumber, toData: &encodedData)
+        //appendUInt32(sequenceNumber, toData: &encodedData)
         
         return encodedData
     }
     
-    /******************************************************************************************************
-    MARK:   Internal
-    ******************************************************************************************************/
+    /*****************************************************************************************************/
+    // MARK:   Internal
+    /*****************************************************************************************************/
     
     internal func parsePayload() {
         NSLog("NetMessage.parsePayload()")
@@ -78,7 +79,13 @@ public class NetMessage {
         // move opcode as it was already inspected to create this instance in the first place
         payloadData!.replaceBytesInRange(NSMakeRange(0, sizeof(UInt16)), withBytes: nil, length:0)
         
-        sequenceNumber = pullUInt32FromPayload()
+        //sequenceNumber = pullUInt32FromPayload()
+    }
+    
+    internal func appendUInt8(num: UInt8, inout toData data: NSMutableData) {
+        var numArray = [UInt8]()
+        numArray.append(num)
+        data.appendBytes(&numArray[0], length: sizeof(UInt8))
     }
     
     internal func appendInt16(num: Int16, inout toData data: NSMutableData) {
@@ -116,6 +123,19 @@ public class NetMessage {
     internal func appendCGPoint(point: CGPoint, inout toData data: NSMutableData) {
         appendFloat32(Float32(point.x), toData: &data)
         appendFloat32(Float32(point.y), toData: &data)
+    }
+    
+    internal func appendVector3(vec: SCNVector3, inout toData data: NSMutableData) {
+        appendFloat32(Float32(vec.x), toData: &data)
+        appendFloat32(Float32(vec.y), toData: &data)
+        appendFloat32(Float32(vec.z), toData: &data)
+    }
+    
+    internal func appendVector4(vec: SCNVector4, inout toData data: NSMutableData) {
+        appendFloat32(Float32(vec.x), toData: &data)
+        appendFloat32(Float32(vec.y), toData: &data)
+        appendFloat32(Float32(vec.z), toData: &data)
+        appendFloat32(Float32(vec.w), toData: &data)
     }
     
     internal func appendUInt8Array(array: [UInt8], inout toData data: NSMutableData) {
@@ -201,22 +221,25 @@ public class NetMessage {
     }
     
     internal func pullCGPointFromPayload() -> CGPoint {
-        return CGPoint(x: CGFloat(pullFloat32FromPayload()), y: CGFloat(pullFloat32FromPayload()))
+        return CGPoint(
+            x: CGFloat(pullFloat32FromPayload()),
+            y: CGFloat(pullFloat32FromPayload()))
     }
     
-//    internal func appendFloat32(num: Float32, inout toData data: NSMutableData) {
-//        let whole = Int16(num)
-//        let fraction = UInt16(Float32(fabs(num - Float32(whole))) * Float32(UINT16_MAX))
-//        
-//        var wholeArray = [Int16]()
-//        var fractionArray = [UInt16]()
-//        
-//        wholeArray.append(whole)
-//        fractionArray.append(fraction)
-//        
-//        data.appendBytes(&wholeArray[0], length: sizeof(Int16))
-//        data.appendBytes(&fractionArray[0], length: sizeof(UInt16))
-//    }
+    internal func pullVector3FromPayload() -> SCNVector3 {
+        return SCNVector3(
+            x: CGFloat(pullFloat32FromPayload()),
+            y: CGFloat(pullFloat32FromPayload()),
+            z: CGFloat(pullFloat32FromPayload()))
+    }
+    
+    internal func pullVector4FromPayload() -> SCNVector4 {
+        return SCNVector4(
+            x: CGFloat(pullFloat32FromPayload()),
+            y: CGFloat(pullFloat32FromPayload()),
+            z: CGFloat(pullFloat32FromPayload()),
+            w: CGFloat(pullFloat32FromPayload()))
+    }
     
     internal func pullStringFromPayload() -> NSString? {
         
@@ -236,9 +259,9 @@ public class NetMessage {
         return str
     }
     
-    /******************************************************************************************************
-    MARK:   Object
-    ******************************************************************************************************/
+    /*****************************************************************************************************/
+    // MARK:   Object
+    /*****************************************************************************************************/
     
     public required init() {
         

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		4151BEEA1B71D62B0082F75E /* NetPlayerUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4151BEE91B71D62B0082F75E /* NetPlayerUpdate.swift */; };
+		4165099A1B6C754C0048804B /* ServerUpdateNetMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 416509991B6C754C0048804B /* ServerUpdateNetMessage.swift */; };
 		417CC38C1B645260006B21F3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC38B1B645260006B21F3 /* AppDelegate.swift */; };
 		417CC3911B645260006B21F3 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 417CC38F1B645260006B21F3 /* MainMenu.xib */; };
 		417CC3A71B645310006B21F3 /* Character.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3981B645310006B21F3 /* Character.swift */; };
@@ -61,6 +63,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		4151BEE91B71D62B0082F75E /* NetPlayerUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetPlayerUpdate.swift; sourceTree = "<group>"; };
+		416509991B6C754C0048804B /* ServerUpdateNetMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerUpdateNetMessage.swift; sourceTree = "<group>"; };
 		417CC3881B645260006B21F3 /* Avara.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Avara.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		417CC38B1B645260006B21F3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		417CC3901B645260006B21F3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
@@ -164,6 +168,7 @@
 				417CC38B1B645260006B21F3 /* AppDelegate.swift */,
 				417CC3A41B645310006B21F3 /* ServerSimulationController.swift */,
 				417CC40C1B68A305006B21F3 /* NetPlayer.swift */,
+				4151BEE91B71D62B0082F75E /* NetPlayerUpdate.swift */,
 				417CC3991B645310006B21F3 /* ClientSimulationController.swift */,
 				417CC3981B645310006B21F3 /* Character.swift */,
 				417CC3A11B645310006B21F3 /* Map.swift */,
@@ -278,6 +283,7 @@
 				417CC40E1B68A9E6006B21F3 /* NetMessage.swift */,
 				417CC4111B68AA2F006B21F3 /* ClientHelloNetMessage.swift */,
 				41D9224F1B6B459600CCE9CA /* ClientUpdateNetMessage.swift */,
+				416509991B6C754C0048804B /* ServerUpdateNetMessage.swift */,
 			);
 			name = NetMessages;
 			sourceTree = "<group>";
@@ -377,6 +383,7 @@
 				417CC40A1B688232006B21F3 /* protocol.c in Sources */,
 				417CC3B01B645310006B21F3 /* Map.swift in Sources */,
 				417CC4141B69B98C006B21F3 /* ServerWindowController.swift in Sources */,
+				4151BEEA1B71D62B0082F75E /* NetPlayerUpdate.swift in Sources */,
 				417CC3A81B645310006B21F3 /* ClientSimulationController.swift in Sources */,
 				417CC3B31B645310006B21F3 /* ServerSimulationController.swift in Sources */,
 				41D922501B6B459600CCE9CA /* ClientUpdateNetMessage.swift in Sources */,
@@ -387,6 +394,7 @@
 				417CC3AA1B645310006B21F3 /* FlyoverCamera.swift in Sources */,
 				417CC3B51B645310006B21F3 /* Utilities.swift in Sources */,
 				417CC4051B688232006B21F3 /* compress.c in Sources */,
+				4165099A1B6C754C0048804B /* ServerUpdateNetMessage.swift in Sources */,
 				417CC4041B688232006B21F3 /* callbacks.c in Sources */,
 				417CC3F01B68804B006B21F3 /* MKDNetServer.m in Sources */,
 				417CC40D1B68A305006B21F3 /* NetPlayer.swift in Sources */,

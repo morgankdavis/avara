@@ -12,9 +12,9 @@ import SceneKit
 
 public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCNPhysicsContactDelegate, MKDNetClientDelegate {
     
-    /******************************************************************************************************
-    MARK:   Properties
-    ******************************************************************************************************/
+    /*****************************************************************************************************/
+    // MARK:   Properties
+    /*****************************************************************************************************/
     
     private         var clientWindowController:     ClientWindowController?
     private(set)    var inputManager:               InputManager
@@ -28,11 +28,11 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
 //    private         var lastUpdateTime =            Double(0)
 //    private         var deltaTime =                 Double(0)
     private         var netClient:                  MKDNetClient?
-    private         var netSequenceNumber =         UInt32(0)
+    private         var sequenceNumber =            UInt32(0)
     
-    /******************************************************************************************************
-    MARK:   Public
-    ******************************************************************************************************/
+    /*****************************************************************************************************/
+    // MARK:   Public
+    /*****************************************************************************************************/
     
     public func play() {
         NSLog("play()")
@@ -49,10 +49,10 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         netClient?.connect()
     }
-    
-    /******************************************************************************************************
-    MARK:   Internal
-    ******************************************************************************************************/
+
+    /*****************************************************************************************************/
+    // MARK:   Internal
+    /*****************************************************************************************************/
     
     internal func gameLoop() {
         gameLoop(1.0/60.0)
@@ -77,10 +77,10 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             }
         }
     }
-    
-    /******************************************************************************************************
-    MARK:   Private
-    ******************************************************************************************************/
+
+    /*****************************************************************************************************/
+    // MARK:   Private
+    /*****************************************************************************************************/
     
     private func setup() {
         NSLog("ClientSimulationController.setup()")
@@ -114,9 +114,9 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             
             if let client = netClient {
                 if client.isConnected {
-                    let updateMessage = ClientUpdateNetMessage(activeActions: inputManager.activeInputs, mouseDelta: mouseDelta)
+                    let updateMessage = ClientUpdateNetMessage(activeActions: inputManager.activeInputs, mouseDelta: mouseDelta, sequenceNumber:sequenceNumber)
                     
-                    let packtData = updateMessage.encodedWithSequenceNumber(netSequenceNumber++)
+                    let packtData = updateMessage.encoded()
                     client.sendPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable) // WARN: change to unreliable
                 }
             }
@@ -163,9 +163,34 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         }
     }
     
-    /******************************************************************************************************
-    MARK:   SCNSceneRendererDelegate
-    ******************************************************************************************************/
+    private func parseServerPacket(packetData: NSData) {
+        NSLog("ClientSimulationController.parseServerPacket(%@)", packetData)
+        
+        if let message = MessageFromPayloadData(packetData) {
+            switch message.opcode {
+                
+            case .ServerUpdate:
+                let updateMessage = message as! ServerUpdateNetMessage
+                
+                // TODO: loop through NetPlayerUpdates
+                // for one matching our ID, perform reconciliation
+                // for others, find their characters and update accordingly
+
+                break
+                
+            default:
+                break
+            }
+        }
+        else {
+            let opcodeInt = NetMessageOpcodeRawValueFromPayloadData(packetData)
+            NSLog("Unknown message opcode: %d", opcodeInt)
+        }
+    }
+    
+    /*****************************************************************************************************/
+    // MARK:    SCNSceneRendererDelegate
+    /*****************************************************************************************************/
     
     public func renderer(aRenderer: SCNSceneRenderer, updateAtTime time: NSTimeInterval) {
 //        NSLog("renderer(updateAtTime:)")
@@ -184,9 +209,9 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         }
     }
     
-    /******************************************************************************************************
-    MARK:   SCNPhysicsContactDelegate
-    ******************************************************************************************************/
+    /*****************************************************************************************************/
+    // MARK:   SCNPhysicsContactDelegate
+    /*****************************************************************************************************/
     
     public func physicsWorld(world: SCNPhysicsWorld, didUpdateContact contact: SCNPhysicsContact) {
         //NSLog("physicsWorld(didUpdateContact: %@)", contact)
@@ -204,15 +229,15 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         //NSLog("physicsWorld(didEndContact: %@)", contact)
     }
     
-    /******************************************************************************************************
-    MARK:   MKDNetClientDelegate
-    ******************************************************************************************************/
+    /*****************************************************************************************************/
+    // MARK:   MKDNetClientDelegate
+    /*****************************************************************************************************/
     
-    public func clientDidConnect(client: MKDNetClient!) {
-        NSLog("clientDidConnect(%@)", client)
+    public func client(client: MKDNetClient!, didConnectWithID clientID: UInt32) {
+        NSLog("client(%@, didConnectWithID: %d)", client, clientID)
         
         let helloMessage = ClientHelloNetMessage(name: "gatsby")
-        let packtData = helloMessage.encodedWithSequenceNumber(netSequenceNumber++)
+        let packtData = helloMessage.encoded()
         client.sendPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable)
     }
     
@@ -226,11 +251,13 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     
     public func client(client: MKDNetClient!, didRecievePacket packetData: NSData!, channel: UInt8) {
         NSLog("client(%@, didRecievePacket: %@, channel: %d", channel)
+        
+        
     }
 
-    /******************************************************************************************************
-    MARK:   Object
-    ******************************************************************************************************/
+    /*****************************************************************************************************/
+    // MARK:   Object
+    /*****************************************************************************************************/
     
     required public init(inputManager: InputManager) {
         self.inputManager = inputManager

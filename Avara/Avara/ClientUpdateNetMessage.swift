@@ -5,7 +5,7 @@
 //  Created by Morgan Davis on 7/30/15.
 //  Copyright © 2015 Morgan K Davis. All rights reserved.
 //
-//  The ganddaddy unreliable message. Sends player input to server.
+//  The ganddaddy unreliable client message. Sends player input to server.
 //
 //  FORMAT: [UINT16ARRAY]<UserInputs>
 //
@@ -15,20 +15,23 @@ import Foundation
 
 public class ClientUpdateNetMessage: NetMessage {
     
-    /******************************************************************************************************
-    MARK:   Properties
-    ******************************************************************************************************/
+    /*****************************************************************************************************/
+    // MARK:   Properties
+    /*****************************************************************************************************/
     
     override public var     opcode:             NetMessageOpcode { get { return .ClientUpdate } }
+    public          var     sequenceNumber:     UInt32?
     private(set)    var     activeInputs =      Set<UserInput>()
     private(set)    var     mouseDelta =        CGPointZero
     
-    /******************************************************************************************************
-    MARK:   Public, NetMessage
-    ******************************************************************************************************/
+    /*****************************************************************************************************/
+    // MARK:   Public, NetMessage
+    /*****************************************************************************************************/
     
-    override public func encodedWithSequenceNumber(sequenceNumber: UInt32) -> NSData? {
-        var encodedData = super.encodedWithSequenceNumber(sequenceNumber) as! NSMutableData
+    override public func encoded() -> NSData? {
+        var encodedData = super.encoded() as! NSMutableData
+        
+        //appendUInt32(sequenceNumber, toData: &encodedData)
         
         // convert UserInput set into UInt8 array
         var actionsRawArray = [UInt8]()
@@ -48,6 +51,8 @@ public class ClientUpdateNetMessage: NetMessage {
         
         super.parsePayload()
         
+        sequenceNumber = pullUInt32FromPayload()
+        
         let actionsRawArray = pullUInt8ArrayFromPayload()
         for a in actionsRawArray {
             if let action = UserInput(rawValue: a) {
@@ -61,13 +66,14 @@ public class ClientUpdateNetMessage: NetMessage {
         mouseDelta = pullCGPointFromPayload()
     }
     
-    /******************************************************************************************************
-    MARK:   Object
-    ******************************************************************************************************/
+    /*****************************************************************************************************/
+    // MARK:   Object
+    /*****************************************************************************************************/
     
-    public required init(activeActions: Set<UserInput>, mouseDelta: CGPoint) {
+    public required init(activeActions: Set<UserInput>, mouseDelta: CGPoint, sequenceNumber: UInt32) {
         self.activeInputs = activeActions
         self.mouseDelta = mouseDelta
+        self.sequenceNumber = sequenceNumber
         super.init()
     }
     

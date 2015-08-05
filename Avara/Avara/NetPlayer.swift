@@ -11,20 +11,20 @@ import Foundation
 
 public class NetPlayer {
     
-    /******************************************************************************************************
-    MARK:   Properties
-    ******************************************************************************************************/
+    /*****************************************************************************************************/
+    // MARK:   Properties
+    /*****************************************************************************************************/
     
-    public          var     lastSequenceNumber:     UInt32 // sequence numbers are unique to each server<->client relationship
-    public          var     activeInputs =          Set<UserInput>()
-    private(set)    var     name:                   String
-    private(set)    var     id:                     UInt32
-    private(set)    var     character:              Character
-    private         var     accumulatedMouseDelta = CGPointZero
-    
-    /******************************************************************************************************
-    MARK:   Public
-    ******************************************************************************************************/
+    public          var     sequenceNumber =            UInt32(0) // sequence numbers are unique to each server<->client relationship
+    public          var     activeInputs =              Set<UserInput>()
+    private(set)    var     name:                       String
+    private(set)    var     id:                         UInt32
+    private(set)    var     character:                  Character
+    private(set)    var     accumulatedMouseDelta =     CGPointZero
+  
+    /*****************************************************************************************************/
+    // MARK:   Public
+    /*****************************************************************************************************/
     
     public func readMouseDeltaAndClear() -> CGPoint {
         let delta = accumulatedMouseDelta
@@ -38,14 +38,13 @@ public class NetPlayer {
             y: accumulatedMouseDelta.y + delta.y)
     }
     
-    /******************************************************************************************************
-    MARK:   Object
-    ******************************************************************************************************/
+    /*****************************************************************************************************/
+    // MARK:   Object
+    /*****************************************************************************************************/
     
-    public required init(id: UInt32, name: String, character: Character, lastSequenceNumber: UInt32) {
+    public required init(id: UInt32, name: String, character: Character) {
         self.id = id
         self.name = name
         self.character = character
-        self.lastSequenceNumber = lastSequenceNumber
     }
 }

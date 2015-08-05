@@ -12,9 +12,9 @@ import SceneKit
 
 public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCNPhysicsContactDelegate, MKDNetServerDelegate {
     
-    /******************************************************************************************************
-    MARK:   Properties
-    ******************************************************************************************************/
+    /*****************************************************************************************************/
+    // MARK:   Properties
+    /*****************************************************************************************************/
     
     //private(set)    var inputManager:               InputManager -- replace with network abstraction
     private         var serverWindowController:     ServerWindowController? // temporary?
@@ -26,10 +26,10 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private         var networkTickTimer:           NSTimer?
     private         var netServer:                  MKDNetServer?
     private         var cameraNode:                 SCNNode?
-    
-    /******************************************************************************************************
-    MARK:   Public
-    ******************************************************************************************************/
+
+    /*****************************************************************************************************/
+    // MARK:   Public
+    /*****************************************************************************************************/
     
     public func start() {
         NSLog("ServerSimulationController.start()")
@@ -51,18 +51,18 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             repeats: true)
     }
     
-    /******************************************************************************************************
-    MARK:   Internal
-    ******************************************************************************************************/
+    /*****************************************************************************************************/
+    // MARK:   Internal
+    /*****************************************************************************************************/
     
     internal func gameLoop() {
         gameLoop(1.0/60.0)
     }
-    
-    /******************************************************************************************************
-    MARK:   Private
-    ******************************************************************************************************/
 
+    /*****************************************************************************************************/
+    // MARK:   Private
+    /*****************************************************************************************************/
+    
     private func setup() {
         NSLog("ServerSimulationController.setup()")
         
@@ -102,13 +102,23 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         for (_,p) in netPlayers {
             let character = p.character
-            // WARN: No mouse delta
             character.gameLoopWithInputs(p.activeInputs, mouseDelta: p.readMouseDeltaAndClear(), dT: dT)
             //cameraNode?.position = SCNVector3(x: character.bodyNode.position.x, y: cameraNode!.position.y, z: character.bodyNode.position.z)
         }
         
-        // check for input and move characters
-        //localCharacter?.gameLoopWithKeysPressed(inputManager.keysPressed, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
+        if let server = netServer {
+            
+            var players = [NetPlayer]()
+            for (_,p) in netPlayers {
+                ++p.sequenceNumber
+                players.append(p)
+            }
+            
+            let updateMessage = ServerUpdateNetMessage(netPlayers: players)
+            
+            let packtData = updateMessage.encoded()
+            server.broadcastPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable) // WARN: change to unreliable
+        }
     }
     
     func switchToCameraNode(cameraNode: SCNNode) {
@@ -138,7 +148,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     }
     
     private func parseClientPacket(packetData: NSData, clientID: UInt32) {
-        NSLog("ServerSimulationController.parseClientPacket(%@, clientID: %d", packetData, clientID)
+        NSLog("ServerSimulationController.parseClientPacket(%@, clientID: %d)", packetData, clientID)
         
         if let message = MessageFromPayloadData(packetData) {
             switch message.opcode {
@@ -147,11 +157,11 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 // well hello! lets create a new "NetPlayer" opject and populate it with what we go so far
                 let helloMessage = message as! ClientHelloNetMessage
                 let name = helloMessage.name!
-                let sequenceNumber = helloMessage.sequenceNumber!
-                NSLog("Client hello message! name: %@, sq: %d", name, sequenceNumber)
+                //let sequenceNumber = helloMessage.sequenceNumber!
+                NSLog("Client hello message! name: %@", name)
                 
                 let character = Character(scene: scene) // adds itself to the scene
-                netPlayers[clientID] = NetPlayer(id: clientID, name: name as String, character: character, lastSequenceNumber: sequenceNumber)
+                netPlayers[clientID] = NetPlayer(id: clientID, name: name as String, character: character)
                 break
                 
             case .ClientUpdate:
@@ -164,6 +174,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                     NSLog("Client update message! active inputs: %@, mouse delta: (%.2f %.2f), sq: %d",
                         activeInputs.description, mouseDelta.x, mouseDelta.y, sequenceNumber)
                     
+                    // WARN: if sending updates as 30Hz we will need to set inputs until they are seen/cleared from main loop
                     player.activeInputs = activeInputs
                     player.addMouseDelta(mouseDelta)
                 }
@@ -182,9 +193,9 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         }
     }
     
-    /******************************************************************************************************
-    MARK:   SCNSceneRendererDelegate
-    ******************************************************************************************************/
+    /*****************************************************************************************************/
+    // MARK:   SCNSceneRendererDelegate
+    /*****************************************************************************************************/
     
     public func renderer(aRenderer: SCNSceneRenderer, updateAtTime time: NSTimeInterval) {
         //NSLog("renderer(updateAtTime:)")
@@ -198,9 +209,9 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
 //        }
     }
     
-    /******************************************************************************************************
-    MARK:   SCNPhysicsContactDelegate
-    ******************************************************************************************************/
+    /*****************************************************************************************************/
+    // MARK:   SCNPhysicsContactDelegate
+    /*****************************************************************************************************/
     
     public func physicsWorld(world: SCNPhysicsWorld, didUpdateContact contact: SCNPhysicsContact) {
         //NSLog("physicsWorld(didUpdateContact: %@)", contact)
@@ -218,9 +229,9 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         //NSLog("physicsWorld(didEndContact: %@)", contact)
     }
     
-    /******************************************************************************************************
-    MARK:   MKDNetServerDelegate
-    ******************************************************************************************************/
+    /*****************************************************************************************************/
+    // MARK:   MKDNetServerDelegate
+    /*****************************************************************************************************/
     
     public func server(server: MKDNetServer!, didConnectClient client: UInt32) {
         NSLog("server(%@, didConnectClient: %d)", server, client)
@@ -236,9 +247,9 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         parseClientPacket(packetData, clientID: client)
     }
 
-    /******************************************************************************************************
-    MARK:   Object
-    ******************************************************************************************************/
+    /*****************************************************************************************************/
+    // MARK:   Object
+    /*****************************************************************************************************/
     
     override required public init() {
         super.init()
