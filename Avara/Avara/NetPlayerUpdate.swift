@@ -10,7 +10,7 @@ import Foundation
 import SceneKit
 
 
-public class NetPlayerUpdate {
+public class NetPlayerUpdate: Equatable {
     
     /*****************************************************************************************************/
     // MARK:   Properties
@@ -19,18 +19,31 @@ public class NetPlayerUpdate {
     private(set)    var     sequenceNumber:         UInt32
     private(set)    var     id:                     UInt32
     private(set)    var     position:               SCNVector3
-    private(set)    var     legsOrientation:        SCNVector4
-    private(set)    var     headOrientation:        SCNVector4
+    private(set)    var     bodyRotation:           SCNVector4
+    private(set)    var     headEulerAngles:        SCNVector3
     
     /*****************************************************************************************************/
     // MARK:   Object
     /*****************************************************************************************************/
     
-    public init(sequenceNumber: UInt32, id: UInt32, position: SCNVector3, legsOrientation: SCNVector4, headOrientation: SCNVector4) {
+    public init(sequenceNumber: UInt32, id: UInt32, position: SCNVector3, bodyRotation: SCNVector4, headEulerAngles: SCNVector3) {
         self.sequenceNumber = sequenceNumber
         self.id = id
         self.position = position
-        self.legsOrientation = legsOrientation
-        self.headOrientation = headOrientation
+        self.bodyRotation = bodyRotation
+        self.headEulerAngles = headEulerAngles
     }
+}
+
+
+/*****************************************************************************************************/
+// MARK:    Operator Overloads
+/*****************************************************************************************************/
+
+public func ==(lhs: NetPlayerUpdate, rhs: NetPlayerUpdate) -> Bool {
+    return (lhs.id == rhs.id) && (lhs.position == rhs.position) && (lhs.bodyRotation == rhs.bodyRotation) && (lhs.headEulerAngles == rhs.headEulerAngles)
+}
+
+public func !=(lhs: NetPlayerUpdate, rhs: NetPlayerUpdate) -> Bool {
+    return !(lhs == rhs)
 }

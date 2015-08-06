@@ -38,6 +38,15 @@ public class NetPlayer {
             y: accumulatedMouseDelta.y + delta.y)
     }
     
+    public func netPlayerUpdate() -> NetPlayerUpdate {
+        return NetPlayerUpdate(
+            sequenceNumber: sequenceNumber,
+            id: id,
+            position: character.bodyNode.position,
+            bodyRotation: character.bodyNode.rotation,
+            headEulerAngles: character.headNode!.eulerAngles)
+    }
+    
     /*****************************************************************************************************/
     // MARK:   Object
     /*****************************************************************************************************/

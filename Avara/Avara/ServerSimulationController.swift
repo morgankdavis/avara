@@ -21,11 +21,13 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private(set)    var scene =                     SCNScene()
     private(set)    var renderView:                 RenderView? // *** TEMPORARY ***
     private         var map:                        Map?
-    private         var netPlayers =                [UInt32:NetPlayer]()
+    private         var netPlayers =                [UInt32:NetPlayer]() // id:player
     private         var gameLoopTimer:              NSTimer? // temporary
     private         var networkTickTimer:           NSTimer?
     private         var netServer:                  MKDNetServer?
     private         var cameraNode:                 SCNNode?
+    
+    private         var lastSentPlayerUpdates =     [UInt32:NetPlayerUpdate]() // id:update
 
     /*****************************************************************************************************/
     // MARK:   Public
@@ -71,34 +73,11 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         scene.physicsWorld.timeStep = PHYSICS_TIMESTEP
         scene.physicsWorld.contactDelegate = self
         
-//        // *** TEMPORARY ***
-//        // setup an SCNView to do our server rendering in. This SHOULD DEFINITLY not actually need to be rendered.
-//        
-//        renderView = RenderView(frame: CGRect(origin: CGPointZero, size: SERVER_WINDOW_SIZE) as NSRect)
-//        renderView?.scene = scene
-//        renderView?.delegate = self
-        
         netServer = MKDNetServer(port: NET_SERVER_PORT, maxClients: NET_MAX_CLIENTS, maxChannels: NET_MAX_CHANNELS, delegate: self)
     }
     
     private func gameLoop(dT: CGFloat) {
         //NSLog("dT: %.4f", dT)
-        
-        // work-around for blank screen until something changes
-//        cameraNode?.rotation = SCNVector4(x: cameraNode!.rotation.x, y: cameraNode!.rotation.y, z: cameraNode!.rotation.z, w: cameraNode!.rotation.w+0.0001)
-//        cameraNode?.position = SCNVector3(x: cameraNode!.position.x, y: cameraNode!.position.y+1, z: cameraNode!.position.z)
-//        switchToCameraNode(cameraNode!)
-//        serverWindowController?.renderView?.play(self)
-        
-//        let sphere = SCNSphere(radius: 1)
-//        let sphereNode = SCNNode(geometry: sphere)
-//        scene.rootNode.addChildNode(sphereNode)
-//        
-//        let sphereMaterial = SCNMaterial()
-//        sphereMaterial.diffuse.contents = NSColor.whiteColor()
-//        sphere.firstMaterial = sphereMaterial
-        
-        
         
         for (_,p) in netPlayers {
             let character = p.character
@@ -108,16 +87,48 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         if let server = netServer {
             
-            var players = [NetPlayer]()
+            // updates ("player states") for our players
+            var updates = [NetPlayerUpdate]()
             for (_,p) in netPlayers {
-                ++p.sequenceNumber
-                players.append(p)
+                updates.append(p.netPlayerUpdate())
             }
             
-            let updateMessage = ServerUpdateNetMessage(netPlayers: players)
+            var updatesToSend = [NetPlayerUpdate]()
+            for u in updates {
+                var send = false
+                
+                if let lastSent = lastSentPlayerUpdates[u.id] {
+                    // here's the last sent update for this player.
+                    if u != lastSent {
+                        send = true
+                    }
+                }
+                else {
+                    // no last sent update for this player. must be new.
+                    send = true
+                }
+                
+                if send {
+                    // WARN: client sequence number not incramented -- return num will be the same. is this what we want?
+                    //++u.sequenceNumber
+                    updatesToSend.append(u)
+                    lastSentPlayerUpdates[u.id] = u
+                }
+            }
             
-            let packtData = updateMessage.encoded()
-            server.broadcastPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable) // WARN: change to unreliable
+            if updatesToSend.count > 0 {
+                
+                let s = updatesToSend[0]
+                NSLog("BOD: { %.2f, %.2f, %.2f, %.2f }", s.bodyRotation.x, s.bodyRotation.y, s.bodyRotation.z, s.bodyRotation.w)
+                NSLog("HEAD: { %.2f, %.2f, %.2f }", s.headEulerAngles.x, s.headEulerAngles.y, s.headEulerAngles.z)
+                
+                let updateMessage = ServerUpdateNetMessage(playerUpdates: updatesToSend)
+                let packtData = updateMessage.encoded()
+                server.broadcastPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable) // WARN: change to unreliable
+            }
+            else {
+                //NSLog("No server updates to send.")
+            }
         }
     }
     
@@ -148,7 +159,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     }
     
     private func parseClientPacket(packetData: NSData, clientID: UInt32) {
-        NSLog("ServerSimulationController.parseClientPacket(%@, clientID: %d)", packetData, clientID)
+        //NSLog("ServerSimulationController.parseClientPacket(%@, clientID: %d)", packetData, clientID)
         
         if let message = MessageFromPayloadData(packetData) {
             switch message.opcode {
@@ -171,8 +182,10 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                     let mouseDelta = updateMessage.mouseDelta
                     let sequenceNumber = updateMessage.sequenceNumber!
                     
-                    NSLog("Client update message! active inputs: %@, mouse delta: (%.2f %.2f), sq: %d",
+                    NSLog("Client update message. active inputs: %@, mouse delta: (%.2f, %.2f), sq: %d",
                         activeInputs.description, mouseDelta.x, mouseDelta.y, sequenceNumber)
+                    
+                    player.sequenceNumber = sequenceNumber
                     
                     // WARN: if sending updates as 30Hz we will need to set inputs until they are seen/cleared from main loop
                     player.activeInputs = activeInputs
@@ -242,7 +255,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     }
     
     public func server(server: MKDNetServer!, didRecievePacket packetData: NSData!, fromClient client: UInt32, channel: UInt8) {
-        NSLog("server(%@, didRecievePacket: %@ fromClient: %d channel: %d)", server, packetData, client, channel)
+        //NSLog("server(%@, didRecievePacket: %@ fromClient: %d channel: %d)", server, packetData, client, channel)
         
         parseClientPacket(packetData, clientID: client)
     }

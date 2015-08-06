@@ -101,7 +101,7 @@
 					
 				case ENET_EVENT_TYPE_RECEIVE: {
                     u_int32_t peerID = event.data;
-                    NSLog(@"ENET_EVENT_TYPE_RECEIVE: peerID: %d", peerID);
+                    //NSLog(@"ENET_EVENT_TYPE_RECEIVE: peerID: %d", peerID);
                     
 					NSData *packetData = [[NSData alloc] initWithBytes:event.packet->data length:event.packet->dataLength];
 					[self.delegate server:self didRecievePacket:packetData fromClient:peerID channel:event.channelID];

@@ -83,7 +83,7 @@
 								  (enet_uint32)peerID);
 	
 	if (self.peer == NULL) {
-		NSLog(@"*** Connection fialed. ***");
+		NSLog(@"*** Connection failed. ***");
 		[self.delegate client:nil didFailToConnect:@"who fucking knows"];
 	}
 }

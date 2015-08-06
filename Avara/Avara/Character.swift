@@ -209,6 +209,15 @@ public class Character {
             z: bodyNode.position.z - scaledNormal.z)
     }
     
+    public func applyServerOverrideUpdate(overrideUpdate: NetPlayerUpdate) {
+        // called when a server update message has a newer sequence number than the last message we sent out
+        // this is the "authoritive" player state from the server
+        // so set it as our base be let any deltas be calculated from it on the next game loop (probably immediately after this)
+        bodyNode.position = overrideUpdate.position
+        bodyNode.rotation = overrideUpdate.bodyRotation
+        headNode?.eulerAngles = overrideUpdate.headEulerAngles
+    }
+    
     /*****************************************************************************************************/
     // MARK:   Private
     /*****************************************************************************************************/

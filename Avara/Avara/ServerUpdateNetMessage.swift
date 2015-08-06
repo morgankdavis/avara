@@ -7,7 +7,7 @@
 //
 //  The ganddaddy unreliable server message. Sends player state to clients.
 //
-//  FORMAT: [UINT8]<NumPlayers>{[UInt32]<sequenceNumber>[UInt32]<clientID>[VEC3]<position>[VEC4]<headOrientation>[VEC4]<bodyOrientation>}
+//  FORMAT: [UINT8]<NumPlayers>{[UInt32]<sequenceNumber>[UInt32]<clientID>[VEC3]<position>[VEC4]<bodyOrientation>[VEC4]<headOrientation>}
 //
 
 import Foundation
@@ -36,34 +36,34 @@ public class ServerUpdateNetMessage: NetMessage {
             appendUInt32(u.sequenceNumber, toData: &encodedData)
             appendUInt32(u.id, toData: &encodedData)
             appendVector3(u.position, toData: &encodedData)
-            appendVector4(u.legsOrientation, toData: &encodedData)
-            appendVector4(u.headOrientation, toData: &encodedData)
+            appendVector4(u.bodyRotation, toData: &encodedData)
+            appendVector3(u.headEulerAngles, toData: &encodedData)
         }
 
         return encodedData as NSData
     }
     
     override internal func parsePayload() {
-        NSLog("ClientUpdateNetMessage.parsePayload()")
+        //NSLog("ServerUpdateNetMessage.parsePayload()")
         
         super.parsePayload()
         
-        let updateCount = Int(pullUInt16FromPayload())
+        let updateCount = Int(pullUInt8FromPayload())
         
         var updates = [NetPlayerUpdate]()
         for (var i=0; i<updateCount; i++) {
             let sequenceNumber = pullUInt32FromPayload()
             let clientID = pullUInt32FromPayload()
             let position = pullVector3FromPayload()
-            let legsOrientation = pullVector4FromPayload()
-            let headOrientation = pullVector4FromPayload()
+            let bodyRotation = pullVector4FromPayload()
+            let headEulerAngles = pullVector3FromPayload()
             
             let update = NetPlayerUpdate(
                 sequenceNumber: sequenceNumber,
                 id: clientID,
                 position: position,
-                legsOrientation: legsOrientation,
-                headOrientation: headOrientation)
+                bodyRotation: bodyRotation,
+                headEulerAngles: headEulerAngles)
             
             updates.append(update)
         }
@@ -74,21 +74,21 @@ public class ServerUpdateNetMessage: NetMessage {
     // MARK:   Object
     /*****************************************************************************************************/
     
-    public convenience init(netPlayers: [NetPlayer]) {
-        var playerUpdates = [NetPlayerUpdate]()
-        
-        for p in netPlayers {
-            let u = NetPlayerUpdate(
-                sequenceNumber: p.sequenceNumber,
-                id: p.id,
-                position: p.character.bodyNode.position,
-                legsOrientation: p.character.legsNode!.orientation,
-                headOrientation: p.character.headNode!.orientation)
-            playerUpdates.append(u)
-        }
-        
-        self.init(playerUpdates: playerUpdates)
-    }
+//    public convenience init(netPlayers: [NetPlayer]) {
+//        var playerUpdates = [NetPlayerUpdate]()
+//        
+//        for p in netPlayers {
+//            let u = NetPlayerUpdate(
+//                sequenceNumber: p.sequenceNumber,
+//                id: p.id,
+//                position: p.character.bodyNode.position,
+//                legsOrientation: p.character.legsNode!.orientation,
+//                headOrientation: p.character.headNode!.orientation)
+//            playerUpdates.append(u)
+//        }
+//        
+//        self.init(playerUpdates: playerUpdates)
+//    }
     
     public required init(playerUpdates: [NetPlayerUpdate]) {
         self.playerUpdates = playerUpdates

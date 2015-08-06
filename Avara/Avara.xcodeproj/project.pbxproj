@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		41195A201B731134006E53DC /* OperatorOverloads.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41195A1F1B731134006E53DC /* OperatorOverloads.swift */; };
 		4151BEEA1B71D62B0082F75E /* NetPlayerUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4151BEE91B71D62B0082F75E /* NetPlayerUpdate.swift */; };
 		4165099A1B6C754C0048804B /* ServerUpdateNetMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 416509991B6C754C0048804B /* ServerUpdateNetMessage.swift */; };
 		417CC38C1B645260006B21F3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC38B1B645260006B21F3 /* AppDelegate.swift */; };
@@ -63,6 +64,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		41195A1F1B731134006E53DC /* OperatorOverloads.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperatorOverloads.swift; sourceTree = "<group>"; };
 		4151BEE91B71D62B0082F75E /* NetPlayerUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetPlayerUpdate.swift; sourceTree = "<group>"; };
 		416509991B6C754C0048804B /* ServerUpdateNetMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerUpdateNetMessage.swift; sourceTree = "<group>"; };
 		417CC3881B645260006B21F3 /* Avara.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Avara.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -165,6 +167,7 @@
 			children = (
 				417CC39A1B645310006B21F3 /* Configuration.swift */,
 				417CC39E1B645310006B21F3 /* Globals.swift */,
+				41195A1F1B731134006E53DC /* OperatorOverloads.swift */,
 				417CC38B1B645260006B21F3 /* AppDelegate.swift */,
 				417CC3A41B645310006B21F3 /* ServerSimulationController.swift */,
 				417CC40C1B68A305006B21F3 /* NetPlayer.swift */,
@@ -391,6 +394,7 @@
 				417CC38C1B645260006B21F3 /* AppDelegate.swift in Sources */,
 				417CC3A91B645310006B21F3 /* Configuration.swift in Sources */,
 				417CC40F1B68A9E6006B21F3 /* NetMessage.swift in Sources */,
+				41195A201B731134006E53DC /* OperatorOverloads.swift in Sources */,
 				417CC3AA1B645310006B21F3 /* FlyoverCamera.swift in Sources */,
 				417CC3B51B645310006B21F3 /* Utilities.swift in Sources */,
 				417CC4051B688232006B21F3 /* compress.c in Sources */,

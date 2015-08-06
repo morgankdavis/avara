@@ -32,6 +32,7 @@ public func MessageFromPayloadData(payloadData: NSData) -> NetMessage? {
         switch opcode {
         case NetMessageOpcode.ClientHello:              return ClientHelloNetMessage(payloadData: payloadData)
         case NetMessageOpcode.ClientUpdate:             return ClientUpdateNetMessage(payloadData: payloadData)
+        case NetMessageOpcode.ServerUpdate:             return ServerUpdateNetMessage(payloadData: payloadData)
         default:                                        return nil
         }
     }
@@ -68,13 +69,13 @@ public class NetMessage {
         return encodedData
     }
     
-    /*****************************************************************************************************/
+    /******************************************************w***********************************************/
     // MARK:   Internal
     /*****************************************************************************************************/
     
     internal func parsePayload() {
-        NSLog("NetMessage.parsePayload()")
-        NSLog("payloadData: %@", payloadData!)
+        //NSLog("NetMessage.parsePayload()")
+        //NSLog("payloadData: %@", payloadData!)
         
         // move opcode as it was already inspected to create this instance in the first place
         payloadData!.replaceBytesInRange(NSMakeRange(0, sizeof(UInt16)), withBytes: nil, length:0)
@@ -175,6 +176,17 @@ public class NetMessage {
         payloadData!.replaceBytesInRange(NSMakeRange(0, dataLen), withBytes: nil, length:0)
         
         return array
+    }
+    
+    internal func pullUInt8FromPayload() -> UInt8 {
+        let numData = payloadData!.subdataWithRange(NSMakeRange(0, sizeof(UInt8)))
+        var numArray = [UInt8](count: 1, repeatedValue: 0)
+        numData.getBytes(&numArray, length: sizeof(UInt8))
+        let num = numArray[0]
+        
+        payloadData!.replaceBytesInRange(NSMakeRange(0, sizeof(UInt8)), withBytes: nil, length:0)
+        
+        return num
     }
     
     internal func pullUInt16FromPayload() -> UInt16 {

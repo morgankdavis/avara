@@ -191,7 +191,7 @@ public class InputManager {
                     for a in activeInputs {
                         str.appendString(NSString(format: "%@, ", a.description) as String)
                     }
-                    NSLog("Active user inputs: %@", str)
+                    //NSLog("Active user inputs: %@", str)
                 }
                 
                 if !prevInputs.contains(action) {

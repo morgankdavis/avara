@@ -31,7 +31,7 @@ public class ClientUpdateNetMessage: NetMessage {
     override public func encoded() -> NSData? {
         var encodedData = super.encoded() as! NSMutableData
         
-        //appendUInt32(sequenceNumber, toData: &encodedData)
+        appendUInt32(sequenceNumber!, toData: &encodedData)
         
         // convert UserInput set into UInt8 array
         var actionsRawArray = [UInt8]()
@@ -47,7 +47,7 @@ public class ClientUpdateNetMessage: NetMessage {
     }
     
     override internal func parsePayload() {
-        NSLog("ClientUpdateNetMessage.parsePayload()")
+        //NSLog("ClientUpdateNetMessage.parsePayload()")
         
         super.parsePayload()
         

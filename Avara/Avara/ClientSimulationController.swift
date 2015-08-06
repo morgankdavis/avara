@@ -27,8 +27,17 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private         var isFlyoverMode =             false
 //    private         var lastUpdateTime =            Double(0)
 //    private         var deltaTime =                 Double(0)
+    
+    
     private         var netClient:                  MKDNetClient?
     private         var sequenceNumber =            UInt32(0)
+    
+    private         var lastActiveInput:            Set<UserInput>?
+    private         var lastMouseDelta:             CGPoint?
+    
+    private         var serverOverrideUpdate:       NetPlayerUpdate?
+    
+//    private         var receivedNetPlayerUpdates =  [UInt32:NetPlayerUpdate]() // sequenceNum:update
     
     /*****************************************************************************************************/
     // MARK:   Public
@@ -110,18 +119,35 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             clientWindowController?.renderView?.play(self) // why the fuck must we do this?? (force re-render)
         }
         else {
+            let activeInput = inputManager.activeInputs
             let mouseDelta = inputManager.readMouseDeltaAndClear()
             
-            if let client = netClient {
-                if client.isConnected {
-                    let updateMessage = ClientUpdateNetMessage(activeActions: inputManager.activeInputs, mouseDelta: mouseDelta, sequenceNumber:sequenceNumber)
-                    
-                    let packtData = updateMessage.encoded()
-                    client.sendPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable) // WARN: change to unreliable
-                }
+            // check for server overrides before applying stuff
+            if let u = serverOverrideUpdate {
+                NSLog("-- Server override --")
+                localCharacter?.applyServerOverrideUpdate(u)
+                serverOverrideUpdate = nil
+            }
+            else {
+                localCharacter?.gameLoopWithInputs(inputManager.activeInputs, mouseDelta: mouseDelta, dT: dT)
             }
             
-            localCharacter?.gameLoopWithInputs(inputManager.activeInputs, mouseDelta: mouseDelta, dT: dT)
+            // send new state to server
+            if let client = netClient {
+                if client.isConnected {
+                    if (lastActiveInput == nil) || (lastMouseDelta == nil)
+                        || (activeInput != lastActiveInput!) || (mouseDelta != lastMouseDelta!) {
+                            ++sequenceNumber
+                            let updateMessage = ClientUpdateNetMessage(activeActions: inputManager.activeInputs, mouseDelta: mouseDelta, sequenceNumber:sequenceNumber)
+                            
+                            let packtData = updateMessage.encoded()
+                            client.sendPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable) // WARN: change to unreliable
+                            
+                            lastActiveInput = activeInput
+                            lastMouseDelta = mouseDelta
+                    }
+                }
+            }
         }
     }
     
@@ -164,7 +190,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     }
     
     private func parseServerPacket(packetData: NSData) {
-        NSLog("ClientSimulationController.parseServerPacket(%@)", packetData)
+        //NSLog("ClientSimulationController.parseServerPacket(%@)", packetData)
         
         if let message = MessageFromPayloadData(packetData) {
             switch message.opcode {
@@ -175,7 +201,26 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 // TODO: loop through NetPlayerUpdates
                 // for one matching our ID, perform reconciliation
                 // for others, find their characters and update accordingly
-
+                
+                
+                // WARN: there is probably a functional operation for this
+                var myUpdate: NetPlayerUpdate?
+                for u in updateMessage.playerUpdates {
+                    if u.id == netClient!.peerID {
+                        myUpdate = u
+                        break
+                    }
+                }
+                
+                if let u = myUpdate {
+                    if u.sequenceNumber >= sequenceNumber {
+                        // correct player position directly in hiieeerrrrr?
+                        serverOverrideUpdate = u // game loop will see and correct player state
+                    }
+                }
+                else {
+                    NSLog("*** I can haz update? ***")
+                }
                 break
                 
             default:
@@ -216,13 +261,13 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     public func physicsWorld(world: SCNPhysicsWorld, didUpdateContact contact: SCNPhysicsContact) {
         //NSLog("physicsWorld(didUpdateContact: %@)", contact)
         
-        physicsWorld(world, didBeginOrUpdateContact: contact);
+        physicsWorld(world, didBeginOrUpdateContact: contact)
     }
     
     public func physicsWorld(world: SCNPhysicsWorld, didBeginContact contact: SCNPhysicsContact) {
         //NSLog("physicsWorld(didBeginContact: %@)", contact)
         
-        physicsWorld(world, didBeginOrUpdateContact: contact);
+        physicsWorld(world, didBeginOrUpdateContact: contact)
     }
     
     public func physicsWorld(world: SCNPhysicsWorld, didEndContact contact: SCNPhysicsContact) {
@@ -250,9 +295,9 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     }
     
     public func client(client: MKDNetClient!, didRecievePacket packetData: NSData!, channel: UInt8) {
-        NSLog("client(%@, didRecievePacket: %@, channel: %d", channel)
+        //NSLog("client(%@, didRecievePacket: %@, channel: %d", self, packetData, channel)
         
-        
+        parseServerPacket(packetData)
     }
 
     /*****************************************************************************************************/

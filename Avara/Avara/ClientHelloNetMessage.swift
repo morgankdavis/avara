@@ -46,7 +46,7 @@ public class ClientHelloNetMessage: NetMessage {
     }
     
     override internal func parsePayload() {
-        NSLog("ClientHelloNetMessage.parsePayload()")
+        //NSLog("ClientHelloNetMessage.parsePayload()")
         
         super.parsePayload()
         
