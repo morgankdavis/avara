@@ -114,6 +114,10 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private func gameLoop(dT: CGFloat) {
         //NSLog("dT: %.4f", dT)
         
+        if let directMouseHelper = inputManager.directMouseHelper {
+            directMouseHelper.pump()
+        }
+        
         if isFlyoverMode {
             flyoverCamera.gameLoopWithInputs(inputManager.activeInputs, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
             clientWindowController?.renderView?.play(self) // why the fuck must we do this?? (force re-render)
@@ -122,32 +126,32 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             let activeInput = inputManager.activeInputs
             let mouseDelta = inputManager.readMouseDeltaAndClear()
             
-            // check for server overrides before applying stuff
-            if let u = serverOverrideUpdate {
-                NSLog("-- Server override --")
-                localCharacter?.applyServerOverrideUpdate(u)
-                serverOverrideUpdate = nil
-            }
-            else {
+//            // check for server overrides before applying stuff
+//            if let u = serverOverrideUpdate {
+//                NSLog("-- Server override --")
+//                localCharacter?.applyServerOverrideUpdate(u)
+//                serverOverrideUpdate = nil
+//            }
+//            else {
                 localCharacter?.gameLoopWithInputs(inputManager.activeInputs, mouseDelta: mouseDelta, dT: dT)
-            }
+//            }
             
             // send new state to server
-            if let client = netClient {
-                if client.isConnected {
-                    if (lastActiveInput == nil) || (lastMouseDelta == nil)
-                        || (activeInput != lastActiveInput!) || (mouseDelta != lastMouseDelta!) {
-                            ++sequenceNumber
-                            let updateMessage = ClientUpdateNetMessage(activeActions: inputManager.activeInputs, mouseDelta: mouseDelta, sequenceNumber:sequenceNumber)
-                            
-                            let packtData = updateMessage.encoded()
-                            client.sendPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable) // WARN: change to unreliable
-                            
-                            lastActiveInput = activeInput
-                            lastMouseDelta = mouseDelta
-                    }
-                }
-            }
+//            if let client = netClient {
+//                if client.isConnected {
+//                    if (lastActiveInput == nil) || (lastMouseDelta == nil)
+//                        || (activeInput != lastActiveInput!) || (mouseDelta != lastMouseDelta!) {
+//                            ++sequenceNumber
+//                            let updateMessage = ClientUpdateNetMessage(activeActions: inputManager.activeInputs, mouseDelta: mouseDelta, sequenceNumber:sequenceNumber)
+//                            
+//                            let packtData = updateMessage.encoded()
+//                            client.sendPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable) // WARN: change to unreliable
+//                            
+//                            lastActiveInput = activeInput
+//                            lastMouseDelta = mouseDelta
+//                    }
+//                }
+//            }
         }
     }
     

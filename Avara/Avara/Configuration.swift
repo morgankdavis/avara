@@ -16,8 +16,8 @@ let SCN_DEBUG_OPTIONS: SCNDebugOptions =    [.ShowPhysicsShapes, .ShowBoundingBo
 
 let PHYSICS_TIMESTEP =                      1.0/120.0
 
-let DIRECT_MOUSE_ENABLED =                  false
-let MOUSE_SENSITIVITY =                     CGFloat(400.0)
+let DIRECT_MOUSE_ENABLED =                  true
+let MOUSE_SENSITIVITY =                     CGFloat(3.0)
 
 let NET_SERVER_PORT =                       UInt16(33777)
 let NET_MAX_CLIENTS =                       Int(12)

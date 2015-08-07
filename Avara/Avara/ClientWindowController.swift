@@ -169,21 +169,10 @@ public class ClientWindowController: NSWindowController, NSWindowDelegate {
     
     override public func keyDown(theEvent: NSEvent) {
         inputManager.updateKeyCode(theEvent.keyCode, pressed: true)
-        
-//        if let key = Key(rawValue: Int(theEvent.keyCode)) {
-//            inputManager.updateKey(key, pressed:true)
-//        }
-//        else {
-//            NSLog("Unknow key down: %d", theEvent.keyCode)
-//        }
     }
     
     override public func keyUp(theEvent: NSEvent) {
         inputManager.updateKeyCode(theEvent.keyCode, pressed: false)
-        
-//        if let key = Key(rawValue: Int(theEvent.keyCode)) {
-//            inputManager.updateKey(key, pressed:false)
-//        }
     }
     
     /*****************************************************************************************************/

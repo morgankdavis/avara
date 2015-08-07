@@ -146,9 +146,9 @@ public class InputManager: NSObject, MKDDirectMouseHelperDelegate {
     // MARK:   Properties
     /*****************************************************************************************************/
     
+    private(set)    var directMouseHelper:              MKDDirectMouseHelper?
     private(set)    var activeInputs =                  Set<UserInput>()
     private         var accumulatedMouseDelta =         CGPointZero
-    private         var rawMouseHelper:                 MKDDirectMouseHelper!
     
     /*****************************************************************************************************/
     // MARK:   Public
@@ -209,7 +209,7 @@ public class InputManager: NSObject, MKDDirectMouseHelperDelegate {
     }
     
     /*****************************************************************************************************/
-    // MARK:   MKDRawMouseHelperDelegate
+    // MARK:   MKDDirectMouseHelperDelegate
     /*****************************************************************************************************/
     
     public func helper(helper: MKDDirectMouseHelper!, didFindMouseID mouseID: Int32, name: String!, driverName: String!) {
@@ -219,7 +219,7 @@ public class InputManager: NSObject, MKDDirectMouseHelperDelegate {
     public func helper(helper: MKDDirectMouseHelper!, didGetRelativeMotion delta: Int32, axis: MKDDirectMouseAxis, mouseID: Int32) {
         NSLog("helper(%@, didGetRelativeMotion: %d, axis: %d, mouseID: %d)", helper, delta, axis.rawValue, mouseID)
         
-        addMouseDelta(CGPointMake(CGFloat((axis == .X ? delta : 0)), CGFloat((axis == .Y ? delta : 0))))
+        addMouseDelta(CGPointMake(CGFloat((axis == .X ? -delta : 0)), CGFloat((axis == .Y ? delta : 0))))
     }
     
     public func helper(helper: MKDDirectMouseHelper!, didGetButtonPress buttonID: Int32, mouseID: Int32) {
@@ -252,8 +252,8 @@ public class InputManager: NSObject, MKDDirectMouseHelperDelegate {
     override init() {
         super.init()
         if DIRECT_MOUSE_ENABLED {
-            self.rawMouseHelper = MKDDirectMouseHelper(delegate: self)
-            self.rawMouseHelper.start()
+            self.directMouseHelper = MKDDirectMouseHelper(delegate: self)
+            self.directMouseHelper!.start()
         }
     }
 }
