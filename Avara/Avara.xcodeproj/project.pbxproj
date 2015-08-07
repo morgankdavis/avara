@@ -60,6 +60,13 @@
 		417CC40F1B68A9E6006B21F3 /* NetMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC40E1B68A9E6006B21F3 /* NetMessage.swift */; };
 		417CC4121B68AA2F006B21F3 /* ClientHelloNetMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC4111B68AA2F006B21F3 /* ClientHelloNetMessage.swift */; };
 		417CC4141B69B98C006B21F3 /* ServerWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC4131B69B98C006B21F3 /* ServerWindowController.swift */; };
+		417E12EB1B74802A006256C7 /* linux_evdev.c in Sources */ = {isa = PBXBuildFile; fileRef = 417E12E21B74802A006256C7 /* linux_evdev.c */; };
+		417E12EC1B74802A006256C7 /* macosx_hidmanager.c in Sources */ = {isa = PBXBuildFile; fileRef = 417E12E31B74802A006256C7 /* macosx_hidmanager.c */; };
+		417E12ED1B74802A006256C7 /* macosx_hidutilities.c in Sources */ = {isa = PBXBuildFile; fileRef = 417E12E41B74802A006256C7 /* macosx_hidutilities.c */; };
+		417E12EE1B74802A006256C7 /* manymouse.c in Sources */ = {isa = PBXBuildFile; fileRef = 417E12E51B74802A006256C7 /* manymouse.c */; };
+		417E12EF1B74802A006256C7 /* windows_wminput.c in Sources */ = {isa = PBXBuildFile; fileRef = 417E12E71B74802A006256C7 /* windows_wminput.c */; };
+		417E12F01B74802A006256C7 /* x11_xinput2.c in Sources */ = {isa = PBXBuildFile; fileRef = 417E12E81B74802A006256C7 /* x11_xinput2.c */; };
+		417E12F11B74802A006256C7 /* MKDDirectMouseHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 417E12EA1B74802A006256C7 /* MKDDirectMouseHelper.m */; };
 		41D922501B6B459600CCE9CA /* ClientUpdateNetMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D9224F1B6B459600CCE9CA /* ClientUpdateNetMessage.swift */; };
 /* End PBXBuildFile section */
 
@@ -131,6 +138,15 @@
 		417CC40E1B68A9E6006B21F3 /* NetMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetMessage.swift; sourceTree = "<group>"; };
 		417CC4111B68AA2F006B21F3 /* ClientHelloNetMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientHelloNetMessage.swift; sourceTree = "<group>"; };
 		417CC4131B69B98C006B21F3 /* ServerWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerWindowController.swift; sourceTree = "<group>"; };
+		417E12E21B74802A006256C7 /* linux_evdev.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = linux_evdev.c; sourceTree = "<group>"; };
+		417E12E31B74802A006256C7 /* macosx_hidmanager.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = macosx_hidmanager.c; sourceTree = "<group>"; };
+		417E12E41B74802A006256C7 /* macosx_hidutilities.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = macosx_hidutilities.c; sourceTree = "<group>"; };
+		417E12E51B74802A006256C7 /* manymouse.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = manymouse.c; sourceTree = "<group>"; };
+		417E12E61B74802A006256C7 /* manymouse.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = manymouse.h; sourceTree = "<group>"; };
+		417E12E71B74802A006256C7 /* windows_wminput.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = windows_wminput.c; sourceTree = "<group>"; };
+		417E12E81B74802A006256C7 /* x11_xinput2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = x11_xinput2.c; sourceTree = "<group>"; };
+		417E12E91B74802A006256C7 /* MKDDirectMouseHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKDDirectMouseHelper.h; sourceTree = "<group>"; };
+		417E12EA1B74802A006256C7 /* MKDDirectMouseHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKDDirectMouseHelper.m; sourceTree = "<group>"; };
 		41D9224F1B6B459600CCE9CA /* ClientUpdateNetMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientUpdateNetMessage.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -182,6 +198,7 @@
 				417CC39C1B645310006B21F3 /* RenderView.swift */,
 				417CC4101B68A9EA006B21F3 /* NetMessages */,
 				417CC3F21B688063006B21F3 /* MKDNet */,
+				417E12F21B74802F006256C7 /* Raw Mouse */,
 				417CC3B71B6453D2006B21F3 /* Utilities */,
 				417CC3F11B688059006B21F3 /* Other */,
 				417CC39F1B645310006B21F3 /* Images.xcassets */,
@@ -291,6 +308,30 @@
 			name = NetMessages;
 			sourceTree = "<group>";
 		};
+		417E12E11B74802A006256C7 /* manymouse */ = {
+			isa = PBXGroup;
+			children = (
+				417E12E21B74802A006256C7 /* linux_evdev.c */,
+				417E12E31B74802A006256C7 /* macosx_hidmanager.c */,
+				417E12E41B74802A006256C7 /* macosx_hidutilities.c */,
+				417E12E51B74802A006256C7 /* manymouse.c */,
+				417E12E61B74802A006256C7 /* manymouse.h */,
+				417E12E71B74802A006256C7 /* windows_wminput.c */,
+				417E12E81B74802A006256C7 /* x11_xinput2.c */,
+			);
+			path = manymouse;
+			sourceTree = "<group>";
+		};
+		417E12F21B74802F006256C7 /* Raw Mouse */ = {
+			isa = PBXGroup;
+			children = (
+				417E12E91B74802A006256C7 /* MKDDirectMouseHelper.h */,
+				417E12EA1B74802A006256C7 /* MKDDirectMouseHelper.m */,
+				417E12E11B74802A006256C7 /* manymouse */,
+			);
+			name = "Raw Mouse";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -387,8 +428,10 @@
 				417CC3B01B645310006B21F3 /* Map.swift in Sources */,
 				417CC4141B69B98C006B21F3 /* ServerWindowController.swift in Sources */,
 				4151BEEA1B71D62B0082F75E /* NetPlayerUpdate.swift in Sources */,
+				417E12EF1B74802A006256C7 /* windows_wminput.c in Sources */,
 				417CC3A81B645310006B21F3 /* ClientSimulationController.swift in Sources */,
 				417CC3B31B645310006B21F3 /* ServerSimulationController.swift in Sources */,
+				417E12EE1B74802A006256C7 /* manymouse.c in Sources */,
 				41D922501B6B459600CCE9CA /* ClientUpdateNetMessage.swift in Sources */,
 				417CC4071B688232006B21F3 /* list.c in Sources */,
 				417CC38C1B645260006B21F3 /* AppDelegate.swift in Sources */,
@@ -400,6 +443,7 @@
 				417CC4051B688232006B21F3 /* compress.c in Sources */,
 				4165099A1B6C754C0048804B /* ServerUpdateNetMessage.swift in Sources */,
 				417CC4041B688232006B21F3 /* callbacks.c in Sources */,
+				417E12EB1B74802A006256C7 /* linux_evdev.c in Sources */,
 				417CC3F01B68804B006B21F3 /* MKDNetServer.m in Sources */,
 				417CC40D1B68A305006B21F3 /* NetPlayer.swift in Sources */,
 				417CC4121B68AA2F006B21F3 /* ClientHelloNetMessage.swift in Sources */,
@@ -407,12 +451,16 @@
 				417CC3AD1B645310006B21F3 /* Globals.swift in Sources */,
 				417CC3AB1B645310006B21F3 /* RenderView.swift in Sources */,
 				417CC3AF1B645310006B21F3 /* InputManager.swift in Sources */,
+				417E12F11B74802A006256C7 /* MKDDirectMouseHelper.m in Sources */,
 				417CC4091B688232006B21F3 /* peer.c in Sources */,
 				417CC3EF1B68804B006B21F3 /* MKDNetClient.m in Sources */,
+				417E12F01B74802A006256C7 /* x11_xinput2.c in Sources */,
 				417CC4061B688232006B21F3 /* host.c in Sources */,
 				417CC3A71B645310006B21F3 /* Character.swift in Sources */,
 				417CC3AC1B645310006B21F3 /* ClientWindowController.swift in Sources */,
+				417E12EC1B74802A006256C7 /* macosx_hidmanager.c in Sources */,
 				417CC40B1B688232006B21F3 /* unix.c in Sources */,
+				417E12ED1B74802A006256C7 /* macosx_hidutilities.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

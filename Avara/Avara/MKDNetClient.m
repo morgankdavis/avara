@@ -84,7 +84,7 @@
 	
 	if (self.peer == NULL) {
 		NSLog(@"*** Connection failed. ***");
-		[self.delegate client:nil didFailToConnect:@"who fucking knows"];
+		[self.delegate client:nil didFailToConnect:nil];
 	}
 }
 

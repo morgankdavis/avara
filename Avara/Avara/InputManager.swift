@@ -127,7 +127,7 @@ public enum Key: Int, CustomStringConvertible {
 }
 
 
-public class InputManager {
+public class InputManager: NSObject, MKDDirectMouseHelperDelegate {
     
     /*****************************************************************************************************/
     // MARK:   Types
@@ -148,6 +148,7 @@ public class InputManager {
     
     private(set)    var activeInputs =                  Set<UserInput>()
     private         var accumulatedMouseDelta =         CGPointZero
+    private         var rawMouseHelper:                 MKDDirectMouseHelper!
     
     /*****************************************************************************************************/
     // MARK:   Public
@@ -208,6 +209,32 @@ public class InputManager {
     }
     
     /*****************************************************************************************************/
+    // MARK:   MKDRawMouseHelperDelegate
+    /*****************************************************************************************************/
+    
+    public func helper(helper: MKDDirectMouseHelper!, didFindMouseID mouseID: Int32, name: String!, driverName: String!) {
+        NSLog("helper(%@, didFindMouseID: %d, name: %@, driverName: %@)", helper, mouseID, name, driverName)
+    }
+    
+    public func helper(helper: MKDDirectMouseHelper!, didGetRelativeMotion delta: Int32, axis: MKDDirectMouseAxis, mouseID: Int32) {
+        NSLog("helper(%@, didGetRelativeMotion: %d, axis: %d, mouseID: %d)", helper, delta, axis.rawValue, mouseID)
+        
+        addMouseDelta(CGPointMake(CGFloat((axis == .X ? delta : 0)), CGFloat((axis == .Y ? delta : 0))))
+    }
+    
+    public func helper(helper: MKDDirectMouseHelper!, didGetButtonPress buttonID: Int32, mouseID: Int32) {
+        NSLog("helper(%@, didGetButtonPress: %d, mouseID: %d)", helper, buttonID, mouseID)
+    }
+    
+    public func helper(helper: MKDDirectMouseHelper!, didGetScroll wheelID: Int32, direction: MKDDirectMouseScrollDirection, mouseID: Int32) {
+        NSLog("helper(%@, didGetScroll: %d, direction: %d, mouseID: %d)", helper, wheelID, direction.rawValue, mouseID)
+    }
+    
+    public func helper(helper: MKDDirectMouseHelper!, didFailWithError error: Int32) {
+        NSLog("helper(%@, didFailWithError: %d)", helper, error)
+    }
+
+    /*****************************************************************************************************/
     // MARK:   Private
     /*****************************************************************************************************/
     
@@ -216,5 +243,17 @@ public class InputManager {
             Notifications.DidBeginUserInput.name,
             object: nil,
             userInfo: [Notifications.DidBeginUserInput.UserInfoKeys.inputRawValue: Int(action.rawValue)])
+    }
+    
+    /*****************************************************************************************************/
+    // MARK:   Object
+    /*****************************************************************************************************/
+    
+    override init() {
+        super.init()
+        if DIRECT_MOUSE_ENABLED {
+            self.rawMouseHelper = MKDDirectMouseHelper(delegate: self)
+            self.rawMouseHelper.start()
+        }
     }
 }

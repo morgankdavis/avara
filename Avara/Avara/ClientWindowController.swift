@@ -140,32 +140,31 @@ public class ClientWindowController: NSWindowController, NSWindowDelegate {
     /*****************************************************************************************************/
     
     override public func mouseMoved(theEvent: NSEvent) {
-        let loc: NSPoint = NSEvent.mouseLocation()
-        
-        let screenSize: CGSize = CGSizeMake(CGFloat(CGDisplayPixelsWide(0)), CGFloat(CGDisplayPixelsHigh(0)))
-        let screenMid: CGPoint = CGPointMake(screenSize.width/2.0, screenSize.height/2.0)
-        let locRelOrigin: CGPoint = CGPointMake(loc.x-screenMid.x, loc.y-screenMid.y)
-        let delta: CGPoint = CGPointMake(lastCursorPoint.x-locRelOrigin.x, lastCursorPoint.y-locRelOrigin.y)
-        
-        inputManager.addMouseDelta(delta)
-        
-        // if the distance from the origin (center of window) gets too big, reset the cursor to the middle
-        let distanceThr: CGFloat = 32.0
-        let distance = sqrt(CGFloat(pow(locRelOrigin.x, 2)) + CGFloat(pow(locRelOrigin.y, 2)))
-        
-        if (distance > distanceThr) {
-            let err: CGError = CGDisplayMoveCursorToPoint(0, screenMid) // CGWarpMouseCursorPosition(screenMid)
-            if (err != .Success) {
-                NSLog("Error warping cursor: %d", err.rawValue)
+        if !DIRECT_MOUSE_ENABLED {
+            let loc: NSPoint = NSEvent.mouseLocation()
+            
+            let screenSize: CGSize = CGSizeMake(CGFloat(CGDisplayPixelsWide(0)), CGFloat(CGDisplayPixelsHigh(0)))
+            let screenMid: CGPoint = CGPointMake(screenSize.width/2.0, screenSize.height/2.0)
+            let locRelOrigin: CGPoint = CGPointMake(loc.x-screenMid.x, loc.y-screenMid.y)
+            let delta: CGPoint = CGPointMake(lastCursorPoint.x-locRelOrigin.x, lastCursorPoint.y-locRelOrigin.y)
+            
+            inputManager.addMouseDelta(delta)
+            
+            // if the distance from the origin (center of window) gets too big, reset the cursor to the middle
+            let distanceThr: CGFloat = 32.0
+            let distance = sqrt(CGFloat(pow(locRelOrigin.x, 2)) + CGFloat(pow(locRelOrigin.y, 2)))
+            
+            if (distance > distanceThr) {
+                let err: CGError = CGDisplayMoveCursorToPoint(0, screenMid) // CGWarpMouseCursorPosition(screenMid)
+                if (err != .Success) {
+                    NSLog("Error warping cursor: %d", err.rawValue)
+                }
+                CGAssociateMouseAndMouseCursorPosition(1) // if this isn't called new mouse events are ignored for about 200ms
+                lastCursorPoint = CGPointZero
+            } else {
+                lastCursorPoint = locRelOrigin
             }
-            CGAssociateMouseAndMouseCursorPosition(1) // if this isn't called new mouse events are ignored for about 200ms
-            lastCursorPoint = CGPointZero
-        } else {
-            lastCursorPoint = locRelOrigin
         }
-        
-        //gameController.gameLoop()
-        //gameController.renderer(aRenderer: SCNSceneRenderer(), didSimulatePhysicsAtTime: NSDate.timeIntervalSinceReferenceDate())
     }
     
     override public func keyDown(theEvent: NSEvent) {

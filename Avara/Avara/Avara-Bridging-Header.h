@@ -6,3 +6,4 @@
 //#import "MKDNetTypes.h" -- creates errors. donno why. MKDNetServer.h & MKDNetClient.h import it, though.
 #import "MKDNetServer.h"
 #import "MKDNetClient.h"
+#import "MKDDirectMouseHelper.h"
