@@ -45,12 +45,17 @@ public class ClientHelloNetMessage: NetMessage {
         return encodedData as NSData
     }
     
-    override internal func parsePayload() {
+    /*****************************************************************************************************/
+    // MARK:   Internal, NetMessage
+    /*****************************************************************************************************/
+    
+    override internal func parsePayload() -> NSMutableData? {
         //NSLog("ClientHelloNetMessage.parsePayload()")
-        
-        super.parsePayload()
-        
-        name = pullStringFromPayload()
+
+        if var data = super.parsePayload() {
+            name = pullStringFromData(&data)
+        }
+        return nil
     }
     
     /*****************************************************************************************************/

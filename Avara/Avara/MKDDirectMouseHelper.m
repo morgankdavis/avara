@@ -112,4 +112,9 @@
     }
 }
 
+- (void)quit
+{
+    ManyMouse_Quit();
+}
+
 @end

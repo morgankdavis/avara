@@ -39,6 +39,8 @@ public class NetPlayer {
     }
     
     public func netPlayerUpdate() -> NetPlayerUpdate {
+//        let rot = character.bodyNode.rotation
+//        NSLog("netPlayerUpdate(): character.bodyNode.rotation: %.2f, %.2f, %.2f, %.2f", rot.x, rot.y, rot.z, rot.w)
         return NetPlayerUpdate(
             sequenceNumber: sequenceNumber,
             id: id,

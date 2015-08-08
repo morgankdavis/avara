@@ -16,9 +16,9 @@ public class ServerWindowController: NSWindowController {
     // MARK:   Properties
     /*****************************************************************************************************/
     
-    private         var serverSimulationController: ServerSimulationController
-    private         var scene:                      SCNScene
-    private(set)    var renderView:                 RenderView?
+    private         var serverSimulationController:     ServerSimulationController
+    private         var scene:                          SCNScene
+    private(set)    var renderView:                     RenderView?
     
     /*****************************************************************************************************/
     // MARK:   Private

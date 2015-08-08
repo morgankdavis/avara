@@ -46,14 +46,19 @@ public class ClientUpdateNetMessage: NetMessage {
         return encodedData as NSData
     }
     
-    override internal func parsePayload() {
+    /*****************************************************************************************************/
+    // MARK:   Internal, NetMessage
+    /*****************************************************************************************************/
+    
+    override internal func parsePayload() -> NSMutableData? {
         //NSLog("ClientUpdateNetMessage.parsePayload()")
         
-        super.parsePayload()
+        if var data = super.parsePayload() {
+        //var data: NSMutableData = super.parsePayload()!
         
-        sequenceNumber = pullUInt32FromPayload()
+        sequenceNumber = pullUInt32FromData(&data)
         
-        let actionsRawArray = pullUInt8ArrayFromPayload()
+        let actionsRawArray = pullUInt8ArrayFromData(&data)
         for a in actionsRawArray {
             if let action = UserInput(rawValue: a) {
                 activeInputs.insert(action)
@@ -63,7 +68,9 @@ public class ClientUpdateNetMessage: NetMessage {
             }
         }
         
-        mouseDelta = pullCGPointFromPayload()
+        mouseDelta = pullCGPointFromData(&data)
+        }
+        return nil
     }
     
     /*****************************************************************************************************/

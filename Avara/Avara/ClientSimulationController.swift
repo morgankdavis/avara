@@ -16,7 +16,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     // MARK:   Properties
     /*****************************************************************************************************/
     
-    private         var clientWindowController:     ClientWindowController?
+    private         var windowController:           ClientWindowController?
     private(set)    var inputManager:               InputManager
     private(set)    var scene =                     SCNScene()
     private         var map:                        Map?
@@ -35,6 +35,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private         var lastActiveInput:            Set<UserInput>?
     private         var lastMouseDelta:             CGPoint?
     
+    private         var inputActive =               false
     private         var serverOverrideUpdate:       NetPlayerUpdate?
     
 //    private         var receivedNetPlayerUpdates =  [UInt32:NetPlayerUpdate]() // sequenceNum:update
@@ -46,7 +47,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     public func play() {
         NSLog("play()")
         
-        clientWindowController?.showWindow(self)
+        windowController?.showWindow(self)
         switchToCameraNode(localCharacter!.cameraNode)
         
         gameLoopTimer = NSTimer.scheduledTimerWithTimeInterval(
@@ -75,7 +76,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 NSLog("Input began: %@", input.description)
                 
                 switch input {
-                case .ToggleFocus:      clientWindowController?.toggleIsCursorCaptured()
+                case .ToggleFocus:      windowController?.toggleIsCursorCaptured()
                 case .ToggleFlyover:    toggleFlyoverMode()
                 case .HeadCamera:       switchToCameraNode(localCharacter!.cameraNode)
                 case .FlyoverCamera:    switchToCameraNode(flyoverCamera.node)
@@ -114,51 +115,57 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private func gameLoop(dT: CGFloat) {
         //NSLog("dT: %.4f", dT)
         
-        if let directMouseHelper = inputManager.directMouseHelper {
-            directMouseHelper.pump()
+        if windowController!.isCursorCaptured {
+            if let directMouseHelper = inputManager.directMouseHelper {
+                directMouseHelper.pump()
+            }
         }
         
         if isFlyoverMode {
             flyoverCamera.gameLoopWithInputs(inputManager.activeInputs, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
-            clientWindowController?.renderView?.play(self) // why the fuck must we do this?? (force re-render)
+            windowController?.renderView?.play(self) // why the fuck must we do this?? (force re-render)
         }
         else {
             let activeInput = inputManager.activeInputs
             let mouseDelta = inputManager.readMouseDeltaAndClear()
             
-//            // check for server overrides before applying stuff
-//            if let u = serverOverrideUpdate {
-//                NSLog("-- Server override --")
-//                localCharacter?.applyServerOverrideUpdate(u)
-//                serverOverrideUpdate = nil
-//            }
-//            else {
-                localCharacter?.gameLoopWithInputs(activeInput, mouseDelta: mouseDelta, dT: dT)
-//            }
             
-            // send new state to server
-//            if let client = netClient {
-//                if client.isConnected {
-//                    if (lastActiveInput == nil) || (lastMouseDelta == nil)
-//                        || (activeInput != lastActiveInput!) || (mouseDelta != lastMouseDelta!) {
-//                            ++sequenceNumber
-//                            let updateMessage = ClientUpdateNetMessage(activeActions: inputManager.activeInputs, mouseDelta: mouseDelta, sequenceNumber:sequenceNumber)
-//                            
-//                            let packtData = updateMessage.encoded()
-//                            client.sendPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable) // WARN: change to unreliable
-//                            
-//                            lastActiveInput = activeInput
-//                            lastMouseDelta = mouseDelta
-//                    }
-//                }
-//            }
+            // check for server overrides before applying stuff
+            if let u = serverOverrideUpdate {
+                NSLog("-- Server override --")
+                localCharacter?.applyServerOverrideUpdate(u)
+                serverOverrideUpdate = nil
+            }
+            else {
+                localCharacter?.gameLoopWithInputs(activeInput, mouseDelta: mouseDelta, dT: dT)
+                
+                let inputChanged = (lastActiveInput == nil) || (lastMouseDelta == nil) || (activeInput != lastActiveInput!) || (mouseDelta != lastMouseDelta!)
+                if inputChanged {
+                    // send new state to server
+                    if let client = netClient {
+                        if client.isConnected {
+                            ++sequenceNumber
+                            let updateMessage = ClientUpdateNetMessage(activeActions: inputManager.activeInputs, mouseDelta: mouseDelta, sequenceNumber:sequenceNumber)
+                            
+                            let packtData = updateMessage.encoded()
+                            client.sendPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable) // WARN: change to unreliable
+                        }
+                    }
+                    
+                    inputActive = (activeInput.count > 0) || (mouseDelta != CGPointZero)
+                    NSLog("inputActive: %@", (inputActive ? "true" : "false"))
+                }
+                
+                lastActiveInput = activeInput
+                lastMouseDelta = mouseDelta
+            }
         }
     }
     
     func switchToCameraNode(cameraNode: SCNNode) {
         NSLog("switchToCameraNode() %@", cameraNode.name!)
         
-        clientWindowController?.renderView?.pointOfView = cameraNode
+        windowController?.renderView?.pointOfView = cameraNode
         if cameraNode != flyoverCamera.node {
             isFlyoverMode = false
         }
@@ -217,7 +224,8 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 }
                 
                 if let u = myUpdate {
-                    if u.sequenceNumber >= sequenceNumber {
+                    NSLog("Update sq: %d, sent sq: %d, inputActive: %@", u.sequenceNumber, sequenceNumber, (inputActive ? "true" : "false"))
+                    if (u.sequenceNumber >= sequenceNumber) && !inputActive {
                         // correct player position directly in hiieeerrrrr?
                         serverOverrideUpdate = u // game loop will see and correct player state
                     }
@@ -312,6 +320,6 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         self.inputManager = inputManager
         super.init()
         setup()
-        self.clientWindowController = ClientWindowController(clientSimulationController: self)
+        self.windowController = ClientWindowController(clientSimulationController: self)
     }
 }

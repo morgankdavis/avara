@@ -157,6 +157,18 @@ public class InputManager: NSObject, MKDDirectMouseHelperDelegate {
     // MARK:   Public
     /*****************************************************************************************************/
     
+    public func startDirectMouseCapture() {
+        directMouseHelper = MKDDirectMouseHelper(delegate: self)
+        directMouseHelper!.findMice()
+    }
+    
+    public func stopDirectMouseCapture() {
+        if let helper = directMouseHelper {
+            helper.quit()
+        }
+        directMouseHelper = nil
+    }
+    
     public func isInputActive(action: UserInput) -> Bool {
         return activeInputs.contains(action)
     }

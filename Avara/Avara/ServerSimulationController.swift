@@ -17,7 +17,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     /*****************************************************************************************************/
     
     //private(set)    var inputManager:               InputManager -- replace with network abstraction
-    private         var serverWindowController:     ServerWindowController? // temporary?
+    private         var windowController:           ServerWindowController? // temporary?
     private(set)    var scene =                     SCNScene()
     private(set)    var renderView:                 RenderView? // *** TEMPORARY ***
     private         var map:                        Map?
@@ -28,7 +28,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private         var cameraNode:                 SCNNode?
     
     private         var lastSentPlayerUpdates =     [UInt32:NetPlayerUpdate]() // id:update
-
+    
     /*****************************************************************************************************/
     // MARK:   Public
     /*****************************************************************************************************/
@@ -36,7 +36,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     public func start() {
         NSLog("ServerSimulationController.start()")
         
-        serverWindowController?.showWindow(self)
+        windowController?.showWindow(self)
         
         cameraNode = SCNNode()
         cameraNode?.name = "Server camera node"
@@ -100,6 +100,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 if let lastSent = lastSentPlayerUpdates[u.id] {
                     // here's the last sent update for this player.
                     if u != lastSent {
+                        NSLog("NOT THE SAME")
                         send = true
                     }
                 }
@@ -109,7 +110,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 }
                 
                 if send {
-                    // WARN: client sequence number not incramented -- return num will be the same. is this what we want?
+                    // WARN: client sequence numbwer not incramented -- return num will be the same. is this what we want?
                     //++u.sequenceNumber
                     updatesToSend.append(u)
                     lastSentPlayerUpdates[u.id] = u
@@ -118,9 +119,11 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             
             if updatesToSend.count > 0 {
                 
-                let s = updatesToSend[0]
-                NSLog("BOD: { %.2f, %.2f, %.2f, %.2f }", s.bodyRotation.x, s.bodyRotation.y, s.bodyRotation.z, s.bodyRotation.w)
-                NSLog("HEAD: { %.2f, %.2f, %.2f }", s.headEulerAngles.x, s.headEulerAngles.y, s.headEulerAngles.z)
+                NSLog("Sending authorative state sq: %d", updatesToSend[0].sequenceNumber)
+                
+//                let s = updatesToSend[0]
+//                NSLog("BOD: { %.2f, %.2f, %.2f, %.2f }", s.bodyRotation.x, s.bodyRotation.y, s.bodyRotation.z, s.bodyRotation.w)
+//                NSLog("HEAD: { %.2f, %.2f, %.2f }", s.headEulerAngles.x, s.headEulerAngles.y, s.headEulerAngles.z)
                 
                 let updateMessage = ServerUpdateNetMessage(playerUpdates: updatesToSend)
                 let packtData = updateMessage.encoded()
@@ -135,7 +138,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     func switchToCameraNode(cameraNode: SCNNode) {
         NSLog("ServerSimulationController.switchToCameraNode() %@", cameraNode.name!)
         
-        serverWindowController?.renderView?.pointOfView = cameraNode
+        windowController?.renderView?.pointOfView = cameraNode
     }
     
     public func physicsWorld(world: SCNPhysicsWorld, didBeginOrUpdateContact contact: SCNPhysicsContact) {
@@ -267,6 +270,6 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     override required public init() {
         super.init()
         setup()
-        self.serverWindowController = ServerWindowController(serverSimulationController: self)
+        self.windowController = ServerWindowController(serverSimulationController: self)
     }
 }

@@ -33,6 +33,7 @@ typedef NS_ENUM(NSInteger, MKDDirectMouseHorizontalScrollDirection) {
 //- (MKDDirectMouseHelper *)sharedHelper;
 - (void)findMice;
 - (void)pump;
+- (void)quit;
 
 @property(atomic, weak) id<MKDDirectMouseHelperDelegate> delegate;
 

@@ -26,7 +26,7 @@ public func NetMessageOpcodeRawValueFromPayloadData(payloadData: NSData) -> UInt
 
 public func MessageFromPayloadData(payloadData: NSData) -> NetMessage? {
     
-    // TODO: There is no doubt a better way to do this.
+    // TODO: There's probably a better way to do this.
     let opcodeInt = NetMessageOpcodeRawValueFromPayloadData(payloadData)
     if let opcode = NetMessageOpcode(rawValue: opcodeInt) {
         switch opcode {
@@ -73,14 +73,13 @@ public class NetMessage {
     // MARK:   Internal
     /*****************************************************************************************************/
     
-    internal func parsePayload() {
+    internal func parsePayload() -> NSMutableData? {
         //NSLog("NetMessage.parsePayload()")
-        //NSLog("payloadData: %@", payloadData!)
-        
-        // move opcode as it was already inspected to create this instance in the first place
-        payloadData!.replaceBytesInRange(NSMakeRange(0, sizeof(UInt16)), withBytes: nil, length:0)
         
         //sequenceNumber = pullUInt32FromPayload()
+
+        // trim opcode as it was already inspected to create this instance in the first place
+        return payloadData!.subdataWithRange(NSMakeRange(sizeof(UInt16), payloadData!.length - sizeof(UInt16))).mutableCopy() as? NSMutableData
     }
     
     internal func appendUInt8(num: UInt8, inout toData data: NSMutableData) {
@@ -165,66 +164,66 @@ public class NetMessage {
         }
     }
     
-    internal func pullUInt8ArrayFromPayload() -> [UInt8] {
-        let count = pullUInt16FromPayload()
+    internal func pullUInt8ArrayFromData(inout data: NSMutableData) -> [UInt8] {
+        let count = pullUInt16FromData(&data)
         
         let dataLen = sizeof(UInt8) * Int(count)
-        let arrayData = payloadData!.subdataWithRange(NSMakeRange(0, dataLen))
+        let arrayData = data.subdataWithRange(NSMakeRange(0, dataLen))
         var array = [UInt8](count: Int(count), repeatedValue: 0)
         arrayData.getBytes(&array, length: dataLen)
         
-        payloadData!.replaceBytesInRange(NSMakeRange(0, dataLen), withBytes: nil, length:0)
+        data.replaceBytesInRange(NSMakeRange(0, dataLen), withBytes: nil, length:0)
         
         return array
     }
     
-    internal func pullUInt8FromPayload() -> UInt8 {
-        let numData = payloadData!.subdataWithRange(NSMakeRange(0, sizeof(UInt8)))
+    internal func pullUInt8FromData(inout data: NSMutableData) -> UInt8 {
+        let numData = data.subdataWithRange(NSMakeRange(0, sizeof(UInt8)))
         var numArray = [UInt8](count: 1, repeatedValue: 0)
         numData.getBytes(&numArray, length: sizeof(UInt8))
         let num = numArray[0]
         
-        payloadData!.replaceBytesInRange(NSMakeRange(0, sizeof(UInt8)), withBytes: nil, length:0)
+        data.replaceBytesInRange(NSMakeRange(0, sizeof(UInt8)), withBytes: nil, length:0)
         
         return num
     }
     
-    internal func pullUInt16FromPayload() -> UInt16 {
-        let numData = payloadData!.subdataWithRange(NSMakeRange(0, sizeof(UInt16)))
+    internal func pullUInt16FromData(inout data: NSMutableData) -> UInt16 {
+        let numData = data.subdataWithRange(NSMakeRange(0, sizeof(UInt16)))
         var numArray = [UInt16](count: 1, repeatedValue: 0)
         numData.getBytes(&numArray, length: sizeof(UInt16))
         let num = numArray[0]
         
-        payloadData!.replaceBytesInRange(NSMakeRange(0, sizeof(UInt16)), withBytes: nil, length:0)
+        data.replaceBytesInRange(NSMakeRange(0, sizeof(UInt16)), withBytes: nil, length:0)
         
         return num
     }
     
-    internal func pullUInt32FromPayload() -> UInt32 {
-        let numData = payloadData!.subdataWithRange(NSMakeRange(0, sizeof(UInt32)))
+    internal func pullUInt32FromData(inout data: NSMutableData) -> UInt32 {
+        let numData = data.subdataWithRange(NSMakeRange(0, sizeof(UInt32)))
         var numArray = [UInt32](count: 1, repeatedValue: 0)
         numData.getBytes(&numArray, length: sizeof(UInt32))
         let num = numArray[0]
         
-        payloadData!.replaceBytesInRange(NSMakeRange(0, sizeof(UInt32)), withBytes: nil, length:0)
+        data.replaceBytesInRange(NSMakeRange(0, sizeof(UInt32)), withBytes: nil, length:0)
         
         return num
     }
     
-    internal func pullFloat32FromPayload() -> Float32 {
-        let wholeData = payloadData!.subdataWithRange(NSMakeRange(0, sizeof(Int16)))
-        let fractionData = payloadData!.subdataWithRange(NSMakeRange(sizeof(Int16), sizeof(UInt16)))
+    internal func pullFloat32FromData(inout data: NSMutableData) -> Float32 {
+        let wholeData = data.subdataWithRange(NSMakeRange(0, sizeof(Int16)))
+        let fractionData = data.subdataWithRange(NSMakeRange(sizeof(Int16), sizeof(UInt16)))
         
         var wholeArray = [Int16](count: 1, repeatedValue: 0)
         var fractionArray = [UInt16](count: 1, repeatedValue: 0)
         
         wholeData.getBytes(&wholeArray, length: sizeof(Int16))
         
-        payloadData!.replaceBytesInRange(NSMakeRange(0, sizeof(Int16)), withBytes: nil, length:0)
+        data.replaceBytesInRange(NSMakeRange(0, sizeof(Int16)), withBytes: nil, length:0)
         
         fractionData.getBytes(&fractionArray, length: sizeof(UInt16))
         
-        payloadData!.replaceBytesInRange(NSMakeRange(0, sizeof(UInt16)), withBytes: nil, length:0)
+        data.replaceBytesInRange(NSMakeRange(0, sizeof(UInt16)), withBytes: nil, length:0)
         
         let whole = wholeArray[0]
         let fraction = fractionArray[0]
@@ -232,41 +231,41 @@ public class NetMessage {
         return Float32(Float32(whole) + (Float32(fraction) / Float32(UINT16_MAX)))
     }
     
-    internal func pullCGPointFromPayload() -> CGPoint {
+    internal func pullCGPointFromData(inout data: NSMutableData) -> CGPoint {
         return CGPoint(
-            x: CGFloat(pullFloat32FromPayload()),
-            y: CGFloat(pullFloat32FromPayload()))
+            x: CGFloat(pullFloat32FromData(&data)),
+            y: CGFloat(pullFloat32FromData(&data)))
     }
     
-    internal func pullVector3FromPayload() -> SCNVector3 {
+    internal func pullVector3FromData(inout data: NSMutableData) -> SCNVector3 {
         return SCNVector3(
-            x: CGFloat(pullFloat32FromPayload()),
-            y: CGFloat(pullFloat32FromPayload()),
-            z: CGFloat(pullFloat32FromPayload()))
+            x: CGFloat(pullFloat32FromData(&data)),
+            y: CGFloat(pullFloat32FromData(&data)),
+            z: CGFloat(pullFloat32FromData(&data)))
     }
     
-    internal func pullVector4FromPayload() -> SCNVector4 {
+    internal func pullVector4FromData(inout data: NSMutableData) -> SCNVector4 {
         return SCNVector4(
-            x: CGFloat(pullFloat32FromPayload()),
-            y: CGFloat(pullFloat32FromPayload()),
-            z: CGFloat(pullFloat32FromPayload()),
-            w: CGFloat(pullFloat32FromPayload()))
+            x: CGFloat(pullFloat32FromData(&data)),
+            y: CGFloat(pullFloat32FromData(&data)),
+            z: CGFloat(pullFloat32FromData(&data)),
+            w: CGFloat(pullFloat32FromData(&data)))
     }
     
-    internal func pullStringFromPayload() -> NSString? {
+    internal func pullStringFromData(inout data: NSMutableData) -> NSString? {
         
         // repalce with pullUInt16FromData {
-        let lenData = payloadData!.subdataWithRange(NSMakeRange(0, sizeof(UInt16)))
+        let lenData = data.subdataWithRange(NSMakeRange(0, sizeof(UInt16)))
         var lenArray = [UInt16](count: 1, repeatedValue: 0)
         lenData.getBytes(&lenArray, length: sizeof(UInt16))
         let len = lenArray[0]
         
-        payloadData!.replaceBytesInRange(NSMakeRange(0, sizeof(UInt16)), withBytes: nil, length:0)
+        data.replaceBytesInRange(NSMakeRange(0, sizeof(UInt16)), withBytes: nil, length:0)
         // }
         
-        let str = NSString(data: payloadData!.subdataWithRange(NSMakeRange(0, Int(len))), encoding: NSUTF16StringEncoding)
+        let str = NSString(data: data.subdataWithRange(NSMakeRange(0, Int(len))), encoding: NSUTF16StringEncoding)
         
-        payloadData!.replaceBytesInRange(NSMakeRange(0, Int(len)), withBytes: nil, length:0)
+        data.replaceBytesInRange(NSMakeRange(0, Int(len)), withBytes: nil, length:0)
         
         return str
     }

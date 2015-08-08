@@ -43,31 +43,37 @@ public class ServerUpdateNetMessage: NetMessage {
         return encodedData as NSData
     }
     
-    override internal func parsePayload() {
+    /*****************************************************************************************************/
+    // MARK:   Internal, NetMessage
+    /*****************************************************************************************************/
+    
+    override internal func parsePayload() -> NSMutableData? {
         //NSLog("ServerUpdateNetMessage.parsePayload()")
         
-        super.parsePayload()
-        
-        let updateCount = Int(pullUInt8FromPayload())
-        
-        var updates = [NetPlayerUpdate]()
-        for (var i=0; i<updateCount; i++) {
-            let sequenceNumber = pullUInt32FromPayload()
-            let clientID = pullUInt32FromPayload()
-            let position = pullVector3FromPayload()
-            let bodyRotation = pullVector4FromPayload()
-            let headEulerAngles = pullVector3FromPayload()
+        if var data = super.parsePayload() {
             
-            let update = NetPlayerUpdate(
-                sequenceNumber: sequenceNumber,
-                id: clientID,
-                position: position,
-                bodyRotation: bodyRotation,
-                headEulerAngles: headEulerAngles)
+            let updateCount = Int(pullUInt8FromData(&data))
             
-            updates.append(update)
+            var updates = [NetPlayerUpdate]()
+            for (var i=0; i<updateCount; i++) {
+                let sequenceNumber = pullUInt32FromData(&data)
+                let clientID = pullUInt32FromData(&data)
+                let position = pullVector3FromData(&data)
+                let bodyRotation = pullVector4FromData(&data)
+                let headEulerAngles = pullVector3FromData(&data)
+                
+                let update = NetPlayerUpdate(
+                    sequenceNumber: sequenceNumber,
+                    id: clientID,
+                    position: position,
+                    bodyRotation: bodyRotation,
+                    headEulerAngles: headEulerAngles)
+                
+                updates.append(update)
+            }
+            playerUpdates = updates
         }
-        playerUpdates = updates
+        return nil
     }
     
     /*****************************************************************************************************/

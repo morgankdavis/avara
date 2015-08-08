@@ -16,13 +16,13 @@ public class ClientWindowController: NSWindowController, NSWindowDelegate {
     // MARK:   Properties
     /*****************************************************************************************************/
     
-    private         var clientSimulationController: ClientSimulationController
-    private         let inputManager:               InputManager
-    private(set)    var renderView:                 RenderView?
-    private(set)    var isCursorCaptured =          false
-    private         var scene:                      SCNScene
-    private         var stashedCursorPoint =        CGPointZero
-    private         var lastCursorPoint =           CGPointZero
+    private         var clientSimulationController:     ClientSimulationController
+    private         let inputManager:                   InputManager
+    private(set)    var renderView:                     RenderView?
+    private(set)    var isCursorCaptured =              false
+    private         var scene:                          SCNScene
+    private         var stashedCursorPoint =            CGPointZero
+    private         var lastCursorPoint =               CGPointZero
     
     /*****************************************************************************************************/
     // MARK:   Public
@@ -34,7 +34,12 @@ public class ClientWindowController: NSWindowController, NSWindowDelegate {
         if isCursorCaptured == false {
             isCursorCaptured = true
             stashCursor()
-            self.window?.acceptsMouseMovedEvents = true
+            if DIRECT_MOUSE_ENABLED {
+                inputManager.startDirectMouseCapture()
+            }
+            else {
+                self.window?.acceptsMouseMovedEvents = true
+            }
         }
     }
     
@@ -43,7 +48,12 @@ public class ClientWindowController: NSWindowController, NSWindowDelegate {
         
         if isCursorCaptured {
             isCursorCaptured = false
-            self.window?.acceptsMouseMovedEvents = false
+            if DIRECT_MOUSE_ENABLED {
+                inputManager.stopDirectMouseCapture()
+            }
+            else {
+                self.window?.acceptsMouseMovedEvents = false
+            }
             restoreCursor()
         }
     }
