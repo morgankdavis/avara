@@ -133,7 +133,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
 //                serverOverrideUpdate = nil
 //            }
 //            else {
-                localCharacter?.gameLoopWithInputs(inputManager.activeInputs, mouseDelta: mouseDelta, dT: dT)
+                localCharacter?.gameLoopWithInputs(activeInput, mouseDelta: mouseDelta, dT: dT)
 //            }
             
             // send new state to server

@@ -108,7 +108,7 @@ public class FlyoverCamera {
                 z: node.position.z + CGFloat(scaledVector.z))
         }
         
-        if inputs.contains(.CrouchJump) { // move up
+        if inputs.contains(.Jump) { // move up
             let sinYRot = transform.m13
             let cosYRot = transform.m33
             let sinXRot = transform.m32

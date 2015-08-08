@@ -7,7 +7,7 @@
 //
 //  The ganddaddy unreliable client message. Sends player input to server.
 //
-//  FORMAT: [UINT16ARRAY]<UserInputs>
+//  FORMAT: [UINT16ARRAY]<UserInputs>[Float32]<mouseDeltaX>[Float32]<mouseDeltaY>
 //
 
 import Foundation
