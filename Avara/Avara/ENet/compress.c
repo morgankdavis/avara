@@ -2,7 +2,7 @@
  @file compress.c
  @brief An adaptive order-2 PPM range coder
 */
-
+#define ENET_BUILDING_LIB 1
 #include <string.h>
 #include "enet.h"
 

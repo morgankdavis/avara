@@ -2,7 +2,7 @@
  @file host.c
  @brief ENet host management functions
 */
-
+#define ENET_BUILDING_LIB 1
 #include <string.h>
 #include "enet.h"
 

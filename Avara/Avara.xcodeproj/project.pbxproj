@@ -10,6 +10,14 @@
 		41195A201B731134006E53DC /* OperatorOverloads.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41195A1F1B731134006E53DC /* OperatorOverloads.swift */; };
 		4151BEEA1B71D62B0082F75E /* NetPlayerUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4151BEE91B71D62B0082F75E /* NetPlayerUpdate.swift */; };
 		4165099A1B6C754C0048804B /* ServerUpdateNetMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 416509991B6C754C0048804B /* ServerUpdateNetMessage.swift */; };
+		4169331E1B75C5B800DB59BA /* callbacks.c in Sources */ = {isa = PBXBuildFile; fileRef = 4169330E1B75C5B800DB59BA /* callbacks.c */; };
+		4169331F1B75C5B800DB59BA /* compress.c in Sources */ = {isa = PBXBuildFile; fileRef = 416933101B75C5B800DB59BA /* compress.c */; };
+		416933201B75C5B800DB59BA /* host.c in Sources */ = {isa = PBXBuildFile; fileRef = 416933121B75C5B800DB59BA /* host.c */; };
+		416933211B75C5B800DB59BA /* list.c in Sources */ = {isa = PBXBuildFile; fileRef = 416933131B75C5B800DB59BA /* list.c */; };
+		416933221B75C5B800DB59BA /* packet.c in Sources */ = {isa = PBXBuildFile; fileRef = 416933151B75C5B800DB59BA /* packet.c */; };
+		416933231B75C5B800DB59BA /* peer.c in Sources */ = {isa = PBXBuildFile; fileRef = 416933161B75C5B800DB59BA /* peer.c */; };
+		416933241B75C5B800DB59BA /* protocol.c in Sources */ = {isa = PBXBuildFile; fileRef = 416933171B75C5B800DB59BA /* protocol.c */; };
+		416933251B75C5B800DB59BA /* unix.c in Sources */ = {isa = PBXBuildFile; fileRef = 4169331B1B75C5B800DB59BA /* unix.c */; };
 		417CC38C1B645260006B21F3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC38B1B645260006B21F3 /* AppDelegate.swift */; };
 		417CC3911B645260006B21F3 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 417CC38F1B645260006B21F3 /* MainMenu.xib */; };
 		417CC3A71B645310006B21F3 /* Character.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3981B645310006B21F3 /* Character.swift */; };
@@ -48,14 +56,6 @@
 		417CC3E81B645676006B21F3 /* TODO.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3E71B645676006B21F3 /* TODO.rtf */; };
 		417CC3EF1B68804B006B21F3 /* MKDNetClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3EB1B68804B006B21F3 /* MKDNetClient.m */; };
 		417CC3F01B68804B006B21F3 /* MKDNetServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3ED1B68804B006B21F3 /* MKDNetServer.m */; };
-		417CC4041B688232006B21F3 /* callbacks.c in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3F41B688232006B21F3 /* callbacks.c */; settings = {COMPILER_FLAGS = "-w"; }; };
-		417CC4051B688232006B21F3 /* compress.c in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3F61B688232006B21F3 /* compress.c */; settings = {COMPILER_FLAGS = "-w"; }; };
-		417CC4061B688232006B21F3 /* host.c in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3F81B688232006B21F3 /* host.c */; settings = {COMPILER_FLAGS = "-w"; }; };
-		417CC4071B688232006B21F3 /* list.c in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3F91B688232006B21F3 /* list.c */; settings = {COMPILER_FLAGS = "-w"; }; };
-		417CC4081B688232006B21F3 /* packet.c in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3FB1B688232006B21F3 /* packet.c */; settings = {COMPILER_FLAGS = "-w"; }; };
-		417CC4091B688232006B21F3 /* peer.c in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3FC1B688232006B21F3 /* peer.c */; settings = {COMPILER_FLAGS = "-w"; }; };
-		417CC40A1B688232006B21F3 /* protocol.c in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3FD1B688232006B21F3 /* protocol.c */; settings = {COMPILER_FLAGS = "-w"; }; };
-		417CC40B1B688232006B21F3 /* unix.c in Sources */ = {isa = PBXBuildFile; fileRef = 417CC4011B688232006B21F3 /* unix.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		417CC40D1B68A305006B21F3 /* NetPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC40C1B68A305006B21F3 /* NetPlayer.swift */; };
 		417CC40F1B68A9E6006B21F3 /* NetMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC40E1B68A9E6006B21F3 /* NetMessage.swift */; };
 		417CC4121B68AA2F006B21F3 /* ClientHelloNetMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC4111B68AA2F006B21F3 /* ClientHelloNetMessage.swift */; };
@@ -74,6 +74,22 @@
 		41195A1F1B731134006E53DC /* OperatorOverloads.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperatorOverloads.swift; sourceTree = "<group>"; };
 		4151BEE91B71D62B0082F75E /* NetPlayerUpdate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetPlayerUpdate.swift; sourceTree = "<group>"; };
 		416509991B6C754C0048804B /* ServerUpdateNetMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerUpdateNetMessage.swift; sourceTree = "<group>"; };
+		4169330E1B75C5B800DB59BA /* callbacks.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = callbacks.c; sourceTree = "<group>"; };
+		4169330F1B75C5B800DB59BA /* callbacks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = callbacks.h; sourceTree = "<group>"; };
+		416933101B75C5B800DB59BA /* compress.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = compress.c; sourceTree = "<group>"; };
+		416933111B75C5B800DB59BA /* enet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = enet.h; sourceTree = "<group>"; };
+		416933121B75C5B800DB59BA /* host.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = host.c; sourceTree = "<group>"; };
+		416933131B75C5B800DB59BA /* list.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = list.c; sourceTree = "<group>"; };
+		416933141B75C5B800DB59BA /* list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = list.h; sourceTree = "<group>"; };
+		416933151B75C5B800DB59BA /* packet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = packet.c; sourceTree = "<group>"; };
+		416933161B75C5B800DB59BA /* peer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = peer.c; sourceTree = "<group>"; };
+		416933171B75C5B800DB59BA /* protocol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = protocol.c; sourceTree = "<group>"; };
+		416933181B75C5B800DB59BA /* protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = protocol.h; sourceTree = "<group>"; };
+		416933191B75C5B800DB59BA /* time.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = time.h; sourceTree = "<group>"; };
+		4169331A1B75C5B800DB59BA /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = types.h; sourceTree = "<group>"; };
+		4169331B1B75C5B800DB59BA /* unix.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unix.c; sourceTree = "<group>"; };
+		4169331C1B75C5B800DB59BA /* unix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unix.h; sourceTree = "<group>"; };
+		4169331D1B75C5B800DB59BA /* utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utility.h; sourceTree = "<group>"; };
 		417CC3881B645260006B21F3 /* Avara.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Avara.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		417CC38B1B645260006B21F3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		417CC3901B645260006B21F3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
@@ -118,22 +134,6 @@
 		417CC3EC1B68804B006B21F3 /* MKDNetServer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKDNetServer.h; sourceTree = "<group>"; };
 		417CC3ED1B68804B006B21F3 /* MKDNetServer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MKDNetServer.m; sourceTree = "<group>"; };
 		417CC3EE1B68804B006B21F3 /* MKDNetTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MKDNetTypes.h; sourceTree = "<group>"; };
-		417CC3F41B688232006B21F3 /* callbacks.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = callbacks.c; sourceTree = "<group>"; };
-		417CC3F51B688232006B21F3 /* callbacks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = callbacks.h; sourceTree = "<group>"; };
-		417CC3F61B688232006B21F3 /* compress.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = compress.c; sourceTree = "<group>"; };
-		417CC3F71B688232006B21F3 /* enet.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = enet.h; sourceTree = "<group>"; };
-		417CC3F81B688232006B21F3 /* host.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = host.c; sourceTree = "<group>"; };
-		417CC3F91B688232006B21F3 /* list.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = list.c; sourceTree = "<group>"; };
-		417CC3FA1B688232006B21F3 /* list.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = list.h; sourceTree = "<group>"; };
-		417CC3FB1B688232006B21F3 /* packet.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = packet.c; sourceTree = "<group>"; };
-		417CC3FC1B688232006B21F3 /* peer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = peer.c; sourceTree = "<group>"; };
-		417CC3FD1B688232006B21F3 /* protocol.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = protocol.c; sourceTree = "<group>"; };
-		417CC3FE1B688232006B21F3 /* protocol.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = protocol.h; sourceTree = "<group>"; };
-		417CC3FF1B688232006B21F3 /* time.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = time.h; sourceTree = "<group>"; };
-		417CC4001B688232006B21F3 /* types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = types.h; sourceTree = "<group>"; };
-		417CC4011B688232006B21F3 /* unix.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unix.c; sourceTree = "<group>"; };
-		417CC4021B688232006B21F3 /* unix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unix.h; sourceTree = "<group>"; };
-		417CC4031B688232006B21F3 /* utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utility.h; sourceTree = "<group>"; };
 		417CC40C1B68A305006B21F3 /* NetPlayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetPlayer.swift; sourceTree = "<group>"; };
 		417CC40E1B68A9E6006B21F3 /* NetMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetMessage.swift; sourceTree = "<group>"; };
 		417CC4111B68AA2F006B21F3 /* ClientHelloNetMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientHelloNetMessage.swift; sourceTree = "<group>"; };
@@ -277,22 +277,22 @@
 		417CC3F31B688232006B21F3 /* ENet */ = {
 			isa = PBXGroup;
 			children = (
-				417CC3F41B688232006B21F3 /* callbacks.c */,
-				417CC3F51B688232006B21F3 /* callbacks.h */,
-				417CC3F61B688232006B21F3 /* compress.c */,
-				417CC3F71B688232006B21F3 /* enet.h */,
-				417CC3F81B688232006B21F3 /* host.c */,
-				417CC3F91B688232006B21F3 /* list.c */,
-				417CC3FA1B688232006B21F3 /* list.h */,
-				417CC3FB1B688232006B21F3 /* packet.c */,
-				417CC3FC1B688232006B21F3 /* peer.c */,
-				417CC3FD1B688232006B21F3 /* protocol.c */,
-				417CC3FE1B688232006B21F3 /* protocol.h */,
-				417CC3FF1B688232006B21F3 /* time.h */,
-				417CC4001B688232006B21F3 /* types.h */,
-				417CC4011B688232006B21F3 /* unix.c */,
-				417CC4021B688232006B21F3 /* unix.h */,
-				417CC4031B688232006B21F3 /* utility.h */,
+				4169330E1B75C5B800DB59BA /* callbacks.c */,
+				4169330F1B75C5B800DB59BA /* callbacks.h */,
+				416933101B75C5B800DB59BA /* compress.c */,
+				416933111B75C5B800DB59BA /* enet.h */,
+				416933121B75C5B800DB59BA /* host.c */,
+				416933131B75C5B800DB59BA /* list.c */,
+				416933141B75C5B800DB59BA /* list.h */,
+				416933151B75C5B800DB59BA /* packet.c */,
+				416933161B75C5B800DB59BA /* peer.c */,
+				416933171B75C5B800DB59BA /* protocol.c */,
+				416933181B75C5B800DB59BA /* protocol.h */,
+				416933191B75C5B800DB59BA /* time.h */,
+				4169331A1B75C5B800DB59BA /* types.h */,
+				4169331B1B75C5B800DB59BA /* unix.c */,
+				4169331C1B75C5B800DB59BA /* unix.h */,
+				4169331D1B75C5B800DB59BA /* utility.h */,
 			);
 			path = ENet;
 			sourceTree = "<group>";
@@ -424,7 +424,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				417CC40A1B688232006B21F3 /* protocol.c in Sources */,
 				417CC3B01B645310006B21F3 /* Map.swift in Sources */,
 				417CC4141B69B98C006B21F3 /* ServerWindowController.swift in Sources */,
 				4151BEEA1B71D62B0082F75E /* NetPlayerUpdate.swift in Sources */,
@@ -433,33 +432,34 @@
 				417CC3B31B645310006B21F3 /* ServerSimulationController.swift in Sources */,
 				417E12EE1B74802A006256C7 /* manymouse.c in Sources */,
 				41D922501B6B459600CCE9CA /* ClientUpdateNetMessage.swift in Sources */,
-				417CC4071B688232006B21F3 /* list.c in Sources */,
 				417CC38C1B645260006B21F3 /* AppDelegate.swift in Sources */,
+				416933241B75C5B800DB59BA /* protocol.c in Sources */,
 				417CC3A91B645310006B21F3 /* Configuration.swift in Sources */,
+				416933231B75C5B800DB59BA /* peer.c in Sources */,
 				417CC40F1B68A9E6006B21F3 /* NetMessage.swift in Sources */,
 				41195A201B731134006E53DC /* OperatorOverloads.swift in Sources */,
 				417CC3AA1B645310006B21F3 /* FlyoverCamera.swift in Sources */,
 				417CC3B51B645310006B21F3 /* Utilities.swift in Sources */,
-				417CC4051B688232006B21F3 /* compress.c in Sources */,
 				4165099A1B6C754C0048804B /* ServerUpdateNetMessage.swift in Sources */,
-				417CC4041B688232006B21F3 /* callbacks.c in Sources */,
+				416933221B75C5B800DB59BA /* packet.c in Sources */,
 				417E12EB1B74802A006256C7 /* linux_evdev.c in Sources */,
 				417CC3F01B68804B006B21F3 /* MKDNetServer.m in Sources */,
 				417CC40D1B68A305006B21F3 /* NetPlayer.swift in Sources */,
 				417CC4121B68AA2F006B21F3 /* ClientHelloNetMessage.swift in Sources */,
-				417CC4081B688232006B21F3 /* packet.c in Sources */,
 				417CC3AD1B645310006B21F3 /* Globals.swift in Sources */,
 				417CC3AB1B645310006B21F3 /* RenderView.swift in Sources */,
+				416933201B75C5B800DB59BA /* host.c in Sources */,
 				417CC3AF1B645310006B21F3 /* InputManager.swift in Sources */,
+				4169331E1B75C5B800DB59BA /* callbacks.c in Sources */,
 				417E12F11B74802A006256C7 /* MKDDirectMouseHelper.m in Sources */,
-				417CC4091B688232006B21F3 /* peer.c in Sources */,
 				417CC3EF1B68804B006B21F3 /* MKDNetClient.m in Sources */,
 				417E12F01B74802A006256C7 /* x11_xinput2.c in Sources */,
-				417CC4061B688232006B21F3 /* host.c in Sources */,
+				4169331F1B75C5B800DB59BA /* compress.c in Sources */,
 				417CC3A71B645310006B21F3 /* Character.swift in Sources */,
 				417CC3AC1B645310006B21F3 /* ClientWindowController.swift in Sources */,
+				416933211B75C5B800DB59BA /* list.c in Sources */,
+				416933251B75C5B800DB59BA /* unix.c in Sources */,
 				417E12EC1B74802A006256C7 /* macosx_hidmanager.c in Sources */,
-				417CC40B1B688232006B21F3 /* unix.c in Sources */,
 				417E12ED1B74802A006256C7 /* macosx_hidutilities.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
