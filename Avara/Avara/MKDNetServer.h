@@ -16,7 +16,6 @@
 @interface MKDNetServer : NSObject
 
 + (MKDNetServer *)serverWithPort:(uint16_t)port maxClients:(size_t)maxClients maxChannels:(uint8_t)maxChannels delegate:(id<MKDNetServerDelegate>)delegate;
-//- (void)sendPacket:(NSData *)packetData client:(id)clinet channel:(uint8_t)channel flags:(MKDNetPacketFlag)flags;
 - (void)broadcastPacket:(NSData *)packetData channel:(uint8_t)channel flags:(MKDNetPacketFlag)flags;
 
 @property(atomic, readonly)			uint16_t				port;

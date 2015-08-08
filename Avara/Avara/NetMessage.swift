@@ -49,7 +49,6 @@ public class NetMessage {
     /*****************************************************************************************************/
     
     public          var     opcode:             NetMessageOpcode { get { return .None } }
-    //public          var     sequenceNumber:     UInt32?
     private(set)    var     payloadData:        NSMutableData?
     
     /*****************************************************************************************************/
@@ -63,8 +62,7 @@ public class NetMessage {
         
         var encodedData = NSMutableData()
 
-        appendUInt16(opcode.rawValue, toData: &encodedData)
-        //appendUInt32(sequenceNumber, toData: &encodedData)
+        pushUInt16(opcode.rawValue, toData: &encodedData)
         
         return encodedData
     }
@@ -75,70 +73,73 @@ public class NetMessage {
     
     internal func parsePayload() -> NSMutableData? {
         //NSLog("NetMessage.parsePayload()")
-        
-        //sequenceNumber = pullUInt32FromPayload()
 
         // trim opcode as it was already inspected to create this instance in the first place
         return payloadData!.subdataWithRange(NSMakeRange(sizeof(UInt16), payloadData!.length - sizeof(UInt16))).mutableCopy() as? NSMutableData
     }
     
-    internal func appendUInt8(num: UInt8, inout toData data: NSMutableData) {
+    internal func pushUInt8(num: UInt8, inout toData data: NSMutableData) {
         var numArray = [UInt8]()
         numArray.append(num)
         data.appendBytes(&numArray[0], length: sizeof(UInt8))
     }
     
-    internal func appendInt16(num: Int16, inout toData data: NSMutableData) {
+    internal func pushInt16(num: Int16, inout toData data: NSMutableData) {
         var numArray = [Int16]()
         numArray.append(num)
         data.appendBytes(&numArray[0], length: sizeof(Int16))
     }
     
-    internal func appendUInt16(num: UInt16, inout toData data: NSMutableData) {
+    internal func pushUInt16(num: UInt16, inout toData data: NSMutableData) {
         var numArray = [UInt16]()
         numArray.append(num)
         data.appendBytes(&numArray[0], length: sizeof(UInt16))
     }
     
-    internal func appendUInt32(num: UInt32, inout toData data: NSMutableData) {
+    internal func pushUInt32(num: UInt32, inout toData data: NSMutableData) {
         var numArray = [UInt32]()
         numArray.append(num)
         data.appendBytes(&numArray[0], length: sizeof(UInt32))
     }
     
-    internal func appendFloat32(num: Float32, inout toData data: NSMutableData) {
-        let whole = Int16(num)
+    internal func pushFloat32(num: Float32, inout toData data: NSMutableData) {
+        // WARN: This is a shitty way to do sign
+        let sign = (num < 0 ? Int8(-1) : Int8(1))
+        let whole = UInt16(num)
         let fraction = UInt16(Float32(fabs(num - Float32(whole))) * Float32(UINT16_MAX))
         
-        var wholeArray = [Int16]()
+        var signArray = [Int8]()
+        var wholeArray = [UInt16]()
         var fractionArray = [UInt16]()
         
+        signArray.append(sign)
         wholeArray.append(whole)
         fractionArray.append(fraction)
         
-        data.appendBytes(&wholeArray[0], length: sizeof(Int16))
+        data.appendBytes(&signArray[0], length: sizeof(Int8))
+        data.appendBytes(&wholeArray[0], length: sizeof(UInt16))
         data.appendBytes(&fractionArray[0], length: sizeof(UInt16))
     }
     
-    internal func appendCGPoint(point: CGPoint, inout toData data: NSMutableData) {
-        appendFloat32(Float32(point.x), toData: &data)
-        appendFloat32(Float32(point.y), toData: &data)
+    internal func pushCGPoint(point: CGPoint, inout toData data: NSMutableData) {
+        pushFloat32(Float32(point.x), toData: &data)
+        pushFloat32(Float32(point.y), toData: &data)
     }
     
-    internal func appendVector3(vec: SCNVector3, inout toData data: NSMutableData) {
-        appendFloat32(Float32(vec.x), toData: &data)
-        appendFloat32(Float32(vec.y), toData: &data)
-        appendFloat32(Float32(vec.z), toData: &data)
+    internal func pushVector3(vec: SCNVector3, inout toData data: NSMutableData) {
+        pushFloat32(Float32(vec.x), toData: &data)
+        pushFloat32(Float32(vec.y), toData: &data)
+        pushFloat32(Float32(vec.z), toData: &data)
     }
     
-    internal func appendVector4(vec: SCNVector4, inout toData data: NSMutableData) {
-        appendFloat32(Float32(vec.x), toData: &data)
-        appendFloat32(Float32(vec.y), toData: &data)
-        appendFloat32(Float32(vec.z), toData: &data)
-        appendFloat32(Float32(vec.w), toData: &data)
+    internal func pushVector4(vec: SCNVector4, inout toData data: NSMutableData) {
+        pushFloat32(Float32(vec.x), toData: &data)
+        pushFloat32(Float32(vec.y), toData: &data)
+        pushFloat32(Float32(vec.z), toData: &data)
+        pushFloat32(Float32(vec.w), toData: &data)
     }
     
-    internal func appendUInt8Array(array: [UInt8], inout toData data: NSMutableData) {
+    internal func pushUInt8Array(array: [UInt8], inout toData data: NSMutableData) {
         var numArray = [UInt16]()
         numArray.append(UInt16(array.count))
         data.appendBytes(&numArray[0], length: sizeof(UInt16))
@@ -154,7 +155,7 @@ public class NetMessage {
             let strLen = UInt16(strData.length)
             
             var data = NSMutableData()
-            appendUInt16(strLen, toData:&data)
+            pushUInt16(strLen, toData:&data)
             data.appendData(strData)
             return data
         }
@@ -211,24 +212,28 @@ public class NetMessage {
     }
     
     internal func pullFloat32FromData(inout data: NSMutableData) -> Float32 {
-        let wholeData = data.subdataWithRange(NSMakeRange(0, sizeof(Int16)))
-        let fractionData = data.subdataWithRange(NSMakeRange(sizeof(Int16), sizeof(UInt16)))
+        let signData = data.subdataWithRange(NSMakeRange(0, sizeof(Int8)))
+        let wholeData = data.subdataWithRange(NSMakeRange(sizeof(Int8), sizeof(UInt16)))
+        let fractionData = data.subdataWithRange(NSMakeRange(sizeof(Int8) + sizeof(UInt16), sizeof(UInt16)))
         
-        var wholeArray = [Int16](count: 1, repeatedValue: 0)
+        var signArray = [Int8](count: 1, repeatedValue: 0)
+        var wholeArray = [UInt16](count: 1, repeatedValue: 0)
         var fractionArray = [UInt16](count: 1, repeatedValue: 0)
         
-        wholeData.getBytes(&wholeArray, length: sizeof(Int16))
+        signData.getBytes(&signArray, length: sizeof(Int8))
+        data.replaceBytesInRange(NSMakeRange(0, sizeof(Int8)), withBytes: nil, length:0)
         
-        data.replaceBytesInRange(NSMakeRange(0, sizeof(Int16)), withBytes: nil, length:0)
-        
-        fractionData.getBytes(&fractionArray, length: sizeof(UInt16))
-        
+        wholeData.getBytes(&wholeArray, length: sizeof(UInt16))
         data.replaceBytesInRange(NSMakeRange(0, sizeof(UInt16)), withBytes: nil, length:0)
         
+        fractionData.getBytes(&fractionArray, length: sizeof(UInt16))
+        data.replaceBytesInRange(NSMakeRange(0, sizeof(UInt16)), withBytes: nil, length:0)
+        
+        let sign = signArray[0]
         let whole = wholeArray[0]
         let fraction = fractionArray[0]
         
-        return Float32(Float32(whole) + (Float32(fraction) / Float32(UINT16_MAX)))
+        return Float32(sign) * (Float32(whole) + (Float32(fraction) / Float32(UINT16_MAX)))
     }
     
     internal func pullCGPointFromData(inout data: NSMutableData) -> CGPoint {

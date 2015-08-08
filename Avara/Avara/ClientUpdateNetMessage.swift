@@ -31,7 +31,7 @@ public class ClientUpdateNetMessage: NetMessage {
     override public func encoded() -> NSData? {
         var encodedData = super.encoded() as! NSMutableData
         
-        appendUInt32(sequenceNumber!, toData: &encodedData)
+        pushUInt32(sequenceNumber!, toData: &encodedData)
         
         // convert UserInput set into UInt8 array
         var actionsRawArray = [UInt8]()
@@ -39,9 +39,9 @@ public class ClientUpdateNetMessage: NetMessage {
             actionsRawArray.append(a.rawValue)
         }
         
-        appendUInt8Array(actionsRawArray, toData: &encodedData)
+        pushUInt8Array(actionsRawArray, toData: &encodedData)
         
-        appendCGPoint(mouseDelta, toData: &encodedData)
+        pushCGPoint(mouseDelta, toData: &encodedData)
         
         return encodedData as NSData
     }

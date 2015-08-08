@@ -17,7 +17,7 @@
 @property(atomic, assign, readwrite)	uint16_t					port;
 @property(atomic, assign, readwrite)	size_t						maxClients;
 @property(atomic, assign, readwrite)	uint8_t						maxChannels;
-@property(atomic, weak, readwrite)		id<MKDNetServerDelegate>		delegate;
+@property(atomic, weak, readwrite)		id<MKDNetServerDelegate>	delegate;
 @property(atomic, assign)				ENetHost					*host;
 @property(atomic, strong)				dispatch_queue_t			eventQueue;
 
@@ -65,12 +65,6 @@
 	return server;
 }
 
-//- (void)sendPacket:(NSData *)packetData client:(id)clinet channel:(uint8_t)channel flags:(MKDNetPacketFlag)flags
-//{
-//	enet_host_flush(self.host);
-//#warning how to?
-//}
-
 - (void)broadcastPacket:(NSData *)packetData channel:(uint8_t)channel flags:(MKDNetPacketFlag)flags
 {
 	ENetPacket *packet = enet_packet_create([packetData bytes],
@@ -80,7 +74,7 @@
 						channel,
 						packet);
 	
-	enet_host_flush(self.host);
+    //enet_packet_destroy(packet); // do we need to call this at some point? it causes random crashes here.
 }
 
 #pragma mark - Private
@@ -94,9 +88,8 @@
 					
 				case ENET_EVENT_TYPE_CONNECT: {
 					u_int32_t peerID = event.data;
-					NSLog(@"ENET_EVENT_TYPE_CONNECT: peerID: %d", peerID);
-					
-					[self.delegate server:self didConnectClient:peerID];
+					//[self.delegate server:self didConnectClient:peerID];
+                    [self performSelectorOnMainThread:@selector(sendDelegateConnect:) withObject:@(peerID) waitUntilDone:YES];
 					break; }
 					
 				case ENET_EVENT_TYPE_RECEIVE: {
@@ -104,7 +97,8 @@
                     //NSLog(@"ENET_EVENT_TYPE_RECEIVE: peerID: %d", peerID);
                     
 					NSData *packetData = [[NSData alloc] initWithBytes:event.packet->data length:event.packet->dataLength];
-					[self.delegate server:self didRecievePacket:packetData fromClient:peerID channel:event.channelID];
+					//[self.delegate server:self didRecievePacket:packetData fromClient:peerID channel:event.channelID];
+                    [self performSelectorOnMainThread:@selector(sendDelegateReceive:) withObject:@[packetData, @(peerID), @(event.channelID)] waitUntilDone:YES];
 					break; }
 					
 				case ENET_EVENT_TYPE_DISCONNECT:
@@ -120,6 +114,16 @@
 			}
 		}
 	}
+}
+
+- (void)sendDelegateConnect:(NSNumber *)peerID
+{
+    [self.delegate server:self didConnectClient:[peerID unsignedIntValue]];
+}
+
+- (void)sendDelegateReceive:(NSArray *)args
+{
+    [self.delegate server:self didRecievePacket:args[0] fromClient:[args[1] unsignedIntValue] channel:[args[2] unsignedIntValue]];
 }
 
 @end

@@ -79,14 +79,15 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private func gameLoop(dT: CGFloat) {
         //NSLog("dT: %.4f", dT)
         
+        var char: Character?
         for (_,p) in netPlayers {
             let character = p.character
+            char = character
             character.gameLoopWithInputs(p.activeInputs, mouseDelta: p.readMouseDeltaAndClear(), dT: dT)
             //cameraNode?.position = SCNVector3(x: character.bodyNode.position.x, y: cameraNode!.position.y, z: character.bodyNode.position.z)
         }
         
         if let server = netServer {
-            
             // updates ("player states") for our players
             var updates = [NetPlayerUpdate]()
             for (_,p) in netPlayers {
@@ -100,7 +101,6 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 if let lastSent = lastSentPlayerUpdates[u.id] {
                     // here's the last sent update for this player.
                     if u != lastSent {
-                        NSLog("NOT THE SAME")
                         send = true
                     }
                 }
@@ -118,12 +118,13 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             }
             
             if updatesToSend.count > 0 {
+//                if let c = char {
+//                    NSLog("send bodyNode.position: %@", NSStringFromSCNVector3(c.bodyNode.position))
+//                    NSLog("send bodyNode.rotation: %@", NSStringFromSCNVector4(c.bodyNode.rotation))
+//                    NSLog("send headNode?.eulerAngles: %@", NSStringFromSCNVector3(c.headNode!.eulerAngles))
+//                }
                 
                 NSLog("Sending authorative state sq: %d", updatesToSend[0].sequenceNumber)
-                
-//                let s = updatesToSend[0]
-//                NSLog("BOD: { %.2f, %.2f, %.2f, %.2f }", s.bodyRotation.x, s.bodyRotation.y, s.bodyRotation.z, s.bodyRotation.w)
-//                NSLog("HEAD: { %.2f, %.2f, %.2f }", s.headEulerAngles.x, s.headEulerAngles.y, s.headEulerAngles.z)
                 
                 let updateMessage = ServerUpdateNetMessage(playerUpdates: updatesToSend)
                 let packtData = updateMessage.encoded()

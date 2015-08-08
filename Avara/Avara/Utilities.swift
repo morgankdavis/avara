@@ -18,3 +18,11 @@ func ConfigureCamera(camera: SCNCamera, screenSize: CGSize, fov: Double) {
     let yFov = camera.xFov * Double(ratio)
     camera.yFov = yFov
 }
+
+func NSStringFromSCNVector3(vec: SCNVector3) -> NSString {
+    return NSString(format: "{ %f, %f, %f }", vec.x, vec.y, vec.z)
+}
+
+func NSStringFromSCNVector4(vec: SCNVector4) -> NSString {
+    return NSString(format: "{ %f, %f, %f, %f }", vec.x, vec.y, vec.z, vec.w)
+}

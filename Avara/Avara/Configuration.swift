@@ -18,6 +18,7 @@ let PHYSICS_TIMESTEP =                      1.0/120.0
 
 let DIRECT_MOUSE_ENABLED =                  true
 let MOUSE_SENSITIVITY =                     CGFloat(3.0)
+let MOUSE_SENSITIVITY_MULTIPLIER =          CGFloat(0.0005)
 
 let NET_SERVER_PORT =                       UInt16(33777)
 let NET_MAX_CLIENTS =                       Int(12)

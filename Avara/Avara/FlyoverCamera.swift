@@ -134,7 +134,7 @@ public class FlyoverCamera {
         }
         
         // mouse
-        let viewDistanceFactor = MOUSE_SENSITIVITY
+        let viewDistanceFactor = 1.0/(MOUSE_SENSITIVITY*MOUSE_SENSITIVITY_MULTIPLIER)
         
         let hAngle = acos(CGFloat(mouseDelta.x) / viewDistanceFactor) - CGFloat(M_PI_2)
         let vAngle = acos(CGFloat(mouseDelta.y) / viewDistanceFactor) - CGFloat(M_PI_2)

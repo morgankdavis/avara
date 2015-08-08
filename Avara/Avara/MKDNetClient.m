@@ -121,12 +121,14 @@
 					
 				case ENET_EVENT_TYPE_CONNECT:
 					self.isConnected = YES;
-                    [self.delegate client:self didConnectWithID:self.peerID];
+                    //[self.delegate client:self didConnectWithID:self.peerID];
+                    [self performSelectorOnMainThread:@selector(sendDelegateConnect) withObject:nil waitUntilDone:YES];
 					break;
 					
 				case ENET_EVENT_TYPE_RECEIVE: {
 					NSData *packetData = [[NSData alloc] initWithBytes:event.packet->data length:event.packet->dataLength];
-					[self.delegate client:self didRecievePacket:packetData channel:event.channelID];
+					//[self.delegate client:self didRecievePacket:packetData channel:event.channelID];
+                    [self performSelectorOnMainThread:@selector(sendDelegateReceive:) withObject:@[packetData, @(event.channelID)] waitUntilDone:YES];
 					break; }
 					
 				case ENET_EVENT_TYPE_DISCONNECT:
@@ -138,6 +140,16 @@
 			}
 		}
 	}
+}
+
+- (void)sendDelegateConnect
+{
+    [self.delegate client:self didConnectWithID:self.peerID];
+}
+
+- (void)sendDelegateReceive:(NSArray *)args
+{
+    [self.delegate client:self didRecievePacket:args[0] channel:[args[1] unsignedIntValue]];
 }
 
 @end

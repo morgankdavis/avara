@@ -10,7 +10,7 @@ import Foundation
 import SceneKit
 
 
-public class NetPlayerUpdate: Equatable {
+public class NetPlayerUpdate: Equatable, CustomStringConvertible {
     
     /*****************************************************************************************************/
     // MARK:   Properties
@@ -32,6 +32,16 @@ public class NetPlayerUpdate: Equatable {
         self.position = position
         self.bodyRotation = bodyRotation
         self.headEulerAngles = headEulerAngles
+    }
+    
+    /*****************************************************************************************************/
+    // MARK:   CustomStringConvertible
+    /*****************************************************************************************************/
+    
+    public var description: String { get {
+        return NSString(format: "NetPlayerUpdate - sequenceNumber: %d, id: %d, position: %@, bodyRotation: %@, headEulerAngles: %@",
+            sequenceNumber, id, NSStringFromSCNVector3(position), NSStringFromSCNVector4(bodyRotation), NSStringFromSCNVector3(headEulerAngles)) as String
+        }
     }
 }
 

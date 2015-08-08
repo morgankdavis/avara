@@ -30,14 +30,14 @@ public class ServerUpdateNetMessage: NetMessage {
         var encodedData = super.encoded() as! NSMutableData
         
         let updateCount = playerUpdates.count
-        appendUInt8(UInt8(updateCount), toData: &encodedData)
+        pushUInt8(UInt8(updateCount), toData: &encodedData)
         
         for u in playerUpdates {
-            appendUInt32(u.sequenceNumber, toData: &encodedData)
-            appendUInt32(u.id, toData: &encodedData)
-            appendVector3(u.position, toData: &encodedData)
-            appendVector4(u.bodyRotation, toData: &encodedData)
-            appendVector3(u.headEulerAngles, toData: &encodedData)
+            pushUInt32(u.sequenceNumber, toData: &encodedData)
+            pushUInt32(u.id, toData: &encodedData)
+            pushVector3(u.position, toData: &encodedData)
+            pushVector4(u.bodyRotation, toData: &encodedData)
+            pushVector3(u.headEulerAngles, toData: &encodedData)
         }
 
         return encodedData as NSData

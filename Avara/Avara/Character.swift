@@ -94,7 +94,7 @@ public class Character {
         }
         
         // head
-        let viewDistanceFactor = 1.0/(0.0005*CGFloat(MOUSE_SENSITIVITY))
+        let viewDistanceFactor = 1.0/(MOUSE_SENSITIVITY*MOUSE_SENSITIVITY_MULTIPLIER)
         
         let hAngle = acos(CGFloat(mouseDelta.x) / viewDistanceFactor) - CGFloat(M_PI_2)
         let vAngle = acos(CGFloat(mouseDelta.y) / viewDistanceFactor) - CGFloat(M_PI_2)
@@ -210,12 +210,19 @@ public class Character {
     }
     
     public func applyServerOverrideUpdate(overrideUpdate: NetPlayerUpdate) {
-        // called when a server update message has a newer sequence number than the last message we sent out
-        // this is the "authoritive" player state from the server
-        // so set it as our base be let any deltas be calculated from it on the next game loop (probably immediately after this)
+        // apply the "authoritive" player state from the server
+        // set it as our base and let any deltas be calculated from it on the next game loop (probably immediately after this)
+//        NSLog("old bodyNode.position: %@", NSStringFromSCNVector3(bodyNode.position))
+//        NSLog("old bodyNode.rotation: %@", NSStringFromSCNVector4(bodyNode.rotation))
+//        NSLog("old headNode?.eulerAngles: %@", NSStringFromSCNVector3(headNode!.eulerAngles))
+        
         bodyNode.position = overrideUpdate.position
         bodyNode.rotation = overrideUpdate.bodyRotation
         headNode?.eulerAngles = overrideUpdate.headEulerAngles
+        
+//        NSLog("new bodyNode.position: %@", NSStringFromSCNVector3(bodyNode.position))
+//        NSLog("new bodyNode.rotation: %@", NSStringFromSCNVector4(bodyNode.rotation))
+//        NSLog("new headNode?.eulerAngles: %@", NSStringFromSCNVector3(headNode!.eulerAngles))
     }
     
     /*****************************************************************************************************/
