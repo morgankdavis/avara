@@ -79,10 +79,10 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private func gameLoop(dT: CGFloat) {
         //NSLog("dT: %.4f", dT)
         
-        var char: Character?
+        //var char: Character?
         for (_,p) in netPlayers {
             let character = p.character
-            char = character
+            //char = character
             character.gameLoopWithInputs(p.activeInputs, mouseDelta: p.readMouseDeltaAndClear(), dT: dT)
             //cameraNode?.position = SCNVector3(x: character.bodyNode.position.x, y: cameraNode!.position.y, z: character.bodyNode.position.z)
         }

@@ -39,7 +39,7 @@ public class NetPlayerUpdate: Equatable, CustomStringConvertible {
     /*****************************************************************************************************/
     
     public var description: String { get {
-        return NSString(format: "NetPlayerUpdate - sequenceNumber: %d, id: %d, position: %@, bodyRotation: %@, headEulerAngles: %@",
+        return NSString(format: "[NetPlayerUpdate] sequenceNumber: %d, id: %d, position: %@, bodyRotation: %@, headEulerAngles: %@",
             sequenceNumber, id, NSStringFromSCNVector3(position), NSStringFromSCNVector4(bodyRotation), NSStringFromSCNVector3(headEulerAngles)) as String
         }
     }

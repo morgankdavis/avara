@@ -105,8 +105,14 @@ public class NetMessage {
     internal func pushFloat32(num: Float32, inout toData data: NSMutableData) {
         // WARN: This is a shitty way to do sign
         let sign = (num < 0 ? Int8(-1) : Int8(1))
-        let whole = UInt16(num)
-        let fraction = UInt16(Float32(fabs(num - Float32(whole))) * Float32(UINT16_MAX))
+//        let whole = UInt16(nwwum)q
+//        let fraction = UInt16(Float32(fabs(num - Float32(whole))) * Float32(UINT16_MAX))
+        
+        let (numInt, numFract) = modf(num)
+        //NSLog("int: %f, fract: %f", numInt, numFract)
+        
+        let whole = UInt16(fabs(numInt))
+        let fraction = UInt16(round(Float(fabs(numFract)) * Float(UINT16_MAX)))
         
         var signArray = [Int8]()
         var wholeArray = [UInt16]()
@@ -120,6 +126,18 @@ public class NetMessage {
         data.appendBytes(&wholeArray[0], length: sizeof(UInt16))
         data.appendBytes(&fractionArray[0], length: sizeof(UInt16))
     }
+    
+    
+    
+//    double ftof ()
+//    {
+//        double floating = 3.40, fractional, integer;
+//        
+//        fractional = modf(floating, &integer);
+//        printf ("Floating: %g\nInteger: %g\nFractional: %g", floating, integer, fractional);
+//
+//        return fractional;
+//    }
     
     internal func pushCGPoint(point: CGPoint, inout toData data: NSMutableData) {
         pushFloat32(Float32(point.x), toData: &data)
