@@ -97,6 +97,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         map = Map(scene: scene)
         localCharacter = Character(scene: scene)
+        localCharacter!.isRemote = true
         
         scene.physicsWorld.timeStep = PHYSICS_TIMESTEP
         scene.physicsWorld.contactDelegate = self
@@ -136,7 +137,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 localCharacter?.applyServerOverrideUpdate(u)
                 serverOverrideUpdate = nil
             }
-            else {
+//            else {
                 localCharacter?.gameLoopWithInputs(activeInput, mouseDelta: mouseDelta, dT: dT)
                 
                 let inputChanged = (lastActiveInput == nil) || (lastMouseDelta == nil) || (activeInput != lastActiveInput!) || (mouseDelta != lastMouseDelta!)
@@ -159,7 +160,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 
                 lastActiveInput = activeInput
                 lastMouseDelta = mouseDelta
-            }
+//            }
         }
     }
     

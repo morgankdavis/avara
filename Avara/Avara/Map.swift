@@ -52,9 +52,9 @@ public class Map : NSObject, SCNProgramDelegate {
             NSImage(named: "sky_miramar_5.png")!]
         // WARNING: Temporary
         if (NSProcessInfo.processInfo().hostName == "goosebox.local") {
-            scene.background.maxAnisotropy = 16
+            scene.background.maxAnisotropy = 16.0
         } else {
-            scene.background.maxAnisotropy = 4
+            scene.background.maxAnisotropy = 2.0
         }
         scene.background.mipFilter = .Linear
 		
@@ -149,7 +149,7 @@ public class Map : NSObject, SCNProgramDelegate {
         if (NSProcessInfo.processInfo().hostName == "goosebox.local") {
             floorMaterial.diffuse.maxAnisotropy = 16.0
         } else {
-            floorMaterial.diffuse.maxAnisotropy = 8.0
+            floorMaterial.diffuse.maxAnisotropy = 2.0
         }
 //        floorMaterial.normal.contents = NSImage(named: "floorBump.jpg")
 //        floorMaterial.normal.contentsTransform = SCNMatrix4MakeScale(15.0, 15.0, 15.0)

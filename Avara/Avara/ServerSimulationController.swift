@@ -40,7 +40,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         cameraNode = SCNNode()
         cameraNode?.name = "Server camera node"
-        cameraNode?.position = SCNVector3(x: 0, y: 15, z: 0)
+        cameraNode?.position = SCNVector3(x: 0, y: 25, z: 0)
         cameraNode?.rotation = SCNVector4(x: 1, y: 0, z: 0, w: -CGFloat(M_PI)/2.0)
         scene.rootNode.addChildNode(cameraNode!)
         switchToCameraNode(cameraNode!)
@@ -151,15 +151,24 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 return
         }
         
-        // TODO: match node to a client character and update accordingly
-//        if let character = localCharacter {
-//            if (contact.nodeA.physicsBody?.categoryBitMask == CollisionCategory.Character.rawValue) {
-//                character.bodyPart(contact.nodeA, mayHaveHitWall:contact.nodeB, withContact:contact)
-//            }
-//            if (contact.nodeB.physicsBody?.categoryBitMask == CollisionCategory.Character.rawValue) {
-//                character.bodyPart(contact.nodeB, mayHaveHitWall:contact.nodeA, withContact:contact)
-//            }
-//        }
+        // match node to a client character and update accordingly
+        
+        for (_,player) in netPlayers {
+            let character = player.character
+            //let childNodes = player.character.bodyNode.childNodes
+            // would be nice to do this recursively from bodyNode down
+            var bodyNodes = [SCNNode]()
+            bodyNodes.append(player.character.bodyNode)
+            bodyNodes.append(player.character.legsNode!)
+            bodyNodes.append(player.character.headNode!)
+            
+            if bodyNodes.contains(contact.nodeA) { // nodeA is for 'player'
+                character.bodyPart(contact.nodeA, mayHaveHitWall:contact.nodeB, withContact:contact)
+            }
+            else if bodyNodes.contains(contact.nodeB) { // nodeB is for 'player'
+                character.bodyPart(contact.nodeB, mayHaveHitWall:contact.nodeA, withContact:contact)
+            }
+        }
     }
     
     private func parseClientPacket(packetData: NSData, clientID: UInt32) {

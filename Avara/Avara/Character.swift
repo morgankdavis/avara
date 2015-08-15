@@ -28,6 +28,7 @@ public class Character {
     /*****************************************************************************************************/
     
     public          let cameraNode =                SCNNode()
+    public          var isRemote =                  true
     private(set)    var bodyNode =                  SCNNode()
     private(set)    var headNode:                   SCNNode?
     private(set)    var legsNode:                   SCNNode?
@@ -162,7 +163,14 @@ public class Character {
     
     public func didSimulatePhysicsAtTime(time: NSTimeInterval) {
         if let position = replacementPosition {
-            bodyNode.position = position
+            if isRemote {
+                NSLog("REMOTE REPLACEMENT")
+                
+                NSLog("bodyNode.position: %@", NSStringFromSCNVector3(bodyNode.position))
+                NSLog("replacementPosition: %@", NSStringFromSCNVector3(position))
+                
+                bodyNode.position = position
+            }
         }
     }
     
