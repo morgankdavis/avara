@@ -33,6 +33,10 @@ public class ServerUpdateNetMessage: NetMessage {
         pushUInt8(UInt8(updateCount), toData: &encodedData)
         
         for u in playerUpdates {
+//            NSLog("OUT position: %@", NSStringFromSCNVector3(u.position))
+//            NSLog("OUT bodyRotation: %@", NSStringFromSCNVector4(u.bodyRotation))
+//            NSLog("OUT headEulerAngles: %@", NSStringFromSCNVector3(u.headEulerAngles))
+            
             pushUInt32(u.sequenceNumber, toData: &encodedData)
             pushUInt32(u.id, toData: &encodedData)
             pushVector3(u.position, toData: &encodedData)
@@ -61,6 +65,10 @@ public class ServerUpdateNetMessage: NetMessage {
                 let position = pullVector3FromData(&data)
                 let bodyRotation = pullVector4FromData(&data)
                 let headEulerAngles = pullVector3FromData(&data)
+                
+//                NSLog("IN position: %@", NSStringFromSCNVector3(position))
+//                NSLog("IN bodyRotation: %@", NSStringFromSCNVector4(bodyRotation))
+//                NSLog("IN headEulerAngles: %@", NSStringFromSCNVector3(headEulerAngles))
                 
                 let update = NetPlayerUpdate(
                     sequenceNumber: sequenceNumber,

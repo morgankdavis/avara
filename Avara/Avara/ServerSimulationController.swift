@@ -79,10 +79,8 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private func gameLoop(dT: CGFloat) {
         //NSLog("dT: %.4f", dT)
         
-        //var char: Character?
         for (_,p) in netPlayers {
             let character = p.character
-            //char = character
             character.gameLoopWithInputs(p.activeInputs, mouseDelta: p.readMouseDeltaAndClear(), dT: dT)
             //cameraNode?.position = SCNVector3(x: character.bodyNode.position.x, y: cameraNode!.position.y, z: character.bodyNode.position.z)
         }
@@ -118,12 +116,6 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             }
             
             if updatesToSend.count > 0 {
-//                if let c = char {
-//                    NSLog("send bodyNode.position: %@", NSStringFromSCNVector3(c.bodyNode.position))
-//                    NSLog("send bodyNode.rotation: %@", NSStringFromSCNVector4(c.bodyNode.rotation))
-//                    NSLog("send headNode?.eulerAngles: %@", NSStringFromSCNVector3(c.headNode!.eulerAngles))
-//                }
-                
                 NSLog("Sending authorative state sq: %d", updatesToSend[0].sequenceNumber)
                 
                 let updateMessage = ServerUpdateNetMessage(playerUpdates: updatesToSend)

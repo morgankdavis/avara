@@ -151,9 +151,9 @@ public class Map : NSObject, SCNProgramDelegate {
         } else {
             floorMaterial.diffuse.maxAnisotropy = 8.0
         }
-        floorMaterial.normal.contents = NSImage(named: "floorBump.jpg")
-        floorMaterial.normal.contentsTransform = SCNMatrix4MakeScale(15.0, 15.0, 15.0)
-        floorMaterial.normal.intensity = 0.15
+//        floorMaterial.normal.contents = NSImage(named: "floorBump.jpg")
+//        floorMaterial.normal.contentsTransform = SCNMatrix4MakeScale(15.0, 15.0, 15.0)
+//        floorMaterial.normal.intensity = 0.15
 
         floorMaterial.locksAmbientWithDiffuse = true
 

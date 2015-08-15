@@ -37,9 +37,10 @@ public class ClientWindowController: NSWindowController, NSWindowDelegate {
             if DIRECT_MOUSE_ENABLED {
                 inputManager.startDirectMouseCapture()
             }
-            else {
-                self.window?.acceptsMouseMovedEvents = true
-            }
+//            else {
+//                self.window?.acceptsMouseMovedEvents = true
+//            }
+            self.window?.acceptsMouseMovedEvents = true
         }
     }
     
@@ -51,9 +52,9 @@ public class ClientWindowController: NSWindowController, NSWindowDelegate {
             if DIRECT_MOUSE_ENABLED {
                 inputManager.stopDirectMouseCapture()
             }
-            else {
-                self.window?.acceptsMouseMovedEvents = false
-            }
+//            else {
+//                self.window?.acceptsMouseMovedEvents = false
+//            }
             restoreCursor()
         }
     }
@@ -150,30 +151,34 @@ public class ClientWindowController: NSWindowController, NSWindowDelegate {
     /*****************************************************************************************************/
     
     override public func mouseMoved(theEvent: NSEvent) {
+        // this method originally existed for mouse input. then we switched to ManyMouse for input.
+        // but this method is still here to keep the captured cursor "under" the game window to is doesnt interfere with other things.
+        
+        let loc: NSPoint = NSEvent.mouseLocation()
+        
+        let screenSize: CGSize = CGSizeMake(CGFloat(CGDisplayPixelsWide(0)), CGFloat(CGDisplayPixelsHigh(0)))
+        let screenMid: CGPoint = CGPointMake(screenSize.width/2.0, screenSize.height/2.0)
+        let locRelOrigin: CGPoint = CGPointMake(loc.x-screenMid.x, loc.y-screenMid.y)
+        let delta: CGPoint = CGPointMake(lastCursorPoint.x-locRelOrigin.x, lastCursorPoint.y-locRelOrigin.y)
+        
         if !DIRECT_MOUSE_ENABLED {
-            let loc: NSPoint = NSEvent.mouseLocation()
-            
-            let screenSize: CGSize = CGSizeMake(CGFloat(CGDisplayPixelsWide(0)), CGFloat(CGDisplayPixelsHigh(0)))
-            let screenMid: CGPoint = CGPointMake(screenSize.width/2.0, screenSize.height/2.0)
-            let locRelOrigin: CGPoint = CGPointMake(loc.x-screenMid.x, loc.y-screenMid.y)
-            let delta: CGPoint = CGPointMake(lastCursorPoint.x-locRelOrigin.x, lastCursorPoint.y-locRelOrigin.y)
-            
             inputManager.addMouseDelta(delta)
-            
-            // if the distance from the origin (center of window) gets too big, reset the cursor to the middle
-            let distanceThr: CGFloat = 32.0
-            let distance = sqrt(CGFloat(pow(locRelOrigin.x, 2)) + CGFloat(pow(locRelOrigin.y, 2)))
-            
-            if (distance > distanceThr) {
-                let err: CGError = CGDisplayMoveCursorToPoint(0, screenMid) // CGWarpMouseCursorPosition(screenMid)
-                if (err != .Success) {
-                    NSLog("Error warping cursor: %d", err.rawValue)
-                }
-                CGAssociateMouseAndMouseCursorPosition(1) // if this isn't called new mouse events are ignored for about 200ms
-                lastCursorPoint = CGPointZero
-            } else {
-                lastCursorPoint = locRelOrigin
+        }
+        
+        // if the distance from the origin (center of window) gets too big, reset the cursor to the middle
+        let distanceThr: CGFloat = 32.0
+        let distance = sqrt(CGFloat(pow(locRelOrigin.x, 2)) + CGFloat(pow(locRelOrigin.y, 2)))
+        
+        if (distance > distanceThr) {
+            let err: CGError = CGDisplayMoveCursorToPoint(0, screenMid) // CGWarpMouseCursorPosition(screenMid)
+            if (err != .Success) {
+                NSLog("Error warping cursor: %d", err.rawValue)
             }
+            CGAssociateMouseAndMouseCursorPosition(1) // if this isn't called new mouse events are ignored for about 200ms
+            lastCursorPoint = CGPointZero
+        }
+        else {
+            lastCursorPoint = locRelOrigin
         }
     }
     
