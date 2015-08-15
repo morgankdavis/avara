@@ -16,7 +16,7 @@ public class NetPlayerUpdate: Equatable, CustomStringConvertible {
     // MARK:   Properties
     /*****************************************************************************************************/
     
-    private(set)    var     sequenceNumber:         UInt32
+    public          var     sequenceNumber:         UInt32
     private(set)    var     id:                     UInt32
     private(set)    var     position:               SCNVector3
     private(set)    var     bodyRotation:           SCNVector4

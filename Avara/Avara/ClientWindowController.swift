@@ -34,13 +34,10 @@ public class ClientWindowController: NSWindowController, NSWindowDelegate {
         if isCursorCaptured == false {
             isCursorCaptured = true
             stashCursor()
+            self.window?.acceptsMouseMovedEvents = true
             if DIRECT_MOUSE_ENABLED {
                 inputManager.startDirectMouseCapture()
             }
-//            else {
-//                self.window?.acceptsMouseMovedEvents = true
-//            }
-            self.window?.acceptsMouseMovedEvents = true
         }
     }
     
@@ -49,13 +46,11 @@ public class ClientWindowController: NSWindowController, NSWindowDelegate {
         
         if isCursorCaptured {
             isCursorCaptured = false
+            self.window?.acceptsMouseMovedEvents = false
+            restoreCursor()
             if DIRECT_MOUSE_ENABLED {
                 inputManager.stopDirectMouseCapture()
             }
-//            else {
-//                self.window?.acceptsMouseMovedEvents = false
-//            }
-            restoreCursor()
         }
     }
     

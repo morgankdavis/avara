@@ -144,6 +144,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                     // send new state to server
                     if let client = netClient {
                         if client.isConnected {
+                            NSLog("-- Client sending --")
                             ++sequenceNumber
                             let updateMessage = ClientUpdateNetMessage(activeActions: inputManager.activeInputs, mouseDelta: mouseDelta, sequenceNumber:sequenceNumber)
                             
@@ -224,11 +225,11 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 }
                 
                 if let u = myUpdate {
-                    NSLog("Update sq: %d, sent sq: %d, inputActive: %@", u.sequenceNumber, sequenceNumber, (inputActive ? "true" : "false"))
+                    //NSLog("Recv update sq: %d, sent sq: %d, inputActive: %@", u.sequenceNumber, sequenceNumber, (inputActive ? "true" : "false"))
                     if (u.sequenceNumber >= sequenceNumber) && !inputActive {
-                        // correct player position directly in hiieeerrrrr?
                         serverOverrideUpdate = u // game loop will see and correct player state
                     }
+                    sequenceNumber = u.sequenceNumber
                 }
                 else {
                     NSLog("*** I can haz update? ***")

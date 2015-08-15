@@ -15,12 +15,14 @@ public class NetPlayer {
     // MARK:   Properties
     /*****************************************************************************************************/
     
-    public          var     sequenceNumber =            UInt32(0) // sequence numbers are unique to each server<->client relationship
-    public          var     activeInputs =              Set<UserInput>()
-    private(set)    var     name:                       String
-    private(set)    var     id:                         UInt32
-    private(set)    var     character:                  Character
-    private(set)    var     accumulatedMouseDelta =     CGPointZero
+    public          var     lastReceivedSequenceNumber =    UInt32(0) // sequence numbers are unique to each server<->client relationship
+    public          var     activeInputs =                  Set<UserInput>()
+    private(set)    var     accumulatedMouseDelta =         CGPointZero
+    private(set)    var     name:                           String
+    private(set)    var     id:                             UInt32
+    private(set)    var     character:                      Character
+    public          var     lastSentNetPlayerUpdate:        NetPlayerUpdate?
+    public          var     lastSentInputActive:            Bool?
   
     /*****************************************************************************************************/
     // MARK:   Public
@@ -39,14 +41,22 @@ public class NetPlayer {
     }
     
     public func netPlayerUpdate() -> NetPlayerUpdate {
-//        let rot = character.bodyNode.rotation
-//        NSLog("netPlayerUpdate(): character.bodyNode.rotation: %.2f, %.2f, %.2f, %.2f", rot.x, rot.y, rot.z, rot.w)
-        return NetPlayerUpdate(
-            sequenceNumber: sequenceNumber,
-            id: id,
-            position: character.bodyNode.position,
-            bodyRotation: character.bodyNode.rotation,
-            headEulerAngles: character.headNode!.eulerAngles)
+        if var lastSentSq = lastSentNetPlayerUpdate?.sequenceNumber {
+            return NetPlayerUpdate(
+                sequenceNumber: ++lastSentSq,
+                id: id,
+                position: character.bodyNode.position,
+                bodyRotation: character.bodyNode.rotation,
+                headEulerAngles: character.headNode!.eulerAngles)
+        }
+        else {
+            return NetPlayerUpdate(
+                sequenceNumber: ++lastReceivedSequenceNumber,
+                id: id,
+                position: character.bodyNode.position,
+                bodyRotation: character.bodyNode.rotation,
+                headEulerAngles: character.headNode!.eulerAngles)
+        }
     }
     
     /*****************************************************************************************************/

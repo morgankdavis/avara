@@ -27,7 +27,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private         var netServer:                  MKDNetServer?
     private         var cameraNode:                 SCNNode?
     
-    private         var lastSentPlayerUpdates =     [UInt32:NetPlayerUpdate]() // id:update
+    //private         var lastSentPlayerUpdates =     [UInt32:NetPlayerUpdate]() // id:update
     
     /*****************************************************************************************************/
     // MARK:   Public
@@ -40,7 +40,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         cameraNode = SCNNode()
         cameraNode?.name = "Server camera node"
-        cameraNode?.position = SCNVector3(x: 0, y: 10, z: 0)
+        cameraNode?.position = SCNVector3(x: 0, y: 15, z: 0)
         cameraNode?.rotation = SCNVector4(x: 1, y: 0, z: 0, w: -CGFloat(M_PI)/2.0)
         scene.rootNode.addChildNode(cameraNode!)
         switchToCameraNode(cameraNode!)
@@ -87,36 +87,44 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         if let server = netServer {
             // updates ("player states") for our players
-            var updates = [NetPlayerUpdate]()
-            for (_,p) in netPlayers {
-                updates.append(p.netPlayerUpdate())
-            }
-            
             var updatesToSend = [NetPlayerUpdate]()
-            for u in updates {
+            for (_,player) in netPlayers {
+                let update = player.netPlayerUpdate()
+                
                 var send = false
                 
-                if let lastSent = lastSentPlayerUpdates[u.id] {
+                let inputActive = (player.activeInputs.count > 0) || (player.accumulatedMouseDelta != CGPointZero)
+                
+                if let lastUpdate = player.lastSentNetPlayerUpdate {
                     // here's the last sent update for this player.
-                    if u != lastSent {
+                    if update != lastUpdate {
+                        // player update is different (e.g. they're moved)
                         send = true
+                    }
+                    else {
+                        if let lastInputActive = player.lastSentInputActive {
+                            if inputActive != lastInputActive {
+                                NSLog("** INPUT CHANGED **")
+                                send = true
+                            }
+                        }
                     }
                 }
                 else {
-                    // no last sent update for this player. must be new.
+                    // no last sent update for this player. send one.
                     send = true
                 }
                 
                 if send {
-                    // WARN: client sequence numbwer not incramented -- return num will be the same. is this what we want?
-                    //++u.sequenceNumber
-                    updatesToSend.append(u)
-                    lastSentPlayerUpdates[u.id] = u
+                    updatesToSend.append(update)
+                    player.lastSentNetPlayerUpdate = update
                 }
+                
+                player.lastSentInputActive = inputActive
             }
             
             if updatesToSend.count > 0 {
-                NSLog("Sending authorative state sq: %d", updatesToSend[0].sequenceNumber)
+                //NSLog("Sending authorative state sq: %d", updatesToSend[0].sequenceNumber)
                 
                 let updateMessage = ServerUpdateNetMessage(playerUpdates: updatesToSend)
                 let packtData = updateMessage.encoded()
@@ -181,7 +189,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                     NSLog("Client update message. active inputs: %@, mouse delta: (%.2f, %.2f), sq: %d",
                         activeInputs.description, mouseDelta.x, mouseDelta.y, sequenceNumber)
                     
-                    player.sequenceNumber = sequenceNumber
+                    player.lastReceivedSequenceNumber = sequenceNumber
                     
                     // WARN: if sending updates as 30Hz we will need to set inputs until they are seen/cleared from main loop
                     player.activeInputs = activeInputs
