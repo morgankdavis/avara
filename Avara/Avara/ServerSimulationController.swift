@@ -16,18 +16,13 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     // MARK:   Properties
     /*****************************************************************************************************/
     
-    //private(set)    var inputManager:               InputManager -- replace with network abstraction
-    private         var windowController:           ServerWindowController? // temporary?
+    private         var windowController:           ServerWindowController?
     private(set)    var scene =                     SCNScene()
-    private(set)    var renderView:                 RenderView? // *** TEMPORARY ***
     private         var map:                        Map?
-    private         var netPlayers =                [UInt32:NetPlayer]() // id:player
-    private         var gameLoopTimer:              NSTimer? // temporary
-    private         var networkTickTimer:           NSTimer?
+    private         var netPlayers =                [UInt32:NetPlayer]()            // id:player
+    private         var gameLoopTimer:              NSTimer?
     private         var netServer:                  MKDNetServer?
-    private         var cameraNode:                 SCNNode?
-    
-    //private         var lastSentPlayerUpdates =     [UInt32:NetPlayerUpdate]() // id:update
+    private         var cameraNode =                SCNNode()
     
     /*****************************************************************************************************/
     // MARK:   Public
@@ -38,12 +33,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         windowController?.showWindow(self)
         
-        cameraNode = SCNNode()
-        cameraNode?.name = "Server camera node"
-        cameraNode?.position = SCNVector3(x: 0, y: 25, z: 0)
-        cameraNode?.rotation = SCNVector4(x: 1, y: 0, z: 0, w: -CGFloat(M_PI)/2.0)
-        scene.rootNode.addChildNode(cameraNode!)
-        switchToCameraNode(cameraNode!)
+        switchToCameraNode(cameraNode)
         
         gameLoopTimer = NSTimer.scheduledTimerWithTimeInterval(
             1.0/60.0,
@@ -69,9 +59,19 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         NSLog("ServerSimulationController.setup()")
         
         map = Map(scene: scene)
-
+        
         scene.physicsWorld.timeStep = PHYSICS_TIMESTEP
         scene.physicsWorld.contactDelegate = self
+        
+        let camera = SCNCamera()
+        ConfigureCamera(camera, screenSize: SERVER_WINDOW_SIZE, fov: 95.0)
+        camera.zNear = 0.01
+        camera.zFar = 1000.0
+        cameraNode.camera = camera
+        cameraNode.name = "Server camera node"
+        cameraNode.position = SCNVector3(x: 0, y: 15, z: 0)
+        cameraNode.rotation = SCNVector4(x: 1, y: 0, z: 0, w: -CGFloat(M_PI)/2.0)
+        scene.rootNode.addChildNode(cameraNode)
         
         netServer = MKDNetServer(port: NET_SERVER_PORT, maxClients: NET_MAX_CLIENTS, maxChannels: NET_MAX_CHANNELS, delegate: self)
     }
@@ -81,8 +81,11 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         for (_,p) in netPlayers {
             let character = p.character
+            
             character.gameLoopWithInputs(p.activeInputs, mouseDelta: p.readMouseDeltaAndClear(), dT: dT)
-            //cameraNode?.position = SCNVector3(x: character.bodyNode.position.x, y: cameraNode!.position.y, z: character.bodyNode.position.z)
+            
+            // make camera follow player
+            cameraNode.position = SCNVector3(x: character.bodyNode.position.x, y: cameraNode.position.y, z: character.bodyNode.position.z)
         }
         
         if let server = netServer {
@@ -162,10 +165,10 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             bodyNodes.append(player.character.legsNode!)
             bodyNodes.append(player.character.headNode!)
             
-            if bodyNodes.contains(contact.nodeA) { // nodeA is for 'player'
+            if bodyNodes.contains(contact.nodeA) { // nodeA belongs to 'player'
                 character.bodyPart(contact.nodeA, mayHaveHitWall:contact.nodeB, withContact:contact)
             }
-            else if bodyNodes.contains(contact.nodeB) { // nodeB is for 'player'
+            else if bodyNodes.contains(contact.nodeB) { // nodeB belongs to 'player'
                 character.bodyPart(contact.nodeB, mayHaveHitWall:contact.nodeA, withContact:contact)
             }
         }
@@ -205,7 +208,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                     player.addMouseDelta(mouseDelta)
                 }
                 else {
-                    NSLog("No player for that ID!")
+                    NSLog("No player for ID:  %d", clientID)
                 }
                 break
                 

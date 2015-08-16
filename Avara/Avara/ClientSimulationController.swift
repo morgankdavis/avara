@@ -21,7 +21,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private(set)    var scene =                     SCNScene()
     private         var map:                        Map?
     private         var localCharacter:             Character?
-    private         var remoteCharacters =          [Character]()
+//    private         var remoteCharacters =          [Character]()
     private         var gameLoopTimer:              NSTimer? // temporary
     private         let flyoverCamera =             FlyoverCamera()
     private         var isFlyoverMode =             false
