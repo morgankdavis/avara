@@ -175,7 +175,7 @@ public class Character {
     }
     
     public func bodyPart(bodyPartNode: SCNNode, mayHaveHitWall wallNode: SCNNode, withContact contact: SCNPhysicsContact) {
-//        NSLog("bodyPart(%@, mayHaveHitWall: %@, withContact: %@", bodyPartNode, wallNode, contact)
+        NSLog("bodyPart(%@, mayHaveHitWall: %@, withContact: %@", bodyPartNode.name!, wallNode.name!, contact)
         
         //NSLog("contact.penetrationDistance: %.2f", contact.penetrationDistance)
     

@@ -35,7 +35,7 @@ public class ServerWindowController: NSWindowController {
         renderView?.antialiasingMode = .None
         renderView?.backgroundColor = NSColor.blackColor()
         renderView?.delegate = serverSimulationController
-        window?.contentView.addSubview(renderView!)
+        window?.contentView?.addSubview(renderView!)
         window?.title = "Avara Server"
         
         if let screen = NSScreen.mainScreen() {

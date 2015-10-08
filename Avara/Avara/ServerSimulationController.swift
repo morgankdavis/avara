@@ -194,12 +194,13 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             case .ClientUpdate:
                 if let player = netPlayers[clientID] {
                     let updateMessage = message as! ClientUpdateNetMessage
+                    let deltaTime = updateMessage.deltaTime
                     let activeInputs = updateMessage.activeInputs
                     let mouseDelta = updateMessage.mouseDelta
                     let sequenceNumber = updateMessage.sequenceNumber!
                     
-                    NSLog("Client update message. active inputs: %@, mouse delta: (%.2f, %.2f), sq: %d",
-                        activeInputs.description, mouseDelta.x, mouseDelta.y, sequenceNumber)
+                    NSLog("Client update message. dT: %f, active inputs: %@, mouse delta: (%.2f, %.2f), sq: %d",
+                        deltaTime, activeInputs.description, mouseDelta.x, mouseDelta.y, sequenceNumber)
                     
                     player.lastReceivedSequenceNumber = sequenceNumber
                     

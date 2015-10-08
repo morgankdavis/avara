@@ -12,7 +12,7 @@ import SceneKit
 
 let CLIENT_WINDOW_SIZE =                    CGSize(width: 800, height: 600)
 let SERVER_WINDOW_SIZE =                    CGSize(width: 320, height: 240)
-let SCN_DEBUG_OPTIONS: SCNDebugOptions =    [.ShowPhysicsShapes, .ShowBoundingBoxes]
+let SCN_DEBUG_OPTIONS: SCNDebugOptions =    [.ShowPhysicsShapes, .ShowBoundingBoxes, .ShowWireframe]
 
 let PHYSICS_TIMESTEP =                      1.0/120.0
 

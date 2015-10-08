@@ -280,20 +280,20 @@ public class Map : NSObject, SCNProgramDelegate {
         
         
         // wall -- plane
-//        let wallGeometry = SCNPlane(width: 5, height: 5)
-//        wallGeometry.materials = [platformMaterial]
-//        let wallNode = SCNNode(geometry: wallGeometry)
-//        wallNode.name = "Wall node"
-//        wallNode.position = SCNVector3(x: 5, y: 2.5, z: 5)
-//        scene.rootNode.addChildNode(wallNode)
-        
-        // wall -- box
-        let wallGeometry = SCNBox(width: 5, height: 5, length: 1, chamferRadius: 0)
-        wallGeometry.materials = [wallMaterial]
+        let wallGeometry = SCNPlane(width: 5, height: 5)
+        wallGeometry.materials = [platformMaterial]
         let wallNode = SCNNode(geometry: wallGeometry)
         wallNode.name = "Wall node"
         wallNode.position = SCNVector3(x: 0, y: 2.5, z: 5)
         scene.rootNode.addChildNode(wallNode)
+        
+        // wall -- box
+//        let wallGeometry = SCNBox(width: 5, height: 5, length: 1, chamferRadius: 0)
+//        wallGeometry.materials = [wallMaterial]
+//        let wallNode = SCNNode(geometry: wallGeometry)
+//        wallNode.name = "Wall node"
+//        wallNode.position = SCNVector3(x: 0, y: 2.5, z: 5)
+//        scene.rootNode.addChildNode(wallNode)
         
         setupCollisionNode(wallNode)
     }

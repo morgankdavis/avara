@@ -147,7 +147,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                         if client.isConnected {
                             NSLog("-- Client sending --")
                             ++sequenceNumber
-                            let updateMessage = ClientUpdateNetMessage(activeActions: inputManager.activeInputs, mouseDelta: mouseDelta, sequenceNumber:sequenceNumber)
+                            let updateMessage = ClientUpdateNetMessage(deltaTime: Float32(dT), activeActions: inputManager.activeInputs, mouseDelta: mouseDelta, sequenceNumber:sequenceNumber)
                             
                             let packtData = updateMessage.encoded()
                             client.sendPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable) // WARN: change to unreliable

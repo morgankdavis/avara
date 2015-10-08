@@ -18,6 +18,7 @@ public class NetPlayer {
     public          var     lastReceivedSequenceNumber =    UInt32(0) // sequence numbers are unique to each server<->client relationship
     public          var     activeInputs =                  Set<UserInput>()
     private(set)    var     accumulatedMouseDelta =         CGPointZero
+    //public          var     netPlayerUpdates =              [NetPlayerUpdate]()
     private(set)    var     name:                           String
     private(set)    var     id:                             UInt32
     private(set)    var     character:                      Character

@@ -119,7 +119,7 @@ public class ClientWindowController: NSWindowController, NSWindowDelegate {
         }
         renderView?.backgroundColor = NSColor.blackColor()
         renderView?.delegate = clientSimulationController
-        window?.contentView.addSubview(renderView!)
+        window?.contentView?.addSubview(renderView!)
         window?.title = "Avara"
         window?.delegate = self
         window?.center()
