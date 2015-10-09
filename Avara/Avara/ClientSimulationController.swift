@@ -36,9 +36,9 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     
     
     
-    private         var netClientAccumUserInputs =  [UserInput: Double]()
-    private         var netClientAccumMouseDelta =  CGPointZero
-    private         var netClientTickTimer:         NSTimer?
+    private         var clientAccumUserInputs =     [UserInput: Double]()
+    private         var clientAccumMouseDelta =     CGPointZero
+    private         var clientTickTimer:            NSTimer?
     
     /*****************************************************************************************************/
     // MARK:   Public
@@ -88,8 +88,8 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         }
     }
     
-    internal func netClientTickTimer(timer: NSTimer) {
-        NSLog("netClientTickTimer()")
+    internal func clientTickTimer(timer: NSTimer) {
+        NSLog("clientTickTimer()")
         
         
         
@@ -110,17 +110,17 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 NSLog("-- Client sending --")
                 ++sequenceNumber
                 let updateMessage = ClientUpdateNetMessage(
-                    userInputs: netClientAccumUserInputs,
-                    mouseDelta: netClientAccumMouseDelta,
-                    sequenceNumber:sequenceNumber)
+                    userInputs: clientAccumUserInputs,
+                    mouseDelta: clientAccumMouseDelta,
+                    sequenceNumber: sequenceNumber)
                 //                    let updateMessage = ClientUpdateNetMessage(deltaTime: Float32(dT), activeActions: inputManager.activeInputs, mouseDelta: mouseDelta, sequenceNumber:sequenceNumber)
                 
                 let packtData = updateMessage.encoded()
-                client.sendPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable) // WARN: change to unreliable
+                client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue , flags: .Reliable) // WARN: change to unreliable
                 
                 // reset accumulators
-                netClientAccumUserInputs.removeAll()
-                netClientAccumMouseDelta = CGPointZero
+                clientAccumUserInputs = [UserInput: Double]()
+                clientAccumMouseDelta = CGPointZero
             }
         }
         
@@ -177,25 +177,26 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             
             
             // add input to the net client input accumulator
-            
             for input in activeInput {
-                if let total = netClientAccumUserInputs[input] {
-                    netClientAccumUserInputs[input] = total + Double(dT)
+                if let total = clientAccumUserInputs[input] {
+                    clientAccumUserInputs[input] = total + Double(dT)
                 }
                 else {
-                    netClientAccumUserInputs[input] = Double(dT)
+                    clientAccumUserInputs[input] = Double(dT)
                 }
             }
-            netClientAccumMouseDelta = CGPoint(x: netClientAccumMouseDelta.x + mouseDelta.x, y: netClientAccumMouseDelta.y + mouseDelta.y)
+            clientAccumMouseDelta = CGPoint(x: clientAccumMouseDelta.x + mouseDelta.x, y: clientAccumMouseDelta.y + mouseDelta.y)
             
             
             // check for server overrides before applying stuff
-            if let u = serverOverrideUpdate {
-                NSLog("-- Server override --")
-                localCharacter?.applyServerOverrideUpdate(u)
-                serverOverrideUpdate = nil
-            }
-            localCharacter?.gameLoopWithInputs(activeInput, mouseDelta: mouseDelta, dT: dT)
+//            if let u = serverOverrideUpdate {
+//                NSLog("-- Server override --")
+//                localCharacter?.applyServerOverrideUpdate(u)
+//                serverOverrideUpdate = nil
+//            }
+            localCharacter?.updateForInputs(activeInput, mouseDelta: mouseDelta, dT: dT)
+            localCharacter?.updateForLoopDelta(dT)
+            //localCharacter?.gameLoopWithInputs(activeInput, mouseDelta: mouseDelta, dT: dT)
 
 //            let inputChanged = (lastActiveInput == nil) || (lastMouseDelta == nil) || (activeInput != lastActiveInput!) || (mouseDelta != lastMouseDelta!)
 //            if inputChanged {
@@ -303,13 +304,13 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         }
     }
     
-    private func startNetClientTickTimer() {
-        NSLog("startNetClientTickTimer()")
+    private func startClientTickTimer() {
+        NSLog("startClientTickTimer()")
         
-        netClientTickTimer = NSTimer.scheduledTimerWithTimeInterval(
+        clientTickTimer = NSTimer.scheduledTimerWithTimeInterval(
             1.0/NSTimeInterval(NET_CLIENT_TICK_RATE),
             target: self,
-            selector: "netClientTickTimer:",
+            selector: "clientTickTimer:",
             userInfo: nil,
             repeats: true)
     }
@@ -364,10 +365,10 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         let helloMessage = ClientHelloNetMessage(name: "gatsby")
         let packtData = helloMessage.encoded()
-        client.sendPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable)
+        client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue , flags: .Reliable)
         
         // WARN: Wait for game start message in future (or whatever)
-        startNetClientTickTimer()
+        startClientTickTimer()
     }
     
     public func client(client: MKDNetClient!, didFailToConnect error: NSError!) {

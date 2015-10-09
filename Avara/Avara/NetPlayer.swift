@@ -18,16 +18,53 @@ public class NetPlayer {
     public          var     lastReceivedSequenceNumber =    UInt32(0) // sequence numbers are unique to each server<->client relationship
 //    public          var     activeInputs =                  Set<UserInput>()
 //    private(set)    var     accumulatedMouseDelta =         CGPointZero
-    public          var     updateNetMessages =             [ClientUpdateNetMessage]()
+//    public          var     updateNetMessages =             [ClientUpdateNetMessage]()
     private(set)    var     name:                           String
     private(set)    var     id:                             UInt32
     private(set)    var     character:                      Character
     public          var     lastSentNetPlayerUpdate:        NetPlayerUpdate?
 //    public          var     lastSentInputActive:            Bool?
+    
+    private(set)    var     accumInputs =                   [UserInput: Double]()
+    private(set)    var     accumMouseDelta =               CGPointZero
   
     /*****************************************************************************************************/
     // MARK:   Public
     /*****************************************************************************************************/
+    
+    public func addInputs(inputs: [UserInput: Double]) {
+        for (input, duration) in inputs {
+            if let total = accumInputs[input] {
+                accumInputs[input] = total + duration
+            }
+            else {
+                accumInputs[input] = duration
+            }
+        }
+    }
+    
+    public func addMouseDelta(delta: CGPoint) {
+        accumMouseDelta = CGPoint(
+            x: accumMouseDelta.x + delta.x,
+            y: accumMouseDelta.y + delta.y)
+    }
+
+    public func readAndClearAccums() -> (pushInputs: [UserInput: Double], mouseDelta: CGPoint, largestDuration: Double) { // last element is largest input time
+        // calculate largest input duration
+        var largestDuration = Double(0)
+        for (_, duration) in accumInputs {
+            if duration > largestDuration {
+                largestDuration = duration
+            }
+        }
+        
+        let retval  = (accumInputs, accumMouseDelta, largestDuration)
+        
+        accumInputs = [UserInput: Double]() // leaves old object intact for retval (instead of removeAll())
+        accumMouseDelta = CGPointZero
+        
+        return retval
+    }
     
 //    public func calculateTotalsAndClear() -> (userInputs: [UserInput: Float32], mouseDelta: CGPoint, deltaTime: Float) {
 //        // returns total time spend holding each key (UserInput),

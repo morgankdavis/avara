@@ -41,12 +41,23 @@ public class Character {
     // MARK:   Public
     /*****************************************************************************************************/
     
-    public func gameLoopWithInputs(inputs: Set<UserInput>, mouseDelta: CGPoint, dT: CGFloat) {
+    public func updateForInputs(pushInputs: Set<UserInput>, mouseDelta: CGPoint, dT: CGFloat) {
+        // called for local simulation where dT for all push imports is uniform
         
-        let initialPosition = bodyNode.position
+        var inputs = [UserInput: Double]()
+        for i in pushInputs {
+            inputs[i] = Double(dT)
+        }
         
+        updateForInputs(inputs, mouseDelta: mouseDelta)
+    }
+    
+    public func updateForInputs(pushInputs: [UserInput: Double], mouseDelta: CGPoint) {
+        // called every net update
+    
         // body
-        if inputs.contains(.MoveForward) {
+        if pushInputs.keys.contains(.MoveForward) {
+            let dT = CGFloat(pushInputs[.MoveForward]!)
             let positionDelta = WALK_VELOCITY * dT
             
             let transform = bodyNode.transform
@@ -61,7 +72,8 @@ public class Character {
                 y: bodyNode.position.y,
                 z: bodyNode.position.z - dz)
         }
-        else if inputs.contains(.MoveBackward) {
+        else if pushInputs.keys.contains(.MoveBackward) {
+            let dT = CGFloat(pushInputs[.MoveBackward]!)
             let positionDelta = WALK_VELOCITY * dT
             
             let transform = bodyNode.transform
@@ -77,7 +89,8 @@ public class Character {
                 z: bodyNode.position.z + dz)
         }
         
-        if inputs.contains(.TurnLeft) {
+        if pushInputs.keys.contains(.TurnLeft) {
+            let dT = CGFloat(pushInputs[.TurnLeft]!)
             let rotationDelta = TURN_ANG_VELOCITY * dT
             bodyNode.rotation = SCNVector4(
                 x: 0,
@@ -85,7 +98,8 @@ public class Character {
                 z: 0,
                 w: bodyNode.rotation.w + CGFloat(rotationDelta))
         }
-        else if inputs.contains(.TurnRight) {
+        else if pushInputs.keys.contains(.TurnRight) {
+            let dT = CGFloat(pushInputs[.TurnRight]!)
             let rotationDelta = TURN_ANG_VELOCITY * dT
             bodyNode.rotation = SCNVector4(
                 x: 0,
@@ -109,8 +123,14 @@ public class Character {
         nAngles.y = max(-HEAD_HORIZ_ANG_CLAMP, min(HEAD_HORIZ_ANG_CLAMP, nAngles.y)) // clamp horizontal angle
         
         headNode?.eulerAngles = nAngles
+    }
+    
+    public func updateForLoopDelta(dT: CGFloat) {
+        // called every iteration of the simulation loop for things like physics
         
         // altitude
+        
+        let initialPosition = bodyNode.position
         
         var groundY: CGFloat = 0
         
@@ -127,9 +147,9 @@ public class Character {
         
         if (rayResults.count > 0) {
             let resultHit = rayResults[0] as SCNHitTestResult
-                groundY = resultHit.worldCoordinates.y;
-                bodyNode.position.y = groundY
-     
+            groundY = resultHit.worldCoordinates.y;
+            bodyNode.position.y = groundY
+            
             let THRESHOLD: CGFloat = 1e-5 // 0.1
             let GRAVITY_ACCEL = scene.physicsWorld.gravity.y/10.0
             if (groundY < position.y - THRESHOLD) {

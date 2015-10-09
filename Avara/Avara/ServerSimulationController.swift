@@ -24,6 +24,8 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private         var netServer:                  MKDNetServer?
     private         var cameraNode =                SCNNode()
     
+    private         var serverTickTimer:            NSTimer?
+    
     /*****************************************************************************************************/
     // MARK:   Public
     /*****************************************************************************************************/
@@ -49,6 +51,12 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     
     internal func gameLoop() {
         gameLoop(1.0/60.0)
+    }
+    
+    internal func serverTickTimer(timer: NSTimer) {
+        NSLog("serverTickTimer()")
+        
+        // broadcast state to all clients
     }
 
     /*****************************************************************************************************/
@@ -79,8 +87,31 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private func gameLoop(dT: CGFloat) {
         //NSLog("dT: %.4f", dT)
         
-        for (_,p) in netPlayers {
-            let character = p.character
+        for (_, player) in netPlayers {
+            let character = player.character
+            
+            
+            let inputs = player.readAndClearAccums() //(pushInputs: [UserInput: Double], mouseDelta: CGPoint, largestDuration: Double)
+            
+//            if inputs.pushInputs.count > 0 {
+//                NSLog("pushInputs: %@", inputs.pushInputs.description)
+//                
+//            }
+            
+            if inputs.pushInputs.count > 0 {
+                NSLog("pushInputs: %@", inputs.pushInputs.description)
+            }
+            if inputs.mouseDelta.x > 0 || inputs.mouseDelta.y > 0 {
+                NSLog("mouseDelta: {%.2f, %.2f}", inputs.mouseDelta.x, inputs.mouseDelta.y)
+            }
+            if inputs.largestDuration > 0 {
+                NSLog("largestDuration: %f", inputs.largestDuration)
+            }
+            
+            character.updateForInputs(inputs.pushInputs, mouseDelta: inputs.mouseDelta)
+            character.updateForLoopDelta(dT)
+            
+            
             
 //            let playerTotals = p.calculateTotalsAndClear() // (userInputs: [UserInput: Float32], mouseDelta: CGPoint, deltaTime: Float)
             //if totalDeltaTime <= <time-since-last>
@@ -163,6 +194,17 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         windowController?.renderView?.pointOfView = cameraNode
     }
     
+    private func startServerTickTimer() {
+        NSLog("startServerTickTimer()")
+        
+        serverTickTimer = NSTimer.scheduledTimerWithTimeInterval(
+            1.0/NSTimeInterval(NET_SERVER_TICK_RATE),
+            target: self,
+            selector: "serverTickTimer:",
+            userInfo: nil,
+            repeats: true)
+    }
+    
     public func physicsWorld(world: SCNPhysicsWorld, didBeginOrUpdateContact contact: SCNPhysicsContact) {
         //NSLog("physicsWorld(didBeginOrUpdateContact: %@)", contact)
         
@@ -220,6 +262,9 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                         userInputs.description, mouseDelta.x, mouseDelta.y, sequenceNumber)
                     
                     player.lastReceivedSequenceNumber = sequenceNumber
+                    
+                    player.addInputs(userInputs)
+                    player.addMouseDelta(mouseDelta)
                     
 //                    // WARN: if sending updates as 30Hz we will need to set inputs until they are seen/cleared from main loop
 //                    player.activeInputs = activeInputs

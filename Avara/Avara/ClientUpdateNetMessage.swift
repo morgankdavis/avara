@@ -37,9 +37,9 @@ public class ClientUpdateNetMessage: NetMessage {
         
         let inputCount = UInt8(userInputs.count)
         pushUInt8(inputCount, toData: &encodedData)
-        for (input, time) in userInputs {
+        for (input, duration) in userInputs {
             pushUInt8(input.rawValue, toData: &encodedData)
-            pushFloat32(Float32(time), toData: &encodedData)
+            pushFloat32(Float32(duration), toData: &encodedData)
         }
         
 //        // convert UserInput set into UInt8 array
