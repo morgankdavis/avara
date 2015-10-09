@@ -72,7 +72,7 @@ public class Character {
                 y: bodyNode.position.y,
                 z: bodyNode.position.z - dz)
         }
-        else if pushInputs.keys.contains(.MoveBackward) {
+        if pushInputs.keys.contains(.MoveBackward) {
             let dT = CGFloat(pushInputs[.MoveBackward]!)
             let positionDelta = WALK_VELOCITY * dT
             
@@ -98,7 +98,7 @@ public class Character {
                 z: 0,
                 w: bodyNode.rotation.w + CGFloat(rotationDelta))
         }
-        else if pushInputs.keys.contains(.TurnRight) {
+        if pushInputs.keys.contains(.TurnRight) {
             let dT = CGFloat(pushInputs[.TurnRight]!)
             let rotationDelta = TURN_ANG_VELOCITY * dT
             bodyNode.rotation = SCNVector4(

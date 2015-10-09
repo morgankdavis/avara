@@ -17,7 +17,7 @@ let SCN_DEBUG_OPTIONS: SCNDebugOptions =    [.ShowPhysicsShapes, .ShowBoundingBo
 let PHYSICS_TIMESTEP =                      1.0/120.0
 
 let NET_SERVER_TICK_RATE =                  CGFloat(0.25) // Hz
-let NET_CLIENT_TICK_RATE =                  CGFloat(1.0) // Hz
+let NET_CLIENT_TICK_RATE =                  CGFloat(4.0) // Hz
 
 let DIRECT_MOUSE_ENABLED =                  true
 let MOUSE_SENSITIVITY =                     CGFloat(3.0)

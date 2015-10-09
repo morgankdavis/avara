@@ -40,6 +40,9 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private         var clientAccumMouseDelta =     CGPointZero
     private         var clientTickTimer:            NSTimer?
     
+    
+    private         var lastLoopDate:               Double?
+    
     /*****************************************************************************************************/
     // MARK:   Public
     /*****************************************************************************************************/
@@ -50,10 +53,11 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         windowController?.showWindow(self)
         switchToCameraNode(localCharacter!.cameraNode)
         
+        //lastLoopDate = NSDate.timeIntervalSinceReferenceDate()
         gameLoopTimer = NSTimer.scheduledTimerWithTimeInterval(
             1.0/60.0,
             target: self,
-            selector: "gameLoop",
+            selector: "gameLoopTimer:",
             userInfo: nil,
             repeats: true)
         
@@ -64,8 +68,8 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     // MARK:   Internal
     /*****************************************************************************************************/
     
-    internal func gameLoop() {
-        gameLoop(1.0/60.0)
+    internal func gameLoopTimer(timer: NSTimer) {
+        gameLoop()
     }
     
     internal func inputManagerDidBeginUserInputNotification(note: NSNotification) {
@@ -158,67 +162,79 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         netClient = MKDNetClient(destinationAddress: "127.0.0.1", port: NET_SERVER_PORT, maxChannels: NET_MAX_CHANNELS, delegate: self)
     }
     
-    private func gameLoop(dT: CGFloat) {
-        //NSLog("dT: %.4f", dT)
+    private func gameLoop() {
+        let nowDate = NSDate.timeIntervalSinceReferenceDate()
         
-        if windowController!.isCursorCaptured {
-            if let directMouseHelper = inputManager.directMouseHelper {
-                directMouseHelper.pump()
-            }
-        }
-        
-        if isFlyoverMode {
-            flyoverCamera.gameLoopWithInputs(inputManager.activeInputs, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
-            windowController?.renderView?.play(self) // why the fuck must we do this?? (force re-render)
-        }
-        else {
-            let activeInput = inputManager.activeInputs
-            let mouseDelta = inputManager.readMouseDeltaAndClear()
+        if let lastDate = lastLoopDate {
+            
+            let dT = CGFloat(nowDate - lastDate)
+            //NSLog("computed dT: %f", dT)
+            //dT = 1.0/60.0
             
             
-            // add input to the net client input accumulator
-            for input in activeInput {
-                if let total = clientAccumUserInputs[input] {
-                    clientAccumUserInputs[input] = total + Double(dT)
-                }
-                else {
-                    clientAccumUserInputs[input] = Double(dT)
+            if windowController!.isCursorCaptured {
+                if let directMouseHelper = inputManager.directMouseHelper {
+                    directMouseHelper.pump()
                 }
             }
-            clientAccumMouseDelta = CGPoint(x: clientAccumMouseDelta.x + mouseDelta.x, y: clientAccumMouseDelta.y + mouseDelta.y)
+            
+            if isFlyoverMode {
+                flyoverCamera.gameLoopWithInputs(inputManager.activeInputs, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
+                windowController?.renderView?.play(self) // why the fuck must we do this?? (force re-render)
+            }
+            else {
+                let activeInput = inputManager.activeInputs
+                let mouseDelta = inputManager.readMouseDeltaAndClear()
+                
+                
+                // add input to the net client input accumulator
+                for input in activeInput {
+                    if let total = clientAccumUserInputs[input] {
+                        clientAccumUserInputs[input] = total + Double(dT)
+                    }
+                    else {
+                        clientAccumUserInputs[input] = Double(dT)
+                    }
+                }
+                clientAccumMouseDelta = CGPoint(x: clientAccumMouseDelta.x + mouseDelta.x, y: clientAccumMouseDelta.y + mouseDelta.y)
+                
+                
+                // check for server overrides before applying stuff
+                //            if let u = serverOverrideUpdate {
+                //                NSLog("-- Server override --")
+                //                localCharacter?.applyServerOverrideUpdate(u)
+                //                serverOverrideUpdate = nil
+                //            }
+                localCharacter?.updateForInputs(activeInput, mouseDelta: mouseDelta, dT: dT)
+                localCharacter?.updateForLoopDelta(dT)
+                //localCharacter?.gameLoopWithInputs(activeInput, mouseDelta: mouseDelta, dT: dT)
+                
+                //            let inputChanged = (lastActiveInput == nil) || (lastMouseDelta == nil) || (activeInput != lastActiveInput!) || (mouseDelta != lastMouseDelta!)
+                //            if inputChanged {
+                //                // send new state to server
+                //                if let client = netClient {
+                //                    if client.isConnected {
+                //                        NSLog("-- Client sending --")
+                //                        ++sequenceNumber
+                //                        let updateMessage = ClientUpdateNetMessage(deltaTime: Float32(dT), activeActions: inputManager.activeInputs, mouseDelta: mouseDelta, sequenceNumber:sequenceNumber)
+                //
+                //                        let packtData = updateMessage.encoded()
+                //                        client.sendPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable) // WARN: change to unreliable
+                //                    }
+                //                }
+                //
+                //                inputActive = (activeInput.count > 0) || (mouseDelta != CGPointZero)
+                //                NSLog("inputActive: %@", (inputActive ? "true" : "false"))
+                //            }
+                //
+                //            lastActiveInput = activeInput
+                //            lastMouseDelta = mouseDelta
+            }
             
             
-            // check for server overrides before applying stuff
-//            if let u = serverOverrideUpdate {
-//                NSLog("-- Server override --")
-//                localCharacter?.applyServerOverrideUpdate(u)
-//                serverOverrideUpdate = nil
-//            }
-            localCharacter?.updateForInputs(activeInput, mouseDelta: mouseDelta, dT: dT)
-            localCharacter?.updateForLoopDelta(dT)
-            //localCharacter?.gameLoopWithInputs(activeInput, mouseDelta: mouseDelta, dT: dT)
-
-//            let inputChanged = (lastActiveInput == nil) || (lastMouseDelta == nil) || (activeInput != lastActiveInput!) || (mouseDelta != lastMouseDelta!)
-//            if inputChanged {
-//                // send new state to server
-//                if let client = netClient {
-//                    if client.isConnected {
-//                        NSLog("-- Client sending --")
-//                        ++sequenceNumber
-//                        let updateMessage = ClientUpdateNetMessage(deltaTime: Float32(dT), activeActions: inputManager.activeInputs, mouseDelta: mouseDelta, sequenceNumber:sequenceNumber)
-//                        
-//                        let packtData = updateMessage.encoded()
-//                        client.sendPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable) // WARN: change to unreliable
-//                    }
-//                }
-//                
-//                inputActive = (activeInput.count > 0) || (mouseDelta != CGPointZero)
-//                NSLog("inputActive: %@", (inputActive ? "true" : "false"))
-//            }
-//            
-//            lastActiveInput = activeInput
-//            lastMouseDelta = mouseDelta
         }
+        
+        lastLoopDate = nowDate
     }
     
     func switchToCameraNode(cameraNode: SCNNode) {

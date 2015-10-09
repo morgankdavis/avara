@@ -26,6 +26,9 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     
     private         var serverTickTimer:            NSTimer?
     
+    
+    private         var lastLoopDate:               Double?
+    
     /*****************************************************************************************************/
     // MARK:   Public
     /*****************************************************************************************************/
@@ -40,7 +43,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         gameLoopTimer = NSTimer.scheduledTimerWithTimeInterval(
             1.0/60.0,
             target: self,
-            selector: "gameLoop",
+            selector: "gameLoopTimer:",
             userInfo: nil,
             repeats: true)
     }
@@ -49,8 +52,8 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     // MARK:   Internal
     /*****************************************************************************************************/
     
-    internal func gameLoop() {
-        gameLoop(1.0/60.0)
+    internal func gameLoopTimer(timer: NSTimer) {
+        gameLoop()
     }
     
     internal func serverTickTimer(timer: NSTimer) {
@@ -84,108 +87,67 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         netServer = MKDNetServer(port: NET_SERVER_PORT, maxClients: NET_MAX_CLIENTS, maxChannels: NET_MAX_CHANNELS, delegate: self)
     }
     
-    private func gameLoop(dT: CGFloat) {
-        //NSLog("dT: %.4f", dT)
+    private func gameLoop() {
+        let nowDate = NSDate.timeIntervalSinceReferenceDate()
         
-        for (_, player) in netPlayers {
-            let character = player.character
+        if let lastDate = lastLoopDate {
             
+            let dT = CGFloat(nowDate - lastDate)
+            //NSLog("computed dT: %f", dT)
+            //dT = 1.0/60.0
             
-            let inputs = player.readAndClearAccums() //(pushInputs: [UserInput: Double], mouseDelta: CGPoint, largestDuration: Double)
-            
-//            if inputs.pushInputs.count > 0 {
-//                NSLog("pushInputs: %@", inputs.pushInputs.description)
-//                
-//            }
-            
-            if inputs.pushInputs.count > 0 {
-                NSLog("pushInputs: %@", inputs.pushInputs.description)
+            for (_, player) in netPlayers {
+                let character = player.character
+                
+                
+                let inputs = player.readAndClearAccums() //(pushInputs: [UserInput: Double], mouseDelta: CGPoint, largestDuration: Double)
+                
+                //            if inputs.pushInputs.count > 0 {
+                //                NSLog("pushInputs: %@", inputs.pushInputs.description)
+                //
+                //            }
+                
+                if inputs.pushInputs.count > 0 {
+                    NSLog("pushInputs: %@", inputs.pushInputs.description)
+                }
+                if inputs.mouseDelta.x > 0 || inputs.mouseDelta.y > 0 {
+                    NSLog("mouseDelta: {%.2f, %.2f}", inputs.mouseDelta.x, inputs.mouseDelta.y)
+                }
+                if inputs.largestDuration > 0 {
+                    NSLog("largestDuration: %f", inputs.largestDuration)
+                }
+                
+                character.updateForInputs(inputs.pushInputs, mouseDelta: inputs.mouseDelta)
+                character.updateForLoopDelta(dT)
+                
+                
+                
+                //            let playerTotals = p.calculateTotalsAndClear() // (userInputs: [UserInput: Float32], mouseDelta: CGPoint, deltaTime: Float)
+                //if totalDeltaTime <= <time-since-last>
+                
+                // else {
+                
+                
+                
+                //            // first update head orientation
+                //            character.gameLoopWithInputs(nil, mouseDelta: playerTotals.mouseDelta, dT: 0)
+                //
+                //            // now loop through and update position
+                //            // WARN: can be optimizaed by pre-computing here before calling gameLoopWithInputs(mouseDelta:dT:) to avoid duplicate trig
+                //            for (activeInput, dT) in playerTotals.userInputs {
+                //                character.gameLoopWithInputs(activeInput, mouseDelta: nil, dT: dT)
+                //            }
+                
+                //character.gameLoopWithInputs(p.activeInputs, mouseDelta: p.readMouseDeltaAndClear(), dT: dT)
+                
+                
+                
+                // make camera follow player
+                cameraNode.position = SCNVector3(x: character.bodyNode.position.x, y: cameraNode.position.y, z: character.bodyNode.position.z)
             }
-            if inputs.mouseDelta.x > 0 || inputs.mouseDelta.y > 0 {
-                NSLog("mouseDelta: {%.2f, %.2f}", inputs.mouseDelta.x, inputs.mouseDelta.y)
-            }
-            if inputs.largestDuration > 0 {
-                NSLog("largestDuration: %f", inputs.largestDuration)
-            }
-            
-            character.updateForInputs(inputs.pushInputs, mouseDelta: inputs.mouseDelta)
-            character.updateForLoopDelta(dT)
-            
-            
-            
-//            let playerTotals = p.calculateTotalsAndClear() // (userInputs: [UserInput: Float32], mouseDelta: CGPoint, deltaTime: Float)
-            //if totalDeltaTime <= <time-since-last>
-            
-            // else {
-            
-            
-            
-//            // first update head orientation
-//            character.gameLoopWithInputs(nil, mouseDelta: playerTotals.mouseDelta, dT: 0)
-//            
-//            // now loop through and update position
-//            // WARN: can be optimizaed by pre-computing here before calling gameLoopWithInputs(mouseDelta:dT:) to avoid duplicate trig
-//            for (activeInput, dT) in playerTotals.userInputs {
-//                character.gameLoopWithInputs(activeInput, mouseDelta: nil, dT: dT)
-//            }
-            
-            //character.gameLoopWithInputs(p.activeInputs, mouseDelta: p.readMouseDeltaAndClear(), dT: dT)
-            
-            
-            
-            // make camera follow player
-            cameraNode.position = SCNVector3(x: character.bodyNode.position.x, y: cameraNode.position.y, z: character.bodyNode.position.z)
         }
         
-//        if let server = netServer {
-//            // updates ("player states") for our players
-//            var updatesToSend = [NetPlayerUpdate]()
-//            for (_,player) in netPlayers {
-//                let update = player.netPlayerUpdate()
-//                
-//                var send = false
-//                
-//                let inputActive = (player.activeInputs.count > 0) || (player.accumulatedMouseDelta != CGPointZero)
-//                
-//                if let lastUpdate = player.lastSentNetPlayerUpdate {
-//                    // here's the last sent update for this player.
-//                    if update != lastUpdate {
-//                        // player update is different (e.g. they're moved)
-//                        send = true
-//                    }
-//                    else {
-//                        if let lastInputActive = player.lastSentInputActive {
-//                            if inputActive != lastInputActive {
-//                                NSLog("** INPUT CHANGED **")
-//                                send = true
-//                            }
-//                        }
-//                    }
-//                }
-//                else {
-//                    // no last sent update for this player. send one.
-//                    send = true
-//                }
-//                
-//                if send {
-//                    updatesToSend.append(update)
-//                    player.lastSentNetPlayerUpdate = update
-//                }
-//                
-//                player.lastSentInputActive = inputActive
-//            }
-//            
-//            if updatesToSend.count > 0 {
-//                //NSLog("Sending authorative state sq: %d", updatesToSend[0].sequenceNumber)
-//                
-//                let updateMessage = ServerUpdateNetMessage(playerUpdates: updatesToSend)
-//                let packtData = updateMessage.encoded()
-//                server.broadcastPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable) // WARN: change to unreliable
-//            }
-//            else {
-//                //NSLog("No server updates to send.")
-//            }
-//        }
+        lastLoopDate = nowDate
     }
     
     func switchToCameraNode(cameraNode: SCNNode) {
