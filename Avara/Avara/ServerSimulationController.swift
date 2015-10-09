@@ -82,61 +82,79 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         for (_,p) in netPlayers {
             let character = p.character
             
-            character.gameLoopWithInputs(p.activeInputs, mouseDelta: p.readMouseDeltaAndClear(), dT: dT)
+//            let playerTotals = p.calculateTotalsAndClear() // (userInputs: [UserInput: Float32], mouseDelta: CGPoint, deltaTime: Float)
+            //if totalDeltaTime <= <time-since-last>
+            
+            // else {
+            
+            
+            
+//            // first update head orientation
+//            character.gameLoopWithInputs(nil, mouseDelta: playerTotals.mouseDelta, dT: 0)
+//            
+//            // now loop through and update position
+//            // WARN: can be optimizaed by pre-computing here before calling gameLoopWithInputs(mouseDelta:dT:) to avoid duplicate trig
+//            for (activeInput, dT) in playerTotals.userInputs {
+//                character.gameLoopWithInputs(activeInput, mouseDelta: nil, dT: dT)
+//            }
+            
+            //character.gameLoopWithInputs(p.activeInputs, mouseDelta: p.readMouseDeltaAndClear(), dT: dT)
+            
+            
             
             // make camera follow player
             cameraNode.position = SCNVector3(x: character.bodyNode.position.x, y: cameraNode.position.y, z: character.bodyNode.position.z)
         }
         
-        if let server = netServer {
-            // updates ("player states") for our players
-            var updatesToSend = [NetPlayerUpdate]()
-            for (_,player) in netPlayers {
-                let update = player.netPlayerUpdate()
-                
-                var send = false
-                
-                let inputActive = (player.activeInputs.count > 0) || (player.accumulatedMouseDelta != CGPointZero)
-                
-                if let lastUpdate = player.lastSentNetPlayerUpdate {
-                    // here's the last sent update for this player.
-                    if update != lastUpdate {
-                        // player update is different (e.g. they're moved)
-                        send = true
-                    }
-                    else {
-                        if let lastInputActive = player.lastSentInputActive {
-                            if inputActive != lastInputActive {
-                                NSLog("** INPUT CHANGED **")
-                                send = true
-                            }
-                        }
-                    }
-                }
-                else {
-                    // no last sent update for this player. send one.
-                    send = true
-                }
-                
-                if send {
-                    updatesToSend.append(update)
-                    player.lastSentNetPlayerUpdate = update
-                }
-                
-                player.lastSentInputActive = inputActive
-            }
-            
-            if updatesToSend.count > 0 {
-                //NSLog("Sending authorative state sq: %d", updatesToSend[0].sequenceNumber)
-                
-                let updateMessage = ServerUpdateNetMessage(playerUpdates: updatesToSend)
-                let packtData = updateMessage.encoded()
-                server.broadcastPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable) // WARN: change to unreliable
-            }
-            else {
-                //NSLog("No server updates to send.")
-            }
-        }
+//        if let server = netServer {
+//            // updates ("player states") for our players
+//            var updatesToSend = [NetPlayerUpdate]()
+//            for (_,player) in netPlayers {
+//                let update = player.netPlayerUpdate()
+//                
+//                var send = false
+//                
+//                let inputActive = (player.activeInputs.count > 0) || (player.accumulatedMouseDelta != CGPointZero)
+//                
+//                if let lastUpdate = player.lastSentNetPlayerUpdate {
+//                    // here's the last sent update for this player.
+//                    if update != lastUpdate {
+//                        // player update is different (e.g. they're moved)
+//                        send = true
+//                    }
+//                    else {
+//                        if let lastInputActive = player.lastSentInputActive {
+//                            if inputActive != lastInputActive {
+//                                NSLog("** INPUT CHANGED **")
+//                                send = true
+//                            }
+//                        }
+//                    }
+//                }
+//                else {
+//                    // no last sent update for this player. send one.
+//                    send = true
+//                }
+//                
+//                if send {
+//                    updatesToSend.append(update)
+//                    player.lastSentNetPlayerUpdate = update
+//                }
+//                
+//                player.lastSentInputActive = inputActive
+//            }
+//            
+//            if updatesToSend.count > 0 {
+//                //NSLog("Sending authorative state sq: %d", updatesToSend[0].sequenceNumber)
+//                
+//                let updateMessage = ServerUpdateNetMessage(playerUpdates: updatesToSend)
+//                let packtData = updateMessage.encoded()
+//                server.broadcastPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable) // WARN: change to unreliable
+//            }
+//            else {
+//                //NSLog("No server updates to send.")
+//            }
+//        }
     }
     
     func switchToCameraNode(cameraNode: SCNNode) {
@@ -194,19 +212,18 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             case .ClientUpdate:
                 if let player = netPlayers[clientID] {
                     let updateMessage = message as! ClientUpdateNetMessage
-                    let deltaTime = updateMessage.deltaTime
-                    let activeInputs = updateMessage.activeInputs
+                    let userInputs = updateMessage.userInputs
                     let mouseDelta = updateMessage.mouseDelta
                     let sequenceNumber = updateMessage.sequenceNumber!
                     
-                    NSLog("Client update message. dT: %f, active inputs: %@, mouse delta: (%.2f, %.2f), sq: %d",
-                        deltaTime, activeInputs.description, mouseDelta.x, mouseDelta.y, sequenceNumber)
+                    NSLog("Client update message. inputs: %@, mouse delta: (%.2f, %.2f), sq: %d",
+                        userInputs.description, mouseDelta.x, mouseDelta.y, sequenceNumber)
                     
                     player.lastReceivedSequenceNumber = sequenceNumber
                     
-                    // WARN: if sending updates as 30Hz we will need to set inputs until they are seen/cleared from main loop
-                    player.activeInputs = activeInputs
-                    player.addMouseDelta(mouseDelta)
+//                    // WARN: if sending updates as 30Hz we will need to set inputs until they are seen/cleared from main loop
+//                    player.activeInputs = activeInputs
+//                    player.addMouseDelta(mouseDelta)
                 }
                 else {
                     NSLog("No player for ID:  %d", clientID)

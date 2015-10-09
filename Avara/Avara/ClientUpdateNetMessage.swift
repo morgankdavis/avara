@@ -7,7 +7,7 @@
 //
 //  The ganddaddy unreliable client message. Sends player input to server.
 //
-//  FORMAT: [Float32]DeltaTime[UINT16ARRAY]<UserInputs>[Float32]<mouseDeltaX>[Float32]<mouseDeltaY>
+//  FORMAT: [UInt8]TotalInputs[{[UInt8]<UserInput>[Float32]<TotalTime>}][Float32]<MouseDeltaX>[Float32]<MouseDeltaY>
 //
 
 import Foundation
@@ -21,8 +21,9 @@ public class ClientUpdateNetMessage: NetMessage {
     
     override public var     opcode:             NetMessageOpcode { get { return .ClientUpdate } }
     public          var     sequenceNumber:     UInt32?
-    private(set)    var     deltaTime =         Float32(0)
-    private(set)    var     activeInputs =      Set<UserInput>()
+//    private(set)    var     deltaTime =         Float32(0)
+//    private(set)    var     activeInputs =      Set<UserInput>()
+    private(set)    var     userInputs =        [UserInput: Double]()
     private(set)    var     mouseDelta =        CGPointZero
     
     /*****************************************************************************************************/
@@ -34,15 +35,22 @@ public class ClientUpdateNetMessage: NetMessage {
         
         pushUInt32(sequenceNumber!, toData: &encodedData)
         
-        // convert UserInput set into UInt8 array
-        var actionsRawArray = [UInt8]()
-        for a in activeInputs {
-            actionsRawArray.append(a.rawValue)
+        let inputCount = UInt8(userInputs.count)
+        pushUInt8(inputCount, toData: &encodedData)
+        for (input, time) in userInputs {
+            pushUInt8(input.rawValue, toData: &encodedData)
+            pushFloat32(Float32(time), toData: &encodedData)
         }
         
-        pushFloat32(deltaTime, toData: &encodedData)
-        
-        pushUInt8Array(actionsRawArray, toData: &encodedData)
+//        // convert UserInput set into UInt8 array
+//        var actionsRawArray = [UInt8]()
+//        for a in activeInputs {
+//            actionsRawArray.append(a.rawValue)
+//        }
+//
+//        pushFloat32(deltaTime, toData: &encodedData)
+//        
+//        pushUInt8Array(actionsRawArray, toData: &encodedData)
         
         pushCGPoint(mouseDelta, toData: &encodedData)
         
@@ -61,17 +69,28 @@ public class ClientUpdateNetMessage: NetMessage {
             
             sequenceNumber = pullUInt32FromData(&data)
             
-            deltaTime = pullFloat32FromData(&data)
-            
-            let actionsRawArray = pullUInt8ArrayFromData(&data)
-            for a in actionsRawArray {
-                if let action = UserInput(rawValue: a) {
-                    activeInputs.insert(action)
+            let inputCount = pullUInt8FromData(&data)
+            for _ in 0..<inputCount {
+                let inputRaw = pullUInt8FromData(&data)
+                if let input = UserInput(rawValue: inputRaw) {
+                    userInputs[input] = Double(pullFloat32FromData(&data))
                 }
                 else {
-                    NSLog("Unknown UserInput raw value: %d", a) // this would likely only happen due to encoding/transport error...
+                    NSLog("Unknown UserInput raw value: %d", inputRaw) // this would likely only happen due to encoding/transport error...
                 }
             }
+            
+//            deltaTime = pullFloat32FromData(&data)
+            
+//            let actionsRawArray = pullUInt8ArrayFromData(&data)
+//            for a in actionsRawArray {
+//                if let action = UserInput(rawValue: a) {
+//                    activeInputs.insert(action)
+//                }
+//                else {
+//                    NSLog("Unknown UserInput raw value: %d", a) // this would likely only happen due to encoding/transport error...
+//                }
+//            }
             
             mouseDelta = pullCGPointFromData(&data)
         }
@@ -82,9 +101,9 @@ public class ClientUpdateNetMessage: NetMessage {
     // MARK:   Object
     /*****************************************************************************************************/
     
-    public required init(deltaTime: Float32, activeActions: Set<UserInput>, mouseDelta: CGPoint, sequenceNumber: UInt32) {
-        self.deltaTime = deltaTime
-        self.activeInputs = activeActions
+    public required init(userInputs: [UserInput: Double], mouseDelta: CGPoint, sequenceNumber: UInt32) {
+//        self.deltaTime = deltaTime
+        self.userInputs = userInputs
         self.mouseDelta = mouseDelta
         self.sequenceNumber = sequenceNumber
         super.init()

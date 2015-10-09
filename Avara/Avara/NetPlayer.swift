@@ -16,30 +16,71 @@ public class NetPlayer {
     /*****************************************************************************************************/
     
     public          var     lastReceivedSequenceNumber =    UInt32(0) // sequence numbers are unique to each server<->client relationship
-    public          var     activeInputs =                  Set<UserInput>()
-    private(set)    var     accumulatedMouseDelta =         CGPointZero
-    //public          var     netPlayerUpdates =              [NetPlayerUpdate]()
+//    public          var     activeInputs =                  Set<UserInput>()
+//    private(set)    var     accumulatedMouseDelta =         CGPointZero
+    public          var     updateNetMessages =             [ClientUpdateNetMessage]()
     private(set)    var     name:                           String
     private(set)    var     id:                             UInt32
     private(set)    var     character:                      Character
     public          var     lastSentNetPlayerUpdate:        NetPlayerUpdate?
-    public          var     lastSentInputActive:            Bool?
+//    public          var     lastSentInputActive:            Bool?
   
     /*****************************************************************************************************/
     // MARK:   Public
     /*****************************************************************************************************/
     
-    public func readMouseDeltaAndClear() -> CGPoint {
-        let delta = accumulatedMouseDelta
-        accumulatedMouseDelta = CGPointZero
-        return delta
-    }
+//    public func calculateTotalsAndClear() -> (userInputs: [UserInput: Float32], mouseDelta: CGPoint, deltaTime: Float) {
+//        // returns total time spend holding each key (UserInput),
+//        // total mouse delta,
+//        // and total delta period for all buffered updates,
+//        // then clears the client update buffer
+//        
+//        var userInputTotals = [UserInput: Float32]()
+//        var mouseDeltaTotal = CGPointZero
+//        var totalDeltaTime = Float(0)
+//        
+//        for u in updateNetMessages {
+//            // add key down totals
+//            let activeInputs = u.activeInputs
+//            let deltaTime = u.deltaTime
+//            for input in activeInputs {
+//                if let existing = userInputTotals[input] {
+//                    userInputTotals[input] = existing + deltaTime
+//                }
+//                else {
+//                    userInputTotals[input] = deltaTime
+//                }
+//            }
+//            totalDeltaTime += deltaTime
+//            
+//            // add mouse delta totals
+//            let mouseDelta = u.mouseDelta
+//            mouseDeltaTotal.x += mouseDelta.x
+//            mouseDeltaTotal.y += mouseDelta.y
+//        }
+//        
+//        updateNetMessages.removeAll()
+//        
+//        return (userInputTotals, mouseDeltaTotal, totalDeltaTime)
+//    }
     
-    public func addMouseDelta(delta: CGPoint) {
-        accumulatedMouseDelta = CGPoint(
-            x: accumulatedMouseDelta.x + delta.x,
-            y: accumulatedMouseDelta.y + delta.y)
-    }
+    
+    
+//    private func readMouseDeltaAndClear() -> CGPoint {
+//        let delta = accumulatedMouseDelta
+//        accumulatedMouseDelta = CGPointZero
+//        return delta
+//    }
+//    
+//    
+//    
+//    public func addMouseDelta(delta: CGPoint) {
+//        accumulatedMouseDelta = CGPoint(
+//            x: accumulatedMouseDelta.x + delta.x,
+//            y: accumulatedMouseDelta.y + delta.y)
+//    }
+    
+    
     
     public func netPlayerUpdate() -> NetPlayerUpdate {
         if var lastSentSq = lastSentNetPlayerUpdate?.sequenceNumber {

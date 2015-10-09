@@ -21,13 +21,9 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private(set)    var scene =                     SCNScene()
     private         var map:                        Map?
     private         var localCharacter:             Character?
-//    private         var remoteCharacters =          [Character]()
     private         var gameLoopTimer:              NSTimer? // temporary
     private         let flyoverCamera =             FlyoverCamera()
     private         var isFlyoverMode =             false
-//    private         var lastUpdateTime =            Double(0)
-//    private         var deltaTime =                 Double(0)
-    
     
     private         var netClient:                  MKDNetClient?
     private         var sequenceNumber =            UInt32(0)
@@ -38,7 +34,11 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private         var inputActive =               false
     private         var serverOverrideUpdate:       NetPlayerUpdate?
     
-//    private         var receivedNetPlayerUpdates =  [UInt32:NetPlayerUpdate]() // sequenceNum:update
+    
+    
+    private         var netClientAccumUserInputs =  [UserInput: Double]()
+    private         var netClientAccumMouseDelta =  CGPointZero
+    private         var netClientTickTimer:         NSTimer?
     
     /*****************************************************************************************************/
     // MARK:   Public
@@ -59,7 +59,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         netClient?.connect()
     }
-
+    
     /*****************************************************************************************************/
     // MARK:   Internal
     /*****************************************************************************************************/
@@ -87,7 +87,52 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             }
         }
     }
-
+    
+    internal func netClientTickTimer(timer: NSTimer) {
+        NSLog("netClientTickTimer()")
+        
+        
+        
+        
+        //        // check for server overrides before applying stuff
+        //        if let u = serverOverrideUpdate {
+        //            NSLog("-- Server override --")
+        //            localCharacter?.applyServerOverrideUpdate(u)
+        //            serverOverrideUpdate = nil
+        //        }
+        //        localCharacter?.gameLoopWithInputs(activeInput, mouseDelta: mouseDelta, dT: dT)
+        //
+        //        let inputChanged = (lastActiveInput == nil) || (lastMouseDelta == nil) || (activeInput != lastActiveInput!) || (mouseDelta != lastMouseDelta!)
+        //        if inputChanged {
+        // send new state to server
+        if let client = netClient {
+            if client.isConnected {
+                NSLog("-- Client sending --")
+                ++sequenceNumber
+                let updateMessage = ClientUpdateNetMessage(
+                    userInputs: netClientAccumUserInputs,
+                    mouseDelta: netClientAccumMouseDelta,
+                    sequenceNumber:sequenceNumber)
+                //                    let updateMessage = ClientUpdateNetMessage(deltaTime: Float32(dT), activeActions: inputManager.activeInputs, mouseDelta: mouseDelta, sequenceNumber:sequenceNumber)
+                
+                let packtData = updateMessage.encoded()
+                client.sendPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable) // WARN: change to unreliable
+                
+                // reset accumulators
+                netClientAccumUserInputs.removeAll()
+                netClientAccumMouseDelta = CGPointZero
+            }
+        }
+        
+        //            inputActive = (activeInput.count > 0) || (mouseDelta != CGPointZero)
+        //            NSLog("inputActive: %@", (inputActive ? "true" : "false"))
+        //        }
+        //
+        //        lastActiveInput = activeInput
+        //        lastMouseDelta = mouseDelta
+        
+    }
+    
     /*****************************************************************************************************/
     // MARK:   Private
     /*****************************************************************************************************/
@@ -131,36 +176,47 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             let mouseDelta = inputManager.readMouseDeltaAndClear()
             
             
+            // add input to the net client input accumulator
+            
+            for input in activeInput {
+                if let total = netClientAccumUserInputs[input] {
+                    netClientAccumUserInputs[input] = total + Double(dT)
+                }
+                else {
+                    netClientAccumUserInputs[input] = Double(dT)
+                }
+            }
+            netClientAccumMouseDelta = CGPoint(x: netClientAccumMouseDelta.x + mouseDelta.x, y: netClientAccumMouseDelta.y + mouseDelta.y)
+            
+            
             // check for server overrides before applying stuff
             if let u = serverOverrideUpdate {
                 NSLog("-- Server override --")
                 localCharacter?.applyServerOverrideUpdate(u)
                 serverOverrideUpdate = nil
             }
-//            else {
-                localCharacter?.gameLoopWithInputs(activeInput, mouseDelta: mouseDelta, dT: dT)
-                
-                let inputChanged = (lastActiveInput == nil) || (lastMouseDelta == nil) || (activeInput != lastActiveInput!) || (mouseDelta != lastMouseDelta!)
-                if inputChanged {
-                    // send new state to server
-                    if let client = netClient {
-                        if client.isConnected {
-                            NSLog("-- Client sending --")
-                            ++sequenceNumber
-                            let updateMessage = ClientUpdateNetMessage(deltaTime: Float32(dT), activeActions: inputManager.activeInputs, mouseDelta: mouseDelta, sequenceNumber:sequenceNumber)
-                            
-                            let packtData = updateMessage.encoded()
-                            client.sendPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable) // WARN: change to unreliable
-                        }
-                    }
-                    
-                    inputActive = (activeInput.count > 0) || (mouseDelta != CGPointZero)
-                    NSLog("inputActive: %@", (inputActive ? "true" : "false"))
-                }
-                
-                lastActiveInput = activeInput
-                lastMouseDelta = mouseDelta
+            localCharacter?.gameLoopWithInputs(activeInput, mouseDelta: mouseDelta, dT: dT)
+
+//            let inputChanged = (lastActiveInput == nil) || (lastMouseDelta == nil) || (activeInput != lastActiveInput!) || (mouseDelta != lastMouseDelta!)
+//            if inputChanged {
+//                // send new state to server
+//                if let client = netClient {
+//                    if client.isConnected {
+//                        NSLog("-- Client sending --")
+//                        ++sequenceNumber
+//                        let updateMessage = ClientUpdateNetMessage(deltaTime: Float32(dT), activeActions: inputManager.activeInputs, mouseDelta: mouseDelta, sequenceNumber:sequenceNumber)
+//                        
+//                        let packtData = updateMessage.encoded()
+//                        client.sendPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable) // WARN: change to unreliable
+//                    }
+//                }
+//                
+//                inputActive = (activeInput.count > 0) || (mouseDelta != CGPointZero)
+//                NSLog("inputActive: %@", (inputActive ? "true" : "false"))
 //            }
+//            
+//            lastActiveInput = activeInput
+//            lastMouseDelta = mouseDelta
         }
     }
     
@@ -247,21 +303,32 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         }
     }
     
+    private func startNetClientTickTimer() {
+        NSLog("startNetClientTickTimer()")
+        
+        netClientTickTimer = NSTimer.scheduledTimerWithTimeInterval(
+            1.0/NSTimeInterval(NET_CLIENT_TICK_RATE),
+            target: self,
+            selector: "netClientTickTimer:",
+            userInfo: nil,
+            repeats: true)
+    }
+    
     /*****************************************************************************************************/
     // MARK:    SCNSceneRendererDelegate
     /*****************************************************************************************************/
     
     public func renderer(aRenderer: SCNSceneRenderer, updateAtTime time: NSTimeInterval) {
-//        NSLog("renderer(updateAtTime:)")
+        //        NSLog("renderer(updateAtTime:)")
     }
-
+    
     public func renderer(aRenderer: SCNSceneRenderer, didSimulatePhysicsAtTime time: NSTimeInterval) {
-//        NSLog("renderer(didSimulatePhysicsAtTime:)")
-//        
-//        deltaTime = time - lastUpdateTime
-//        lastUpdateTime = time
-//        
-//        gameLoop(CGFloat(deltaTime))
+        //        NSLog("renderer(didSimulatePhysicsAtTime:)")
+        //
+        //        deltaTime = time - lastUpdateTime
+        //        lastUpdateTime = time
+        //
+        //        gameLoop(CGFloat(deltaTime))
         
         if let character = localCharacter {
             character.didSimulatePhysicsAtTime(time)
@@ -298,6 +365,9 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         let helloMessage = ClientHelloNetMessage(name: "gatsby")
         let packtData = helloMessage.encoded()
         client.sendPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable)
+        
+        // WARN: Wait for game start message in future (or whatever)
+        startNetClientTickTimer()
     }
     
     public func client(client: MKDNetClient!, didFailToConnect error: NSError!) {
@@ -313,7 +383,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         parseServerPacket(packetData)
     }
-
+    
     /*****************************************************************************************************/
     // MARK:   Object
     /*****************************************************************************************************/
