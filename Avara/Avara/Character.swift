@@ -237,16 +237,16 @@ public class Character {
             z: bodyNode.position.z - scaledNormal.z)
     }
     
-    public func applyServerOverrideUpdate(overrideUpdate: NetPlayerSnapshot) {
+    public func applyServerOverrideSnapshot(override: NetPlayerSnapshot) {
         // apply the "authoritive" player state from the server
         // set it as our base and let any deltas be calculated from it on the next game loop (probably immediately after this)
 //        NSLog("old bodyNode.position: %@", NSStringFromSCNVector3(bodyNode.position))
 //        NSLog("old bodyNode.rotation: %@", NSStringFromSCNVector4(bodyNode.rotation))
 //        NSLog("old headNode?.eulerAngles: %@", NSStringFromSCNVector3(headNode!.eulerAngles))
         
-        bodyNode.position = overrideUpdate.position
-        bodyNode.rotation = overrideUpdate.bodyRotation
-        headNode?.eulerAngles = overrideUpdate.headEulerAngles
+        bodyNode.position = override.position
+        bodyNode.rotation = override.bodyRotation
+        headNode?.eulerAngles = override.headEulerAngles
         
 //        NSLog("new bodyNode.position: %@", NSStringFromSCNVector3(bodyNode.position))
 //        NSLog("new bodyNode.rotation: %@", NSStringFromSCNVector4(bodyNode.rotation))

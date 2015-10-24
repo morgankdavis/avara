@@ -31,7 +31,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private         var lastActiveInput:            Set<ButtonInput>?
     private         var lastMouseDelta:             CGPoint?
     
-    private         var inputActive =               false
+    //private         var inputActive =               false
     private         var serverOverrideSnapshot:     NetPlayerSnapshot?
     
     
@@ -42,6 +42,8 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     
     
     private         var lastLoopDate:               Double?
+    
+    private         var sentNoInputPacket =         false                       // indicates the client has told the server input has stopped
     
     /*****************************************************************************************************/
     // MARK:   Public
@@ -93,48 +95,53 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     }
     
     internal func clientTickTimer(timer: NSTimer) {
-        NSLog("clientTickTimer()")
+        //NSLog("clientTickTimer()")
         
-        
-        
-        
-        //        // check for server overrides before applying stuff
-        //        if let u = serverOverrideUpdate {
-        //            NSLog("-- Server override --")
-        //            localCharacter?.applyServerOverrideUpdate(u)
-        //            serverOverrideUpdate = nil
-        //        }
-        //        localCharacter?.gameLoopWithInputs(activeInput, mouseDelta: mouseDelta, dT: dT)
-        //
-        //        let inputChanged = (lastActiveInput == nil) || (lastMouseDelta == nil) || (activeInput != lastActiveInput!) || (mouseDelta != lastMouseDelta!)
-        //        if inputChanged {
-        // send new state to server
         if let client = netClient {
             if client.isConnected {
-                NSLog("-- Client sending --")
-                ++sequenceNumber
-                let updateMessage = ClientUpdateNetMessage(
-                    buttonInputs: clientAccumButtonInputs,
-                    mouseDelta: clientAccumMouseDelta,
-                    sequenceNumber: sequenceNumber)
-                //                    let updateMessage = ClientUpdateNetMessage(deltaTime: Float32(dT), activeActions: inputManager.activeInputs, mouseDelta: mouseDelta, sequenceNumber:sequenceNumber)
                 
-                let packtData = updateMessage.encoded()
-                client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue , flags: .Reliable) // WARN: change to unreliable
-                
-                // reset accumulators
-                clientAccumButtonInputs = [ButtonInput: Double]()
-                clientAccumMouseDelta = CGPointZero
+                let newInput = clientAccumButtonInputs.count > 0 || abs(clientAccumMouseDelta.x) > 0 || abs(clientAccumMouseDelta.y) > 0
+                if newInput {
+                    //NSLog("-- CLIENT SENDING HIGH --")
+                    
+                    ++sequenceNumber
+                    let updateMessage = ClientUpdateNetMessage(
+                        buttonInputs: clientAccumButtonInputs,
+                        mouseDelta: clientAccumMouseDelta,
+                        sequenceNumber: sequenceNumber)
+   
+                    let packtData = updateMessage.encoded()
+                    client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue , flags: .Reliable) // WARN: change to unreliable
+                    
+                    // reset accumulators
+                    clientAccumButtonInputs = [ButtonInput: Double]()
+                    clientAccumMouseDelta = CGPointZero
+                    
+                    sentNoInputPacket = false
+                }
+                else { // no input
+                    if !sentNoInputPacket {
+                        // send a single packet indicating there is no new input
+                        
+                        //NSLog("-- CLIENT SENDING LOW --")
+                        
+                        ++sequenceNumber
+                        let updateMessage = ClientUpdateNetMessage(
+                            buttonInputs: clientAccumButtonInputs,
+                            mouseDelta: clientAccumMouseDelta,
+                            sequenceNumber: sequenceNumber)
+                        
+                        let packtData = updateMessage.encoded()
+                        client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue , flags: .Reliable) // WARN: change to unreliable
+                        
+                        sentNoInputPacket = true
+                    }
+                    else {
+                        //NSLog("-- CLIENT SKIPPING --")
+                    }
+                }
             }
         }
-        
-        //            inputActive = (activeInput.count > 0) || (mouseDelta != CGPointZero)
-        //            NSLog("inputActive: %@", (inputActive ? "true" : "false"))
-        //        }
-        //
-        //        lastActiveInput = activeInput
-        //        lastMouseDelta = mouseDelta
-        
     }
     
     /*****************************************************************************************************/
@@ -199,14 +206,29 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 clientAccumMouseDelta = CGPoint(x: clientAccumMouseDelta.x + mouseDelta.x, y: clientAccumMouseDelta.y + mouseDelta.y)
                 
                 
+                // check for server override before applying local input
+                if let override = serverOverrideSnapshot {
+                    NSLog("** SERVER OVERRIDE **");
+                    
+                    localCharacter?.applyServerOverrideSnapshot(override)
+                    serverOverrideSnapshot = nil
+                }
+                else {
+//                    localCharacter?.updateForInputs(activeButtonInput, mouseDelta: mouseDelta, dT: dT)
+//                    localCharacter?.updateForLoopDelta(dT)
+                }
+                
+                localCharacter?.updateForInputs(activeButtonInput, mouseDelta: mouseDelta, dT: dT)
+                localCharacter?.updateForLoopDelta(dT)
+                
                 // check for server overrides before applying stuff
                 //            if let u = serverOverrideUpdate {
                 //                NSLog("-- Server override --")
                 //                localCharacter?.applyServerOverrideUpdate(u)
                 //                serverOverrideUpdate = nil
                 //            }
-                localCharacter?.updateForInputs(activeButtonInput, mouseDelta: mouseDelta, dT: dT)
-                localCharacter?.updateForLoopDelta(dT)
+//                localCharacter?.updateForInputs(activeButtonInput, mouseDelta: mouseDelta, dT: dT)
+//                localCharacter?.updateForLoopDelta(dT)
                 //localCharacter?.gameLoopWithInputs(activeInput, mouseDelta: mouseDelta, dT: dT)
                 
                 //            let inputChanged = (lastActiveInput == nil) || (lastMouseDelta == nil) || (activeInput != lastActiveInput!) || (mouseDelta != lastMouseDelta!)
@@ -275,8 +297,8 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         }
     }
     
-    private func parseServerPacket(packetData: NSData) {
-        //NSLog("ClientSimulationController.parseServerPacket(%@)", packetData)
+    private func serverPacketReceived(packetData: NSData) {
+        //NSLog("ClientSimulationController.serverPacketReceived(%@)", packetData)
         
         if let message = MessageFromPayloadData(packetData) {
             switch message.opcode {
@@ -299,8 +321,8 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 }
                 
                 if let u = mySnapshot {
-                    //NSLog("Recv update sq: %d, sent sq: %d, inputActive: %@", u.sequenceNumber, sequenceNumber, (inputActive ? "true" : "false"))
-                    if (u.sequenceNumber >= sequenceNumber) && !inputActive {
+                    //NSLog("Server update message with sq: %d, prev sent sq: %d", u.sequenceNumber, sequenceNumber)s
+                    if (u.sequenceNumber >= sequenceNumber) && sentNoInputPacket {
                         serverOverrideSnapshot = u // game loop will see and correct player state
                     }
                     sequenceNumber = u.sequenceNumber
@@ -398,7 +420,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     public func client(client: MKDNetClient!, didRecievePacket packetData: NSData!, channel: UInt8) {
         //NSLog("client(%@, didRecievePacket: %@, channel: %d", self, packetData, channel)
         
-        parseServerPacket(packetData)
+        serverPacketReceived(packetData)
     }
     
     /*****************************************************************************************************/

@@ -28,6 +28,8 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     
     private         var lastLoopDate:               Double?
     
+    private         var sentNoChangePacket =        [UInt32:Bool]()                 // id:flag -- indicates the server has sent at least one duplicate packet
+    
     /*****************************************************************************************************/
     // MARK:   Public
     /*****************************************************************************************************/
@@ -56,12 +58,14 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     }
     
     internal func serverTickTimer(timer: NSTimer) {
-        NSLog("serverTickTimer()")
+        //NSLog("serverTickTimer()")
         
         // broadcast state to all clients
         
         var snapshotsToSend = [NetPlayerSnapshot]()
         for (id, player) in netPlayers {
+            //NSLog("-- PLAYER ID %d --", id)
+            
             // make a snapshot for each player
             // if that snapshot is different from player.lastSentPlayerSnapshot, add it to the list to send
             
@@ -76,19 +80,36 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             
             
             if snapshot != player.lastSentNetPlayerSnapshot {
-                NSLog("SERVER SENDING")
+                //NSLog("-- SERVER SENDING --")
                 snapshotsToSend.append(snapshot)
                 player.lastSentNetPlayerSnapshot = snapshot
                 player.lastReceivedSequenceNumber++
+                
+                sentNoChangePacket[id] = false
             }
             else {
-                NSLog("SERVER MEH")
+                if sentNoChangePacket[id] == nil || sentNoChangePacket[id] == false {
+                    // send a single packet indicating there is no new input
+                    
+                    //NSLog("-- SERVER SENDING DUPLICATE --")
+                    
+                    snapshotsToSend.append(snapshot)
+                    player.lastSentNetPlayerSnapshot = snapshot
+                    player.lastReceivedSequenceNumber++
+                    
+                    sentNoChangePacket[id] = true
+                }
+                else {
+                    //NSLog("-- SERVER SKIPPING --")
+                }
             }
             
-            let updateMessage = ServerUpdateNetMessage(playerSnapshots: snapshotsToSend)
-            let packtData = updateMessage.encoded()
-            if let server = netServer {
-                server.broadcastPacket(packtData, channel: NetChannel.Live.rawValue, flags: .Reliable) // WARN: change to unreliable
+            if snapshotsToSend.count > 0 {
+                let updateMessage = ServerUpdateNetMessage(playerSnapshots: snapshotsToSend)
+                let packtData = updateMessage.encoded()
+                if let server = netServer {
+                    server.broadcastPacket(packtData, channel: NetChannel.Signaling.rawValue, flags: .Reliable) // WARN: change to unreliable
+                }
             }
         }
     }
@@ -135,7 +156,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
 //                if inputs.buttonInputs.count > 0 {
 //                    NSLog("pushInputs: %@", inputs.buttonInputs.description)
 //                }
-//                if inputs.mouseDelta.x > 0 || inputs.mouseDelta.y > 0 {
+//                if abs(inputs.mouseDelta.x) > 0 || abs(inputs.mouseDelta.y) > 0 {
 //                    NSLog("mouseDelta: {%.2f, %.2f}", inputs.mouseDelta.x, inputs.mouseDelta.y)
 //                }
 //                if inputs.largestDuration > 0 {
@@ -202,8 +223,8 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         }
     }
     
-    private func parseClientPacket(packetData: NSData, clientID: UInt32) {
-        //NSLog("ServerSimulationController.parseClientPacket(%@, clientID: %d)", packetData, clientID)
+    private func clientPacketReceived(packetData: NSData, clientID: UInt32) {
+        //NSLog("ServerSimulationController.clientPacketReceived(%@, clientID: %d)", packetData, clientID)
         
         if let message = MessageFromPayloadData(packetData) {
             switch message.opcode {
@@ -226,8 +247,8 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                     let mouseDelta = updateMessage.mouseDelta
                     let sequenceNumber = updateMessage.sequenceNumber!
                     
-                    NSLog("Client update message. inputs: %@, mouse delta: (%.2f, %.2f), sq: %d",
-                        userInputs.description, mouseDelta.x, mouseDelta.y, sequenceNumber)
+//                    NSLog("Client update message. inputs: %@, mouse delta: (%.2f, %.2f), sq: %d",
+//                        userInputs.description, mouseDelta.x, mouseDelta.y, sequenceNumber)
                     
                     player.lastReceivedSequenceNumber = sequenceNumber
                     
@@ -304,7 +325,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     public func server(server: MKDNetServer!, didRecievePacket packetData: NSData!, fromClient client: UInt32, channel: UInt8) {
         //NSLog("server(%@, didRecievePacket: %@ fromClient: %d channel: %d)", server, packetData, client, channel)
         
-        parseClientPacket(packetData, clientID: client)
+        clientPacketReceived(packetData, clientID: client)
     }
 
     /*****************************************************************************************************/
