@@ -31,19 +31,14 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private         var lastActiveInput:            Set<ButtonInput>?
     private         var lastMouseDelta:             CGPoint?
     
-    //private         var inputActive =               false
     private         var serverOverrideSnapshot:     NetPlayerSnapshot?
-    
-    
     
     private         var clientAccumButtonInputs =   [ButtonInput: Double]()
     private         var clientAccumMouseDelta =     CGPointZero
     private         var clientTickTimer:            NSTimer?
-    
+    private         var sentNoInputPacket =         false
     
     private         var lastLoopDate:               Double?
-    
-    private         var sentNoInputPacket =         false                       // indicates the client has told the server input has stopped
     
     /*****************************************************************************************************/
     // MARK:   Public
@@ -213,44 +208,9 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                     localCharacter?.applyServerOverrideSnapshot(override)
                     serverOverrideSnapshot = nil
                 }
-                else {
-//                    localCharacter?.updateForInputs(activeButtonInput, mouseDelta: mouseDelta, dT: dT)
-//                    localCharacter?.updateForLoopDelta(dT)
-                }
-                
+
                 localCharacter?.updateForInputs(activeButtonInput, mouseDelta: mouseDelta, dT: dT)
                 localCharacter?.updateForLoopDelta(dT)
-                
-                // check for server overrides before applying stuff
-                //            if let u = serverOverrideUpdate {
-                //                NSLog("-- Server override --")
-                //                localCharacter?.applyServerOverrideUpdate(u)
-                //                serverOverrideUpdate = nil
-                //            }
-//                localCharacter?.updateForInputs(activeButtonInput, mouseDelta: mouseDelta, dT: dT)
-//                localCharacter?.updateForLoopDelta(dT)
-                //localCharacter?.gameLoopWithInputs(activeInput, mouseDelta: mouseDelta, dT: dT)
-                
-                //            let inputChanged = (lastActiveInput == nil) || (lastMouseDelta == nil) || (activeInput != lastActiveInput!) || (mouseDelta != lastMouseDelta!)
-                //            if inputChanged {
-                //                // send new state to server
-                //                if let client = netClient {
-                //                    if client.isConnected {
-                //                        NSLog("-- Client sending --")
-                //                        ++sequenceNumber
-                //                        let updateMessage = ClientUpdateNetMessage(deltaTime: Float32(dT), activeActions: inputManager.activeInputs, mouseDelta: mouseDelta, sequenceNumber:sequenceNumber)
-                //
-                //                        let packtData = updateMessage.encoded()
-                //                        client.sendPacket(packtData, channel: NetChannel.Control.rawValue , flags: .Reliable) // WARN: change to unreliable
-                //                    }
-                //                }
-                //
-                //                inputActive = (activeInput.count > 0) || (mouseDelta != CGPointZero)
-                //                NSLog("inputActive: %@", (inputActive ? "true" : "false"))
-                //            }
-                //
-                //            lastActiveInput = activeInput
-                //            lastMouseDelta = mouseDelta
             }
             
             
@@ -421,6 +381,10 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         //NSLog("client(%@, didRecievePacket: %@, channel: %d", self, packetData, channel)
         
         serverPacketReceived(packetData)
+    }
+    
+    public func client(client: MKDNetClient!, didUpdateUploadRate bytesUpPerSec: UInt, downloadRate bytesDownPerSec: UInt) {
+        NSLog("NET RATE: %.2fKB/sec up, %.2fKB/sec down", Double(bytesUpPerSec)/1024.0, Double(bytesDownPerSec)/1024.0);
     }
     
     /*****************************************************************************************************/

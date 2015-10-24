@@ -36,4 +36,7 @@
 - (void)clientDidDisconnect:(MKDNetClient *)client;
 - (void)client:(MKDNetClient *)client didRecievePacket:(NSData *)packetData channel:(uint8_t)channel;
 
+@optional
+- (void)client:(MKDNetClient *)client didUpdateUploadRate:(NSUInteger)bytesUpPerSec downloadRate:(NSUInteger)bytesDownPerSec;
+
 @end

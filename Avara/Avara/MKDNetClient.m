@@ -10,9 +10,15 @@
 #import <stdlib.h>
 
 
+#define BANDWIDTH_AVERAGE_INTERVAL      0.5 // sec
+
+
 @interface MKDNetClient ()
 
 - (void)eventLoop;
+- (void)sendDelegateConnect;
+- (void)sendDelegateReceive:(NSArray *)args;
+- (void)checkAverages;
 
 @property(atomic, strong, readwrite)	NSString					*address;
 @property(atomic, assign, readwrite)	uint16_t					port;
@@ -23,6 +29,10 @@
 @property(atomic, strong)				dispatch_queue_t			eventQueue;
 @property(atomic, assign, readwrite)	BOOL						isConnected;
 @property(atomic, assign, readwrite)    u_int32_t                   peerID;
+
+@property(atomic, assign)               NSUInteger                  bytesSentSinceLastAverage;
+@property(atomic, assign)               NSUInteger                  bytesReceivedSinceLastAverage;
+@property(atomic, strong)               NSDate                      *lastBandwidthAverageDate;
 
 @end
 
@@ -103,6 +113,8 @@
 					   packet);
 		
 		enet_host_flush(self.host);
+        
+        self.bytesSentSinceLastAverage += [packetData length];
 	}
 	else {
 		NSLog(@"Not connected!");
@@ -125,9 +137,11 @@
 					break;
 					
 				case ENET_EVENT_TYPE_RECEIVE: {
-					NSData *packetData = [[NSData alloc] initWithBytes:event.packet->data length:event.packet->dataLength];
+                    NSData *packetData = [[NSData alloc] initWithBytes:event.packet->data length:event.packet->dataLength];
 					//[self.delegate client:self didRecievePacket:packetData channel:event.channelID];
                     [self performSelectorOnMainThread:@selector(sendDelegateReceive:) withObject:@[packetData, @(event.channelID)] waitUntilDone:YES];
+                    
+                    self.bytesReceivedSinceLastAverage += event.packet->dataLength;
 					break; }
 					
 				case ENET_EVENT_TYPE_DISCONNECT:
@@ -136,8 +150,9 @@
 					
 				default:
 					break;
-			}
+			} 
 		}
+        [self performSelectorOnMainThread:@selector(checkAverages) withObject:nil waitUntilDone:NO];
 	}
 }
 
@@ -149,6 +164,27 @@
 - (void)sendDelegateReceive:(NSArray *)args
 {
     [self.delegate client:self didRecievePacket:args[0] channel:[args[1] unsignedIntValue]];
+}
+
+- (void)checkAverages
+{
+    float timeSinceLastAverage = [[NSDate date] timeIntervalSinceDate:self.lastBandwidthAverageDate];
+    if (!self.lastBandwidthAverageDate || timeSinceLastAverage > BANDWIDTH_AVERAGE_INTERVAL) {
+        
+        float bytesUpSec = self.bytesSentSinceLastAverage / timeSinceLastAverage;
+        float bytesDownSec = self.bytesReceivedSinceLastAverage / timeSinceLastAverage;
+        
+//        NSLog(@"bytesUpSec: %.2f/sec", bytesUpSec/1024.0);
+//        NSLog(@"bytesDownSec: %.2f/sec", bytesDownSec/1024.0);
+        
+        if ([self.delegate respondsToSelector:@selector(client:didUpdateUploadRate:downloadRate:)]) {
+            [self.delegate client:self didUpdateUploadRate:bytesUpSec downloadRate:bytesDownSec];
+        }
+        
+        self.bytesSentSinceLastAverage = 0;
+        self.bytesReceivedSinceLastAverage = 0;
+        self.lastBandwidthAverageDate = [NSDate date];
+    }
 }
 
 @end

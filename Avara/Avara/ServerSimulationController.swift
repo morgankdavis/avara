@@ -25,10 +25,9 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private         var cameraNode =                SCNNode()
     
     private         var serverTickTimer:            NSTimer?
+    private         var sentNoChangePacket =        [UInt32:Bool]()                 // id:sent
     
     private         var lastLoopDate:               Double?
-    
-    private         var sentNoChangePacket =        [UInt32:Bool]()                 // id:flag -- indicates the server has sent at least one duplicate packet
     
     /*****************************************************************************************************/
     // MARK:   Public
@@ -76,8 +75,6 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 position: player.character.bodyNode.position,
                 bodyRotation: player.character.bodyNode.rotation,
                 headEulerAngles: player.character.headNode!.eulerAngles)
-            
-            
             
             if snapshot != player.lastSentNetPlayerSnapshot {
                 //NSLog("-- SERVER SENDING --")
@@ -254,10 +251,6 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                     
                     player.addInputs(userInputs)
                     player.addMouseDelta(mouseDelta)
-                    
-//                    // WARN: if sending updates as 30Hz we will need to set inputs until they are seen/cleared from main loop
-//                    player.activeInputs = activeInputs
-//                    player.addMouseDelta(mouseDelta)
                 }
                 else {
                     NSLog("No player for ID:  %d", clientID)
