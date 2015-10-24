@@ -13,7 +13,7 @@ import Foundation
 
 
 // WARN: Temporary. This mapping will eventually reside as a user preference
-public func UserInputForKey(key: Key) -> UserInput? {
+public func ButtonInputForKey(key: Key) -> ButtonInput? {
     switch key {
     case .W:                        return .MoveForward
     case .A:                        return .TurnLeft
@@ -29,7 +29,7 @@ public func UserInputForKey(key: Key) -> UserInput? {
 }
 
 
-public enum UserInput: UInt8, CustomStringConvertible {
+public enum ButtonInput: UInt8, CustomStringConvertible {
     case MoveForward =      1
     case MoveBackward =     2
     case TurnLeft =         3
@@ -137,8 +137,8 @@ public class InputManager: NSObject, MKDDirectMouseHelperDelegate {
     /*****************************************************************************************************/
     
     public struct Notifications {
-        struct DidBeginUserInput {
-            static let name = "DidBeginUserInputNotification"
+        struct DidBeginButtonInput {
+            static let name = "DidBeginButtonInputNotification"
             struct UserInfoKeys {
                 static let inputRawValue = "inputRawValue"
             }
@@ -150,7 +150,7 @@ public class InputManager: NSObject, MKDDirectMouseHelperDelegate {
     /*****************************************************************************************************/
     
     private(set)    var directMouseHelper:              MKDDirectMouseHelper?
-    private(set)    var activeInputs =                  Set<UserInput>()
+    private(set)    var activeButtonInputs =            Set<ButtonInput>()
     private         var accumulatedMouseDelta =         CGPointZero
     
     /*****************************************************************************************************/
@@ -169,8 +169,8 @@ public class InputManager: NSObject, MKDDirectMouseHelperDelegate {
         directMouseHelper = nil
     }
     
-    public func isInputActive(action: UserInput) -> Bool {
-        return activeInputs.contains(action)
+    public func isInputActive(action: ButtonInput) -> Bool {
+        return activeButtonInputs.contains(action)
     }
     
     public func readMouseDeltaAndClear() -> CGPoint {
@@ -187,24 +187,24 @@ public class InputManager: NSObject, MKDDirectMouseHelperDelegate {
     
     public func updateKeyCode(keyCode: UInt16, pressed: Bool) {
         if let key = Key(rawValue: Int(keyCode)) {
-            if let action = UserInputForKey(key) {
+            if let action = ButtonInputForKey(key) {
                 
-                var prevInputs = Set<UserInput>()
+                var prevInputs = Set<ButtonInput>()
                 // this is super lame but can't seem to find a better copy/clone method
-                for a in activeInputs {
+                for a in activeButtonInputs {
                     prevInputs.insert(a)
                 }
                 
                 if pressed {
-                    activeInputs.insert(action)
+                    activeButtonInputs.insert(action)
                 }
                 else {
-                    activeInputs.remove(action)
+                    activeButtonInputs.remove(action)
                 }
                 
-                if activeInputs != prevInputs {
+                if activeButtonInputs != prevInputs {
                     let str = NSMutableString()
-                    for a in activeInputs {
+                    for a in activeButtonInputs {
                         str.appendString(NSString(format: "%@, ", a.description) as String)
                     }
                     //NSLog("Active user inputs: %@", str)
@@ -215,7 +215,7 @@ public class InputManager: NSObject, MKDDirectMouseHelperDelegate {
                 }
             }
             else {
-                NSLog("No user input bound to key: %@", key.description)
+                NSLog("No button input bound to key: %@", key.description)
             }
         }
         else {
@@ -261,11 +261,11 @@ public class InputManager: NSObject, MKDDirectMouseHelperDelegate {
     // MARK:   Private
     /*****************************************************************************************************/
     
-    private func didBeginUserInput(action: UserInput) {
+    private func didBeginUserInput(action: ButtonInput) {
         NSNotificationCenter.defaultCenter().postNotificationName(
-            Notifications.DidBeginUserInput.name,
+            Notifications.DidBeginButtonInput.name,
             object: nil,
-            userInfo: [Notifications.DidBeginUserInput.UserInfoKeys.inputRawValue: Int(action.rawValue)])
+            userInfo: [Notifications.DidBeginButtonInput.UserInfoKeys.inputRawValue: Int(action.rawValue)])
     }
     
     /*****************************************************************************************************/

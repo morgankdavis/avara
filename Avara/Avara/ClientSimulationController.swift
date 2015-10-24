@@ -28,15 +28,15 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private         var netClient:                  MKDNetClient?
     private         var sequenceNumber =            UInt32(0)
     
-    private         var lastActiveInput:            Set<UserInput>?
+    private         var lastActiveInput:            Set<ButtonInput>?
     private         var lastMouseDelta:             CGPoint?
     
     private         var inputActive =               false
-    private         var serverOverrideUpdate:       NetPlayerUpdate?
+    private         var serverOverrideSnapshot:     NetPlayerSnapshot?
     
     
     
-    private         var clientAccumUserInputs =     [UserInput: Double]()
+    private         var clientAccumButtonInputs =   [ButtonInput: Double]()
     private         var clientAccumMouseDelta =     CGPointZero
     private         var clientTickTimer:            NSTimer?
     
@@ -75,8 +75,8 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     internal func inputManagerDidBeginUserInputNotification(note: NSNotification) {
         //NSLog("inputManagerDidBeginUserInputNotification()")
         
-        if let inputRawValue = note.userInfo?[InputManager.Notifications.DidBeginUserInput.UserInfoKeys.inputRawValue] as? Int {
-            if let input = UserInput(rawValue: UInt8(inputRawValue)) {
+        if let inputRawValue = note.userInfo?[InputManager.Notifications.DidBeginButtonInput.UserInfoKeys.inputRawValue] as? Int {
+            if let input = ButtonInput(rawValue: UInt8(inputRawValue)) {
                 NSLog("Input began: %@", input.description)
                 
                 switch input {
@@ -114,7 +114,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 NSLog("-- Client sending --")
                 ++sequenceNumber
                 let updateMessage = ClientUpdateNetMessage(
-                    userInputs: clientAccumUserInputs,
+                    buttonInputs: clientAccumButtonInputs,
                     mouseDelta: clientAccumMouseDelta,
                     sequenceNumber: sequenceNumber)
                 //                    let updateMessage = ClientUpdateNetMessage(deltaTime: Float32(dT), activeActions: inputManager.activeInputs, mouseDelta: mouseDelta, sequenceNumber:sequenceNumber)
@@ -123,7 +123,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue , flags: .Reliable) // WARN: change to unreliable
                 
                 // reset accumulators
-                clientAccumUserInputs = [UserInput: Double]()
+                clientAccumButtonInputs = [ButtonInput: Double]()
                 clientAccumMouseDelta = CGPointZero
             }
         }
@@ -156,7 +156,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         NSNotificationCenter.defaultCenter().addObserver(
             self,
             selector: "inputManagerDidBeginUserInputNotification:",
-            name: InputManager.Notifications.DidBeginUserInput.name,
+            name: InputManager.Notifications.DidBeginButtonInput.name,
             object: nil)
         
         netClient = MKDNetClient(destinationAddress: "127.0.0.1", port: NET_SERVER_PORT, maxChannels: NET_MAX_CHANNELS, delegate: self)
@@ -179,21 +179,21 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             }
             
             if isFlyoverMode {
-                flyoverCamera.gameLoopWithInputs(inputManager.activeInputs, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
+                flyoverCamera.gameLoopWithInputs(inputManager.activeButtonInputs, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
                 windowController?.renderView?.play(self) // why the fuck must we do this?? (force re-render)
             }
             else {
-                let activeInput = inputManager.activeInputs
+                let activeButtonInput = inputManager.activeButtonInputs
                 let mouseDelta = inputManager.readMouseDeltaAndClear()
                 
                 
                 // add input to the net client input accumulator
-                for input in activeInput {
-                    if let total = clientAccumUserInputs[input] {
-                        clientAccumUserInputs[input] = total + Double(dT)
+                for input in activeButtonInput {
+                    if let total = clientAccumButtonInputs[input] {
+                        clientAccumButtonInputs[input] = total + Double(dT)
                     }
                     else {
-                        clientAccumUserInputs[input] = Double(dT)
+                        clientAccumButtonInputs[input] = Double(dT)
                     }
                 }
                 clientAccumMouseDelta = CGPoint(x: clientAccumMouseDelta.x + mouseDelta.x, y: clientAccumMouseDelta.y + mouseDelta.y)
@@ -205,7 +205,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 //                localCharacter?.applyServerOverrideUpdate(u)
                 //                serverOverrideUpdate = nil
                 //            }
-                localCharacter?.updateForInputs(activeInput, mouseDelta: mouseDelta, dT: dT)
+                localCharacter?.updateForInputs(activeButtonInput, mouseDelta: mouseDelta, dT: dT)
                 localCharacter?.updateForLoopDelta(dT)
                 //localCharacter?.gameLoopWithInputs(activeInput, mouseDelta: mouseDelta, dT: dT)
                 
@@ -284,24 +284,24 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             case .ServerUpdate:
                 let updateMessage = message as! ServerUpdateNetMessage
                 
-                // TODO: loop through NetPlayerUpdates
+                // TODO: loop through NetPlayerSnapshots
                 // for one matching our ID, perform reconciliation
                 // for others, find their characters and update accordingly
                 
                 
                 // WARN: there is probably a functional operation for this
-                var myUpdate: NetPlayerUpdate?
-                for u in updateMessage.playerUpdates {
+                var mySnapshot: NetPlayerSnapshot?
+                for u in updateMessage.playerSnapshots {
                     if u.id == netClient!.peerID {
-                        myUpdate = u
+                        mySnapshot = u
                         break
                     }
                 }
                 
-                if let u = myUpdate {
+                if let u = mySnapshot {
                     //NSLog("Recv update sq: %d, sent sq: %d, inputActive: %@", u.sequenceNumber, sequenceNumber, (inputActive ? "true" : "false"))
                     if (u.sequenceNumber >= sequenceNumber) && !inputActive {
-                        serverOverrideUpdate = u // game loop will see and correct player state
+                        serverOverrideSnapshot = u // game loop will see and correct player state
                     }
                     sequenceNumber = u.sequenceNumber
                 }

@@ -16,7 +16,7 @@ let SCN_DEBUG_OPTIONS: SCNDebugOptions =    [.ShowPhysicsShapes, .ShowBoundingBo
 
 let PHYSICS_TIMESTEP =                      1.0/120.0
 
-let NET_SERVER_TICK_RATE =                  CGFloat(0.25) // Hz
+let NET_SERVER_TICK_RATE =                  CGFloat(2.0) // Hz
 let NET_CLIENT_TICK_RATE =                  CGFloat(4.0) // Hz
 
 let DIRECT_MOUSE_ENABLED =                  true
@@ -29,6 +29,6 @@ let NET_MAX_CHANNELS =                      UInt8(4)
 
 
 enum NetChannel: UInt8 {
-    case Signaling =      0
+    case Signaling =    0
     case Live =         1
 }

@@ -26,7 +26,6 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     
     private         var serverTickTimer:            NSTimer?
     
-    
     private         var lastLoopDate:               Double?
     
     /*****************************************************************************************************/
@@ -60,6 +59,38 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         NSLog("serverTickTimer()")
         
         // broadcast state to all clients
+        
+        var snapshotsToSend = [NetPlayerSnapshot]()
+        for (id, player) in netPlayers {
+            // make a snapshot for each player
+            // if that snapshot is different from player.lastSentPlayerSnapshot, add it to the list to send
+            
+            // TODO: add convenience method to NetPlayer to make its own snapshot?
+            let snapshot = NetPlayerSnapshot(
+                sequenceNumber: player.lastReceivedSequenceNumber+1,
+                id: id,
+                position: player.character.bodyNode.position,
+                bodyRotation: player.character.bodyNode.rotation,
+                headEulerAngles: player.character.headNode!.eulerAngles)
+            
+            
+            
+            if snapshot != player.lastSentNetPlayerSnapshot {
+                NSLog("SERVER SENDING")
+                snapshotsToSend.append(snapshot)
+                player.lastSentNetPlayerSnapshot = snapshot
+                player.lastReceivedSequenceNumber++
+            }
+            else {
+                NSLog("SERVER MEH")
+            }
+            
+            let updateMessage = ServerUpdateNetMessage(playerSnapshots: snapshotsToSend)
+            let packtData = updateMessage.encoded()
+            if let server = netServer {
+                server.broadcastPacket(packtData, channel: NetChannel.Live.rawValue, flags: .Reliable) // WARN: change to unreliable
+            }
+        }
     }
 
     /*****************************************************************************************************/
@@ -85,6 +116,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         scene.rootNode.addChildNode(cameraNode)
         
         netServer = MKDNetServer(port: NET_SERVER_PORT, maxClients: NET_MAX_CLIENTS, maxChannels: NET_MAX_CHANNELS, delegate: self)
+        startServerTickTimer();
     }
     
     private func gameLoop() {
@@ -98,48 +130,22 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             
             for (_, player) in netPlayers {
                 let character = player.character
+                let inputs = player.readAndClearAccums() //(buttonInputs: [ButtonInput: Double], mouseDelta: CGPoint, largestDuration: Double)
                 
+//                if inputs.buttonInputs.count > 0 {
+//                    NSLog("pushInputs: %@", inputs.buttonInputs.description)
+//                }
+//                if inputs.mouseDelta.x > 0 || inputs.mouseDelta.y > 0 {
+//                    NSLog("mouseDelta: {%.2f, %.2f}", inputs.mouseDelta.x, inputs.mouseDelta.y)
+//                }
+//                if inputs.largestDuration > 0 {
+//                    NSLog("largestDuration: %f", inputs.largestDuration)
+//                }
                 
-                let inputs = player.readAndClearAccums() //(pushInputs: [UserInput: Double], mouseDelta: CGPoint, largestDuration: Double)
+                // WARN: SANITY CHECK CLIENT INPUT TIME DELTAS
                 
-                //            if inputs.pushInputs.count > 0 {
-                //                NSLog("pushInputs: %@", inputs.pushInputs.description)
-                //
-                //            }
-                
-                if inputs.pushInputs.count > 0 {
-                    NSLog("pushInputs: %@", inputs.pushInputs.description)
-                }
-                if inputs.mouseDelta.x > 0 || inputs.mouseDelta.y > 0 {
-                    NSLog("mouseDelta: {%.2f, %.2f}", inputs.mouseDelta.x, inputs.mouseDelta.y)
-                }
-                if inputs.largestDuration > 0 {
-                    NSLog("largestDuration: %f", inputs.largestDuration)
-                }
-                
-                character.updateForInputs(inputs.pushInputs, mouseDelta: inputs.mouseDelta)
+                character.updateForInputs(inputs.buttonInputs, mouseDelta: inputs.mouseDelta)
                 character.updateForLoopDelta(dT)
-                
-                
-                
-                //            let playerTotals = p.calculateTotalsAndClear() // (userInputs: [UserInput: Float32], mouseDelta: CGPoint, deltaTime: Float)
-                //if totalDeltaTime <= <time-since-last>
-                
-                // else {
-                
-                
-                
-                //            // first update head orientation
-                //            character.gameLoopWithInputs(nil, mouseDelta: playerTotals.mouseDelta, dT: 0)
-                //
-                //            // now loop through and update position
-                //            // WARN: can be optimizaed by pre-computing here before calling gameLoopWithInputs(mouseDelta:dT:) to avoid duplicate trig
-                //            for (activeInput, dT) in playerTotals.userInputs {
-                //                character.gameLoopWithInputs(activeInput, mouseDelta: nil, dT: dT)
-                //            }
-                
-                //character.gameLoopWithInputs(p.activeInputs, mouseDelta: p.readMouseDeltaAndClear(), dT: dT)
-                
                 
                 
                 // make camera follow player
@@ -216,7 +222,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             case .ClientUpdate:
                 if let player = netPlayers[clientID] {
                     let updateMessage = message as! ClientUpdateNetMessage
-                    let userInputs = updateMessage.userInputs
+                    let userInputs = updateMessage.buttonInputs
                     let mouseDelta = updateMessage.mouseDelta
                     let sequenceNumber = updateMessage.sequenceNumber!
                     

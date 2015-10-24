@@ -41,18 +41,18 @@ public class Character {
     // MARK:   Public
     /*****************************************************************************************************/
     
-    public func updateForInputs(pushInputs: Set<UserInput>, mouseDelta: CGPoint, dT: CGFloat) {
+    public func updateForInputs(buttonInputs: Set<ButtonInput>, mouseDelta: CGPoint, dT: CGFloat) {
         // called for local simulation where dT for all push imports is uniform
         
-        var inputs = [UserInput: Double]()
-        for i in pushInputs {
+        var inputs = [ButtonInput: Double]()
+        for i in buttonInputs {
             inputs[i] = Double(dT)
         }
         
         updateForInputs(inputs, mouseDelta: mouseDelta)
     }
     
-    public func updateForInputs(pushInputs: [UserInput: Double], mouseDelta: CGPoint) {
+    public func updateForInputs(pushInputs: [ButtonInput: Double], mouseDelta: CGPoint) {
         // called every net update
     
         // body
@@ -237,7 +237,7 @@ public class Character {
             z: bodyNode.position.z - scaledNormal.z)
     }
     
-    public func applyServerOverrideUpdate(overrideUpdate: NetPlayerUpdate) {
+    public func applyServerOverrideUpdate(overrideUpdate: NetPlayerSnapshot) {
         // apply the "authoritive" player state from the server
         // set it as our base and let any deltas be calculated from it on the next game loop (probably immediately after this)
 //        NSLog("old bodyNode.position: %@", NSStringFromSCNVector3(bodyNode.position))

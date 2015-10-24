@@ -20,7 +20,7 @@ public class ServerUpdateNetMessage: NetMessage {
     /*****************************************************************************************************/
     
     override public var     opcode:             NetMessageOpcode { get { return .ServerUpdate } }
-    private(set)    var     playerUpdates =     [NetPlayerUpdate]()
+    private(set)    var     playerSnapshots =   [NetPlayerSnapshot]()
 
     /*****************************************************************************************************/
     // MARK:   Public, NetMessage
@@ -29,10 +29,10 @@ public class ServerUpdateNetMessage: NetMessage {
     override public func encoded() -> NSData? {
         var encodedData = super.encoded() as! NSMutableData
         
-        let updateCount = playerUpdates.count
-        pushUInt8(UInt8(updateCount), toData: &encodedData)
+        let snapshotsCount = playerSnapshots.count
+        pushUInt8(UInt8(snapshotsCount), toData: &encodedData)
         
-        for u in playerUpdates {
+        for u in playerSnapshots {
 //            NSLog("OUT position: %@", NSStringFromSCNVector3(u.position))
 //            NSLog("OUT bodyRotation: %@", NSStringFromSCNVector4(u.bodyRotation))
 //            NSLog("OUT headEulerAngles: %@", NSStringFromSCNVector3(u.headEulerAngles))
@@ -56,10 +56,10 @@ public class ServerUpdateNetMessage: NetMessage {
         
         if var data = super.parsePayload() {
             
-            let updateCount = Int(pullUInt8FromData(&data))
+            let snapshotsCount = Int(pullUInt8FromData(&data))
             
-            var updates = [NetPlayerUpdate]()
-            for (var i=0; i<updateCount; i++) {
+            var snapshots = [NetPlayerSnapshot]()
+            for (var i=0; i<snapshotsCount; i++) {
                 let sequenceNumber = pullUInt32FromData(&data)
                 let clientID = pullUInt32FromData(&data)
                 let position = pullVector3FromData(&data)
@@ -70,16 +70,16 @@ public class ServerUpdateNetMessage: NetMessage {
 //                NSLog("IN bodyRotation: %@", NSStringFromSCNVector4(bodyRotation))
 //                NSLog("IN headEulerAngles: %@", NSStringFromSCNVector3(headEulerAngles))
                 
-                let update = NetPlayerUpdate(
+                let snapshot = NetPlayerSnapshot(
                     sequenceNumber: sequenceNumber,
                     id: clientID,
                     position: position,
                     bodyRotation: bodyRotation,
                     headEulerAngles: headEulerAngles)
                 
-                updates.append(update)
+                snapshots.append(snapshot)
             }
-            playerUpdates = updates
+            playerSnapshots = snapshots
         }
         return nil
     }
@@ -104,8 +104,8 @@ public class ServerUpdateNetMessage: NetMessage {
 //        self.init(playerUpdates: playerUpdates)
 //    }
     
-    public required init(playerUpdates: [NetPlayerUpdate]) {
-        self.playerUpdates = playerUpdates
+    public required init(playerSnapshots: [NetPlayerSnapshot]) {
+        self.playerSnapshots = playerSnapshots
         super.init()
     }
     

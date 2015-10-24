@@ -1,16 +1,19 @@
 //
-//  NetPlayerUpdate.swift
+//  NetPlayerSnapshot.swift
 //  Avara
 //
 //  Created by Morgan Davis on 8/4/15.
 //  Copyright © 2015 Morgan K Davis. All rights reserved.
+//
+//  Much like ServerUpdateNetMessage except for only one player, not all 'dem
+//  Makes packing/unpacking and reasoning about individual players easier
 //
 
 import Foundation
 import SceneKit
 
 
-public class NetPlayerUpdate: Equatable, CustomStringConvertible {
+public class NetPlayerSnapshot: Equatable, CustomStringConvertible {
     
     /*****************************************************************************************************/
     // MARK:   Properties
@@ -39,7 +42,7 @@ public class NetPlayerUpdate: Equatable, CustomStringConvertible {
     /*****************************************************************************************************/
     
     public var description: String { get {
-        return NSString(format: "[NetPlayerUpdate] sequenceNumber: %d, id: %d, position: %@, bodyRotation: %@, headEulerAngles: %@",
+        return NSString(format: "[NetPlayerSnapshot] sequenceNumber: %d, id: %d, position: %@, bodyRotation: %@, headEulerAngles: %@",
             sequenceNumber, id, NSStringFromSCNVector3(position), NSStringFromSCNVector4(bodyRotation), NSStringFromSCNVector3(headEulerAngles)) as String
         }
     }
@@ -50,10 +53,10 @@ public class NetPlayerUpdate: Equatable, CustomStringConvertible {
 // MARK:    Operator Overloads
 /*****************************************************************************************************/
 
-public func ==(lhs: NetPlayerUpdate, rhs: NetPlayerUpdate) -> Bool {
+public func ==(lhs: NetPlayerSnapshot, rhs: NetPlayerSnapshot) -> Bool {
     return (lhs.id == rhs.id) && (lhs.position == rhs.position) && (lhs.bodyRotation == rhs.bodyRotation) && (lhs.headEulerAngles == rhs.headEulerAngles)
 }
 
-public func !=(lhs: NetPlayerUpdate, rhs: NetPlayerUpdate) -> Bool {
+public func !=(lhs: NetPlayerSnapshot, rhs: NetPlayerSnapshot) -> Bool {
     return !(lhs == rhs)
 }

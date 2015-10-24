@@ -23,7 +23,7 @@ public class ClientUpdateNetMessage: NetMessage {
     public          var     sequenceNumber:     UInt32?
 //    private(set)    var     deltaTime =         Float32(0)
 //    private(set)    var     activeInputs =      Set<UserInput>()
-    private(set)    var     userInputs =        [UserInput: Double]()
+    private(set)    var     buttonInputs =        [ButtonInput: Double]()
     private(set)    var     mouseDelta =        CGPointZero
     
     /*****************************************************************************************************/
@@ -35,9 +35,9 @@ public class ClientUpdateNetMessage: NetMessage {
         
         pushUInt32(sequenceNumber!, toData: &encodedData)
         
-        let inputCount = UInt8(userInputs.count)
-        pushUInt8(inputCount, toData: &encodedData)
-        for (input, duration) in userInputs {
+        let buttonInputCount = UInt8(buttonInputs.count)
+        pushUInt8(buttonInputCount, toData: &encodedData)
+        for (input, duration) in buttonInputs {
             pushUInt8(input.rawValue, toData: &encodedData)
             pushFloat32(Float32(duration), toData: &encodedData)
         }
@@ -69,11 +69,11 @@ public class ClientUpdateNetMessage: NetMessage {
             
             sequenceNumber = pullUInt32FromData(&data)
             
-            let inputCount = pullUInt8FromData(&data)
-            for _ in 0..<inputCount {
+            let buttonInputCount = pullUInt8FromData(&data)
+            for _ in 0..<buttonInputCount {
                 let inputRaw = pullUInt8FromData(&data)
-                if let input = UserInput(rawValue: inputRaw) {
-                    userInputs[input] = Double(pullFloat32FromData(&data))
+                if let input = ButtonInput(rawValue: inputRaw) {
+                    buttonInputs[input] = Double(pullFloat32FromData(&data))
                 }
                 else {
                     NSLog("Unknown UserInput raw value: %d", inputRaw) // this would likely only happen due to encoding/transport error...
@@ -101,9 +101,9 @@ public class ClientUpdateNetMessage: NetMessage {
     // MARK:   Object
     /*****************************************************************************************************/
     
-    public required init(userInputs: [UserInput: Double], mouseDelta: CGPoint, sequenceNumber: UInt32) {
+    public required init(buttonInputs: [ButtonInput: Double], mouseDelta: CGPoint, sequenceNumber: UInt32) {
 //        self.deltaTime = deltaTime
-        self.userInputs = userInputs
+        self.buttonInputs = buttonInputs
         self.mouseDelta = mouseDelta
         self.sequenceNumber = sequenceNumber
         super.init()

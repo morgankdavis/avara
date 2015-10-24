@@ -22,23 +22,23 @@ public class NetPlayer {
     private(set)    var     name:                           String
     private(set)    var     id:                             UInt32
     private(set)    var     character:                      Character
-    public          var     lastSentNetPlayerUpdate:        NetPlayerUpdate?
+    public          var     lastSentNetPlayerSnapshot:      NetPlayerSnapshot?
 //    public          var     lastSentInputActive:            Bool?
     
-    private(set)    var     accumInputs =                   [UserInput: Double]()
+    private(set)    var     accumButtonInputs =             [ButtonInput: Double]()
     private(set)    var     accumMouseDelta =               CGPointZero
   
     /*****************************************************************************************************/
     // MARK:   Public
     /*****************************************************************************************************/
     
-    public func addInputs(inputs: [UserInput: Double]) {
-        for (input, duration) in inputs {
-            if let total = accumInputs[input] {
-                accumInputs[input] = total + duration
+    public func addInputs(buttonInputs: [ButtonInput: Double]) {
+        for (input, duration) in buttonInputs {
+            if let total = accumButtonInputs[input] {
+                accumButtonInputs[input] = total + duration
             }
             else {
-                accumInputs[input] = duration
+                accumButtonInputs[input] = duration
             }
         }
     }
@@ -49,18 +49,18 @@ public class NetPlayer {
             y: accumMouseDelta.y + delta.y)
     }
 
-    public func readAndClearAccums() -> (pushInputs: [UserInput: Double], mouseDelta: CGPoint, largestDuration: Double) { // last element is largest input time
+    public func readAndClearAccums() -> (buttonInputs: [ButtonInput: Double], mouseDelta: CGPoint, largestDuration: Double) { // last element is largest input time
         // calculate largest input duration
         var largestDuration = Double(0)
-        for (_, duration) in accumInputs {
+        for (_, duration) in accumButtonInputs {
             if duration > largestDuration {
                 largestDuration = duration
             }
         }
         
-        let retval  = (accumInputs, accumMouseDelta, largestDuration)
+        let retval  = (accumButtonInputs, accumMouseDelta, largestDuration)
         
-        accumInputs = [UserInput: Double]() // leaves old object intact for retval (instead of removeAll())
+        accumButtonInputs = [ButtonInput: Double]() // leaves old object intact for retval (instead of removeAll())
         accumMouseDelta = CGPointZero
         
         return retval
@@ -119,24 +119,24 @@ public class NetPlayer {
     
     
     
-    public func netPlayerUpdate() -> NetPlayerUpdate {
-        if var lastSentSq = lastSentNetPlayerUpdate?.sequenceNumber {
-            return NetPlayerUpdate(
-                sequenceNumber: ++lastSentSq,
-                id: id,
-                position: character.bodyNode.position,
-                bodyRotation: character.bodyNode.rotation,
-                headEulerAngles: character.headNode!.eulerAngles)
-        }
-        else {
-            return NetPlayerUpdate(
-                sequenceNumber: ++lastReceivedSequenceNumber,
-                id: id,
-                position: character.bodyNode.position,
-                bodyRotation: character.bodyNode.rotation,
-                headEulerAngles: character.headNode!.eulerAngles)
-        }
-    }
+//    public func netPlayerSnapshot() -> NetPlayerSnapshot {
+//        if var lastSentSq = lastSentNetPlayerSnapshot?.sequenceNumber {
+//            return NetPlayerSnapshot(
+//                sequenceNumber: ++lastSentSq,
+//                id: id,
+//                position: character.bodyNode.position,
+//                bodyRotation: character.bodyNode.rotation,
+//                headEulerAngles: character.headNode!.eulerAngles)
+//        }
+//        else {
+//            return NetPlayerSnapshot(
+//                sequenceNumber: ++lastReceivedSequenceNumber,
+//                id: id,
+//                position: character.bodyNode.position,
+//                bodyRotation: character.bodyNode.rotation,
+//                headEulerAngles: character.headNode!.eulerAngles)
+//        }
+//    }
     
     /*****************************************************************************************************/
     // MARK:   Object

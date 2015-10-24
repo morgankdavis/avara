@@ -29,7 +29,7 @@ public class FlyoverCamera {
     // MARK:   Public
     /*****************************************************************************************************/
     
-    public func gameLoopWithInputs(inputs: Set<UserInput>, mouseDelta: CGPoint, dT: CGFloat) {
+    public func gameLoopWithInputs(inputs: Set<ButtonInput>, mouseDelta: CGPoint, dT: CGFloat) {
         // keys
         let positionDelta = MOVE_RATE * dT
         let transform = node.transform
@@ -48,7 +48,7 @@ public class FlyoverCamera {
                 y: node.position.y - dy,
                 z: node.position.z - dz)
         }
-        else if inputs.contains(.MoveBackward) {
+        if inputs.contains(.MoveBackward) {
             let sinYRot = transform.m13
             let cosYRot = transform.m33
             let sinXRot = transform.m32
@@ -85,7 +85,7 @@ public class FlyoverCamera {
                 y: node.position.y,
                 z: node.position.z + CGFloat(scaledVector.z))
         }
-        else if inputs.contains(.TurnRight) { // move right
+        if inputs.contains(.TurnRight) { // move right
             let sinYRot = transform.m13
             let cosYRot = transform.m33
             
