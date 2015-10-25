@@ -33,10 +33,6 @@ public class ServerUpdateNetMessage: NetMessage {
         pushUInt8(UInt8(snapshotsCount), toData: &encodedData)
         
         for u in playerSnapshots {
-//            NSLog("OUT position: %@", NSStringFromSCNVector3(u.position))
-//            NSLog("OUT bodyRotation: %@", NSStringFromSCNVector4(u.bodyRotation))
-//            NSLog("OUT headEulerAngles: %@", NSStringFromSCNVector3(u.headEulerAngles))
-            
             pushUInt32(u.sequenceNumber, toData: &encodedData)
             pushUInt32(u.id, toData: &encodedData)
             pushVector3(u.position, toData: &encodedData)
@@ -66,10 +62,6 @@ public class ServerUpdateNetMessage: NetMessage {
                 let bodyRotation = pullVector4FromData(&data)
                 let headEulerAngles = pullVector3FromData(&data)
                 
-//                NSLog("IN position: %@", NSStringFromSCNVector3(position))
-//                NSLog("IN bodyRotation: %@", NSStringFromSCNVector4(bodyRotation))
-//                NSLog("IN headEulerAngles: %@", NSStringFromSCNVector3(headEulerAngles))
-                
                 let snapshot = NetPlayerSnapshot(
                     sequenceNumber: sequenceNumber,
                     id: clientID,
@@ -87,22 +79,6 @@ public class ServerUpdateNetMessage: NetMessage {
     /*****************************************************************************************************/
     // MARK:   Object
     /*****************************************************************************************************/
-    
-//    public convenience init(netPlayers: [NetPlayer]) {
-//        var playerUpdates = [NetPlayerUpdate]()
-//        
-//        for p in netPlayers {
-//            let u = NetPlayerUpdate(
-//                sequenceNumber: p.sequenceNumber,
-//                id: p.id,
-//                position: p.character.bodyNode.position,
-//                legsOrientation: p.character.legsNode!.orientation,
-//                headOrientation: p.character.headNode!.orientation)
-//            playerUpdates.append(u)
-//        }
-//        
-//        self.init(playerUpdates: playerUpdates)
-//    }
     
     public required init(playerSnapshots: [NetPlayerSnapshot]) {
         self.playerSnapshots = playerSnapshots

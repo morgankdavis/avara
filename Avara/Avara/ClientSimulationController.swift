@@ -173,13 +173,14 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             //NSLog("computed dT: %f", dT)
             //dT = 1.0/60.0
             
-            
+            // pump direct input handler
             if windowController!.isCursorCaptured {
                 if let directMouseHelper = inputManager.directMouseHelper {
                     directMouseHelper.pump()
                 }
             }
             
+            // handle flyover or player movement
             if isFlyoverMode {
                 flyoverCamera.gameLoopWithInputs(inputManager.activeButtonInputs, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
                 windowController?.renderView?.play(self) // why the fuck must we do this?? (force re-render)
@@ -187,7 +188,6 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             else {
                 let activeButtonInput = inputManager.activeButtonInputs
                 let mouseDelta = inputManager.readMouseDeltaAndClear()
-                
                 
                 // add input to the net client input accumulator
                 for input in activeButtonInput {
@@ -200,20 +200,21 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 }
                 clientAccumMouseDelta = CGPoint(x: clientAccumMouseDelta.x + mouseDelta.x, y: clientAccumMouseDelta.y + mouseDelta.y)
                 
-                
-                // check for server override before applying local input
-                if let override = serverOverrideSnapshot {
-                    NSLog("** SERVER OVERRIDE **");
-                    
-                    localCharacter?.applyServerOverrideSnapshot(override)
-                    serverOverrideSnapshot = nil
+                if NET_CLIENT_ENABLE_RECONCILIATION {
+                    // check for server override before applying local input
+                    if let override = serverOverrideSnapshot {
+                        NSLog("** SERVER OVERRIDE **");
+                        
+                        localCharacter?.applyServerOverrideSnapshot(override)
+                        serverOverrideSnapshot = nil
+                    }
                 }
 
+                // IMPORTANT! initialPosition has to happen BEFORE translation
+                let initialPosition = localCharacter?.bodyNode.position
                 localCharacter?.updateForInputs(activeButtonInput, mouseDelta: mouseDelta, dT: dT)
-                localCharacter?.updateForLoopDelta(dT)
+                localCharacter?.updateForLoopDelta(dT, initialPosition: initialPosition!)
             }
-            
-            
         }
         
         lastLoopDate = nowDate
@@ -282,7 +283,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 
                 if let u = mySnapshot {
                     //NSLog("Server update message with sq: %d, prev sent sq: %d", u.sequenceNumber, sequenceNumber)s
-                    if (u.sequenceNumber >= sequenceNumber) && sentNoInputPacket {
+                    if (u.sequenceNumber > sequenceNumber) && sentNoInputPacket {
                         serverOverrideSnapshot = u // game loop will see and correct player state
                     }
                     sequenceNumber = u.sequenceNumber

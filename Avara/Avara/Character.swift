@@ -125,12 +125,15 @@ public class Character {
         headNode?.eulerAngles = nAngles
     }
     
-    public func updateForLoopDelta(dT: CGFloat) {
+    public func updateForLoopDelta(dT: CGFloat, initialPosition: SCNVector3) {
         // called every iteration of the simulation loop for things like physics
         
         // altitude
         
-        let initialPosition = bodyNode.position
+        //let initialPosition = bodyNode.position
+//        if initialPosition == nil {
+//            initialPosition = bodyNode.position
+//        }
         
         var groundY: CGFloat = 0
         

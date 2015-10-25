@@ -162,8 +162,10 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 
                 // WARN: SANITY CHECK CLIENT INPUT TIME DELTAS
                 
+                // IMPORTANT! initialPosition has to happen BEFORE translation
+                let initialPosition = character.bodyNode.position
                 character.updateForInputs(inputs.buttonInputs, mouseDelta: inputs.mouseDelta)
-                character.updateForLoopDelta(dT)
+                character.updateForLoopDelta(dT, initialPosition:initialPosition)
                 
                 
                 // make camera follow player

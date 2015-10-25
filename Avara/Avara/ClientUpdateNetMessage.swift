@@ -21,8 +21,6 @@ public class ClientUpdateNetMessage: NetMessage {
     
     override public var     opcode:             NetMessageOpcode { get { return .ClientUpdate } }
     public          var     sequenceNumber:     UInt32?
-//    private(set)    var     deltaTime =         Float32(0)
-//    private(set)    var     activeInputs =      Set<UserInput>()
     private(set)    var     buttonInputs =        [ButtonInput: Double]()
     private(set)    var     mouseDelta =        CGPointZero
     
@@ -42,16 +40,6 @@ public class ClientUpdateNetMessage: NetMessage {
             pushFloat32(Float32(duration), toData: &encodedData)
         }
         
-//        // convert UserInput set into UInt8 array
-//        var actionsRawArray = [UInt8]()
-//        for a in activeInputs {
-//            actionsRawArray.append(a.rawValue)
-//        }
-//
-//        pushFloat32(deltaTime, toData: &encodedData)
-//        
-//        pushUInt8Array(actionsRawArray, toData: &encodedData)
-        
         pushCGPoint(mouseDelta, toData: &encodedData)
         
         return encodedData as NSData
@@ -65,8 +53,6 @@ public class ClientUpdateNetMessage: NetMessage {
         //NSLog("ClientUpdateNetMessage.parsePayload()")
         
         if var data = super.parsePayload() {
-            //var data: NSMutableData = super.parsePayload()!
-            
             sequenceNumber = pullUInt32FromData(&data)
             
             let buttonInputCount = pullUInt8FromData(&data)
@@ -79,19 +65,7 @@ public class ClientUpdateNetMessage: NetMessage {
                     NSLog("Unknown UserInput raw value: %d", inputRaw) // this would likely only happen due to encoding/transport error...
                 }
             }
-            
-//            deltaTime = pullFloat32FromData(&data)
-            
-//            let actionsRawArray = pullUInt8ArrayFromData(&data)
-//            for a in actionsRawArray {
-//                if let action = UserInput(rawValue: a) {
-//                    activeInputs.insert(action)
-//                }
-//                else {
-//                    NSLog("Unknown UserInput raw value: %d", a) // this would likely only happen due to encoding/transport error...
-//                }
-//            }
-            
+
             mouseDelta = pullCGPointFromData(&data)
         }
         return nil
@@ -102,7 +76,6 @@ public class ClientUpdateNetMessage: NetMessage {
     /*****************************************************************************************************/
     
     public required init(buttonInputs: [ButtonInput: Double], mouseDelta: CGPoint, sequenceNumber: UInt32) {
-//        self.deltaTime = deltaTime
         self.buttonInputs = buttonInputs
         self.mouseDelta = mouseDelta
         self.sequenceNumber = sequenceNumber
