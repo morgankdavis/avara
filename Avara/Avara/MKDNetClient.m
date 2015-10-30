@@ -43,12 +43,12 @@
 
 + (MKDNetClient *)clientWithDestinationAddress:(NSString *)address port:(uint16_t)port maxChannels:(uint8_t)maxChannels delegate:(id<MKDNetClientDelegate>)delegate
 {
-	MKDNetClient *client = [[MKDNetClient alloc] init];
+    MKDNetClient *client = [[MKDNetClient alloc] init];
 	client.address = address;
 	client.port = port;
 	client.delegate = delegate;
 	
-    if (enet_initialize () != 0) {
+    if (enet_initialize() != 0) {
         NSLog(@"*** Error initializing ENet! ***");
         return nil;
     }
@@ -89,7 +89,7 @@
 	self.peer = enet_host_connect(self.host,
 								  &address,
 								  self.maxChannels,
-								  (enet_uint32)peerID);
+								  (enet_uint32)_peerID);
 	
 	if (self.peer == NULL) {
 		NSLog(@"*** Connection failed. ***");
@@ -112,7 +112,7 @@
 					   channel,
 					   packet);
 		
-		enet_host_flush(self.host);
+		//enet_host_flush(self.host); // this was causing a crash. it was modifying enet internal structures at the same time as the event loop
         
         self.bytesSentSinceLastAverage += [packetData length];
 	}
@@ -127,9 +127,10 @@
 {
     ENetEvent event;
 	while (YES) {
+        //[self.hostLock lock];
+        
 		while (enet_host_service(self.host, &event, 1) > 0) {
-			switch (event.type) {
-					
+            switch (event.type) {
 				case ENET_EVENT_TYPE_CONNECT:
 					self.isConnected = YES;
                     //[self.delegate client:self didConnectWithID:self.peerID];
@@ -150,7 +151,7 @@
 					
 				default:
 					break;
-			} 
+			}
 		}
         [self performSelectorOnMainThread:@selector(checkAverages) withObject:nil waitUntilDone:NO];
 	}

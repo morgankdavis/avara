@@ -127,6 +127,7 @@ public class Character {
     
     public func updateForLoopDelta(dT: CGFloat, initialPosition: SCNVector3) {
         // called every iteration of the simulation loop for things like physics
+        // IMPORTANT! initialPosition is the position BEFORE ANY TRANSLATIONS THIS LOOP ITERATION
         
         // altitude
         
@@ -153,7 +154,7 @@ public class Character {
             groundY = resultHit.worldCoordinates.y;
             bodyNode.position.y = groundY
             
-            let THRESHOLD: CGFloat = 1e-5 // 0.1
+            let THRESHOLD: CGFloat = 0.01//1e-5 // 0.1
             let GRAVITY_ACCEL = scene.physicsWorld.gravity.y/10.0
             if (groundY < position.y - THRESHOLD) {
                 accelerationY -= dT * GRAVITY_ACCEL // approximation of acceleration for a delta time.
@@ -243,17 +244,10 @@ public class Character {
     public func applyServerOverrideSnapshot(override: NetPlayerSnapshot) {
         // apply the "authoritive" player state from the server
         // set it as our base and let any deltas be calculated from it on the next game loop (probably immediately after this)
-//        NSLog("old bodyNode.position: %@", NSStringFromSCNVector3(bodyNode.position))
-//        NSLog("old bodyNode.rotation: %@", NSStringFromSCNVector4(bodyNode.rotation))
-//        NSLog("old headNode?.eulerAngles: %@", NSStringFromSCNVector3(headNode!.eulerAngles))
-        
+
         bodyNode.position = override.position
         bodyNode.rotation = override.bodyRotation
         headNode?.eulerAngles = override.headEulerAngles
-        
-//        NSLog("new bodyNode.position: %@", NSStringFromSCNVector3(bodyNode.position))
-//        NSLog("new bodyNode.rotation: %@", NSStringFromSCNVector4(bodyNode.rotation))
-//        NSLog("new headNode?.eulerAngles: %@", NSStringFromSCNVector3(headNode!.eulerAngles))
     }
     
     /*****************************************************************************************************/

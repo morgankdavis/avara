@@ -29,7 +29,7 @@
 
 + (MKDNetServer *)serverWithPort:(uint16_t)port maxClients:(size_t)maxClients maxChannels:(uint8_t)maxChannels delegate:(id<MKDNetServerDelegate>)delegate
 {
-	MKDNetServer *server = [[MKDNetServer alloc] init];
+    MKDNetServer *server = [[MKDNetServer alloc] init];
 	server.port = port;
 	server.maxClients = maxClients;
 	server.maxChannels = maxChannels;
@@ -39,15 +39,17 @@
 		NSLog(@"*** Error initializing ENet! ***");
 		return nil;
 	}
-	
+
 	ENetAddress address;
 	address.host = ENET_HOST_ANY;
 	address.port = port;
+    
 	server.host = enet_host_create (&address,
 									maxClients,
 									maxChannels,
 									0,
 									0);
+
 	if (server.host == NULL) {
 		NSLog(@"*** Error creating ENet server host! ***");
 		return nil;
@@ -69,10 +71,11 @@
 	ENetPacket *packet = enet_packet_create([packetData bytes],
 											[packetData length],
 											flags);
+    
 	enet_host_broadcast(self.host,
 						channel,
 						packet);
-	
+    
     //enet_packet_destroy(packet); // do we need to call this at some point? it causes random crashes here.
 }
 
@@ -80,7 +83,7 @@
 
 - (void)eventLoop
 {
-	ENetEvent event;
+    ENetEvent event;
 	while (YES) {
 		while (enet_host_service(self.host, &event, 1) > 0) {
 			switch (event.type) {

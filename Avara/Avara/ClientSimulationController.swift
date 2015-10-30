@@ -59,6 +59,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             repeats: true)
         
         netClient?.connect()
+        startClientTickTimer()
     }
     
     /*****************************************************************************************************/
@@ -136,6 +137,8 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                     }
                 }
             }
+            
+            //client.pump()
         }
     }
     
@@ -180,6 +183,11 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 }
             }
             
+//            // pump net socket client
+//            if let client = netClient {
+//                client.pump()
+//            }
+            
             // handle flyover or player movement
             if isFlyoverMode {
                 flyoverCamera.gameLoopWithInputs(inputManager.activeButtonInputs, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
@@ -203,14 +211,14 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 if NET_CLIENT_ENABLE_RECONCILIATION {
                     // check for server override before applying local input
                     if let override = serverOverrideSnapshot {
-                        NSLog("** SERVER OVERRIDE **");
+                        NSLog("** SERVER OVERRIDE **")
                         
                         localCharacter?.applyServerOverrideSnapshot(override)
                         serverOverrideSnapshot = nil
                     }
                 }
 
-                // IMPORTANT! initialPosition has to happen BEFORE translation
+                // IMPORTANT! initialPosition has to be set BEFORE any translation in each loop invocation
                 let initialPosition = localCharacter?.bodyNode.position
                 localCharacter?.updateForInputs(activeButtonInput, mouseDelta: mouseDelta, dT: dT)
                 localCharacter?.updateForLoopDelta(dT, initialPosition: initialPosition!)
@@ -318,12 +326,16 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     // MARK:    SCNSceneRendererDelegate
     /*****************************************************************************************************/
     
-    public func renderer(aRenderer: SCNSceneRenderer, updateAtTime time: NSTimeInterval) {
-        //        NSLog("renderer(updateAtTime:)")
+    public func renderer(renderer: SCNSceneRenderer, updateAtTime time: NSTimeInterval) {
+        //NSLog("renderer(%@, updateAtTime: %f)", renderer, time)
     }
     
-    public func renderer(aRenderer: SCNSceneRenderer, didSimulatePhysicsAtTime time: NSTimeInterval) {
-        //        NSLog("renderer(didSimulatePhysicsAtTime:)")
+    public func renderer(renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: NSTimeInterval) {
+        NSLog("renderer(didRenderScene: %@, atTime: %f)", scene, time)
+    }
+    
+    public func renderer(renderer: SCNSceneRenderer, didSimulatePhysicsAtTime time: NSTimeInterval) {
+        //        NSLog("renderer(%@, didSimulatePhysicsAtTime: %f)", renderer, time)
         //
         //        deltaTime = time - lastUpdateTime
         //        lastUpdateTime = time
@@ -340,19 +352,19 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     /*****************************************************************************************************/
     
     public func physicsWorld(world: SCNPhysicsWorld, didUpdateContact contact: SCNPhysicsContact) {
-        //NSLog("physicsWorld(didUpdateContact: %@)", contact)
+        //NSLog("physicsWorld(%@, didUpdateContact: %@)", world, contact)
         
         physicsWorld(world, didBeginOrUpdateContact: contact)
     }
     
     public func physicsWorld(world: SCNPhysicsWorld, didBeginContact contact: SCNPhysicsContact) {
-        //NSLog("physicsWorld(didBeginContact: %@)", contact)
+        //NSLog("physicsWorld(%@, didBeginContact: %@)", world, contact)
         
         physicsWorld(world, didBeginOrUpdateContact: contact)
     }
     
     public func physicsWorld(world: SCNPhysicsWorld, didEndContact contact: SCNPhysicsContact) {
-        //NSLog("physicsWorld(didEndContact: %@)", contact)
+        //NSLog("physicsWorld(%@, didEndContact: %@)", world, contact)
     }
     
     /*****************************************************************************************************/
@@ -367,7 +379,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue , flags: .Reliable)
         
         // WARN: Wait for game start message in future (or whatever)
-        startClientTickTimer()
+        //startClientTickTimer()
     }
     
     public func client(client: MKDNetClient!, didFailToConnect error: NSError!) {
@@ -385,7 +397,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     }
     
     public func client(client: MKDNetClient!, didUpdateUploadRate bytesUpPerSec: UInt, downloadRate bytesDownPerSec: UInt) {
-        NSLog("NET RATE: %.2fKB/sec up, %.2fKB/sec down", Double(bytesUpPerSec)/1024.0, Double(bytesDownPerSec)/1024.0);
+        //NSLog("NET RATE: %.2fKB/sec up, %.2fKB/sec down", Double(bytesUpPerSec)/1024.0, Double(bytesDownPerSec)/1024.0)
     }
     
     /*****************************************************************************************************/

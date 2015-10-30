@@ -109,6 +109,10 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 }
             }
         }
+        
+//        if let server = netServer {
+//            server.pump()
+//        }
     }
 
     /*****************************************************************************************************/
@@ -134,7 +138,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         scene.rootNode.addChildNode(cameraNode)
         
         netServer = MKDNetServer(port: NET_SERVER_PORT, maxClients: NET_MAX_CLIENTS, maxChannels: NET_MAX_CHANNELS, delegate: self)
-        startServerTickTimer();
+        startServerTickTimer()
     }
     
     private func gameLoop() {
@@ -145,6 +149,11 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             let dT = CGFloat(nowDate - lastDate)
             //NSLog("computed dT: %f", dT)
             //dT = 1.0/60.0
+            
+//            // pump net socket server
+//            if let server = netServer {
+//                server.pump()
+//            }
             
             for (_, player) in netPlayers {
                 let character = player.character
@@ -162,7 +171,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 
                 // WARN: SANITY CHECK CLIENT INPUT TIME DELTAS
                 
-                // IMPORTANT! initialPosition has to happen BEFORE translation
+                // IMPORTANT! initialPosition has to be set BEFORE translation in each loop invocation
                 let initialPosition = character.bodyNode.position
                 character.updateForInputs(inputs.buttonInputs, mouseDelta: inputs.mouseDelta)
                 character.updateForLoopDelta(dT, initialPosition:initialPosition)
@@ -194,7 +203,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     }
     
     public func physicsWorld(world: SCNPhysicsWorld, didBeginOrUpdateContact contact: SCNPhysicsContact) {
-        //NSLog("physicsWorld(didBeginOrUpdateContact: %@)", contact)
+        //NSLog("ServerSimulationController.physicsWorld(didBeginOrUpdateContact: %@)", contact)
         
         // WARN: this is stupid. should be taken are of automatically with floor's collisionBitmask
         guard contact.nodeA.physicsBody?.categoryBitMask != CollisionCategory.Floor.rawValue
@@ -233,13 +242,16 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 let helloMessage = message as! ClientHelloNetMessage
                 let name = helloMessage.name!
                 //let sequenceNumber = helloMessage.sequenceNumber!
-                NSLog("Client hello message! name: %@", name)
+                NSLog("Client hello message! name: %@, id: %d", name, clientID)
                 
                 let character = Character(scene: scene) // adds itself to the scene
+                //character.isRemote = true
                 netPlayers[clientID] = NetPlayer(id: clientID, name: name as String, character: character)
                 break
                 
             case .ClientUpdate:
+                //dNSLog("Update from player id: %d", clientID)
+                
                 if let player = netPlayers[clientID] {
                     let updateMessage = message as! ClientUpdateNetMessage
                     let userInputs = updateMessage.buttonInputs

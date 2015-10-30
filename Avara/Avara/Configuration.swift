@@ -27,7 +27,7 @@ let NET_SERVER_PORT =                       UInt16(33777)
 let NET_MAX_CLIENTS =                       Int(12)
 let NET_MAX_CHANNELS =                      UInt8(4)
 
-let NET_CLIENT_ENABLE_RECONCILIATION =      true
+let NET_CLIENT_ENABLE_RECONCILIATION =      false
 
 enum NetChannel: UInt8 {
     case Signaling =    0
