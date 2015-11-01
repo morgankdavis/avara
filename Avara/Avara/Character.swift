@@ -29,6 +29,7 @@ public class Character {
     
     public          let cameraNode =                SCNNode()
     //public          var isRemote =                  true
+    public          var serverInstance =            false
     private(set)    var bodyNode =                  SCNNode()
     private(set)    var headNode:                   SCNNode?
     private(set)    var legsNode:                   SCNNode?
@@ -200,14 +201,16 @@ public class Character {
     }
     
     public func bodyPart(bodyPartNode: SCNNode, mayHaveHitWall wallNode: SCNNode, withContact contact: SCNPhysicsContact) {
-        //NSLog("bodyPart(%@, mayHaveHitWall: %@, withContact: %@", bodyPartNode.name!, wallNode.name!, contact)
+        if serverInstance {
+            //NSLog("bodyPart(%@, mayHaveHitWall: %@, withContact: %@", bodyPartNode.name!, wallNode.name!, contact)
+        }
         
         //NSLog("contact.penetrationDistance: %.2f", contact.penetrationDistance)
     
         let LEG_BOTTOM_THRESHOLD: CGFloat = 0.05
         if let legContactPoint = legsNode?.convertPosition(contact.contactPoint, fromNode: scene.rootNode) {
             guard bodyPartNode == headNode || (bodyPartNode == legsNode && legContactPoint.y > LEG_BOTTOM_THRESHOLD) else {
-                //NSLog("Contact at very bottom of legs.")
+                //NSLog("Contact at bottom of legs.")
                 return
             }
         }
@@ -227,7 +230,9 @@ public class Character {
             return
         }
         
-        //NSLog("*** WALL CONTACT ***")
+        if serverInstance {
+            //NSLog("*** WALL CONTACT ***")
+        }
         
         largestWallPenetration = contact.penetrationDistance;
         

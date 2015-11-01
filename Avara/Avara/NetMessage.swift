@@ -10,7 +10,7 @@ import Foundation
 import SceneKit
 
 
-public enum NetMessageOpcode : UInt16 {
+public enum NetMessageOpcode: UInt16 {
     case None =                 0
     case ClientHello =          1
     case ClientUpdate =         2

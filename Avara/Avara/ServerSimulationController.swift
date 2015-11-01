@@ -248,6 +248,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 
                 let character = Character(scene: scene) // adds itself to the scene
                 //character.isRemote = true
+                character.serverInstance = true
                 netPlayers[clientID] = NetPlayer(id: clientID, name: name as String, character: character)
                 break
                 
@@ -294,9 +295,9 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     public func renderer(aRenderer: SCNSceneRenderer, didSimulatePhysicsAtTime time: NSTimeInterval) {
         //NSLog("renderer(didSimulatePhysicsAtTime:)")
 
-//        for character in characters {
-//            character.didSimulatePhysicsAtTime(time)
-//        }
+        for (_,player) in netPlayers {
+            player.character.didSimulatePhysicsAtTime(time)
+        }
     }
     
     /*****************************************************************************************************/
