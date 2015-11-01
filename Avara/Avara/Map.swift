@@ -207,14 +207,14 @@ public class Map : NSObject, SCNProgramDelegate {
         box1Node.physicsBody?.rollingFriction = 1
         box1Node.physicsBody?.categoryBitMask = CollisionCategory.Movable.rawValue
         box1Node.physicsBody?.collisionBitMask = CollisionCategory.Character.rawValue
-        box1Node.physicsBody?.contactTestBitMask = CollisionCategory.Character.rawValue
+        //box1Node.physicsBody?.contactTestBitMask = CollisionCategory.Character.rawValue
 
         box2Node.physicsBody = SCNPhysicsBody.dynamicBody()
         box2Node.physicsBody?.friction = 1 // default is .5
         box2Node.physicsBody?.rollingFriction = 1
         box2Node.physicsBody?.categoryBitMask = CollisionCategory.Movable.rawValue
         box2Node.physicsBody?.collisionBitMask = CollisionCategory.Character.rawValue
-        box2Node.physicsBody?.contactTestBitMask = CollisionCategory.Character.rawValue
+        //box2Node.physicsBody?.contactTestBitMask = CollisionCategory.Character.rawValue
         
         // platform
         
@@ -304,7 +304,7 @@ public class Map : NSObject, SCNProgramDelegate {
         //node.physicsBody?.physicsShape = SCNPhysicsShape(node: node, options: [SCNPhysicsShapeTypeKey: SCNPhysicsShapeTypeConcavePolyhedron])
         
         node.physicsBody?.categoryBitMask = CollisionCategory.Wall.rawValue
-        node.physicsBody?.collisionBitMask = CollisionCategory.Character.rawValue
+        //node.physicsBody?.collisionBitMask = CollisionCategory.Character.rawValue
         node.physicsBody?.contactTestBitMask = CollisionCategory.Character.rawValue
         
         // From Apple's "Fox" example (WWDC 2015) AAPLGameViewController.m:~188

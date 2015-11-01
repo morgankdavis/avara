@@ -151,7 +151,6 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         map = Map(scene: scene)
         localCharacter = Character(scene: scene)
-        //localCharacter!.isRemote = true
         
         scene.physicsWorld.timeStep = PHYSICS_TIMESTEP
         scene.physicsWorld.contactDelegate = self
@@ -238,7 +237,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     }
     
     func toggleFlyoverMode() {
-        if (isFlyoverMode) {
+        if isFlyoverMode {
             isFlyoverMode = false
         }
         else {
@@ -248,9 +247,9 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     }
     
     public func physicsWorld(world: SCNPhysicsWorld, didBeginOrUpdateContact contact: SCNPhysicsContact) {
-        //NSLog("physicsWorld(didBeginOrUpdateContact: %@)", contact)
+        NSLog("physicsWorld(didBeginOrUpdateContact: %@)", contact)
         
-        if (COLLISION_DETECTION_ENABLED) {
+        if COLLISION_DETECTION_ENABLED {
             // WARN: this is stupid. should be taken are of automatically with floor's collisionBitmask
             guard contact.nodeA.physicsBody?.categoryBitMask != CollisionCategory.Floor.rawValue
                 && contact.nodeB.physicsBody?.categoryBitMask != CollisionCategory.Floor.rawValue else {

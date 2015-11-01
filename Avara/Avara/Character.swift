@@ -28,7 +28,6 @@ public class Character {
     /*****************************************************************************************************/
     
     public          let cameraNode =                SCNNode()
-    //public          var isRemote =                  true
     public          var serverInstance =            false
     private(set)    var bodyNode =                  SCNNode()
     private(set)    var headNode:                   SCNNode?
@@ -189,14 +188,10 @@ public class Character {
     
     public func didSimulatePhysicsAtTime(time: NSTimeInterval) {
         if let position = replacementPosition {
-            //if isRemote {
-                //NSLog("REMOTE REPLACEMENT")
-                
-                NSLog("bodyNode.position: %@", NSStringFromSCNVector3(bodyNode.position))
-                NSLog("replacementPosition: %@", NSStringFromSCNVector3(position))
-                
-                bodyNode.position = position
-            //}
+//            NSLog("bodyNode.position: %@", NSStringFromSCNVector3(bodyNode.position))
+//            NSLog("replacementPosition: %@", NSStringFromSCNVector3(position))
+            
+            bodyNode.position = position
         }
     }
     
@@ -275,7 +270,7 @@ public class Character {
             legsNode?.position = SCNVector3(x: 0, y: 0, z: 0)
             legsNode?.physicsBody = SCNPhysicsBody.kinematicBody()
             legsNode?.physicsBody?.categoryBitMask = CollisionCategory.Character.rawValue
-            legsNode?.physicsBody?.collisionBitMask = CollisionCategory.Wall.rawValue | CollisionCategory.Movable.rawValue
+            //legsNode?.physicsBody?.collisionBitMask = CollisionCategory.Wall.rawValue | CollisionCategory.Movable.rawValue
             legsNode?.physicsBody?.contactTestBitMask = CollisionCategory.Wall.rawValue | CollisionCategory.Movable.rawValue
             bodyNode.addChildNode(legsNode!)
         }
@@ -287,7 +282,7 @@ public class Character {
             headNode?.position = SCNVector3(x: 0, y: 1.6, z: 0)
             headNode?.physicsBody = SCNPhysicsBody.kinematicBody()
             headNode?.physicsBody?.categoryBitMask = CollisionCategory.Character.rawValue
-            headNode?.physicsBody?.collisionBitMask = CollisionCategory.Wall.rawValue | CollisionCategory.Movable.rawValue
+            //headNode?.physicsBody?.collisionBitMask = CollisionCategory.Wall.rawValue | CollisionCategory.Movable.rawValue
             headNode?.physicsBody?.contactTestBitMask = CollisionCategory.Wall.rawValue | CollisionCategory.Movable.rawValue
             legsNode?.addChildNode(headNode!)
         }

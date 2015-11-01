@@ -247,7 +247,6 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 NSLog("Client hello message! name: %@, id: %d", name, clientID)
                 
                 let character = Character(scene: scene) // adds itself to the scene
-                //character.isRemote = true
                 character.serverInstance = true
                 netPlayers[clientID] = NetPlayer(id: clientID, name: name as String, character: character)
                 break
