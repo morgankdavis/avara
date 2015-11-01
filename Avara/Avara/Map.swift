@@ -133,6 +133,7 @@ public class Map : NSObject, SCNProgramDelegate {
 
         // floor node
         let floor = SCNFloor()
+        floor.name = "Floor"
         floor.reflectivity = 0.25
         let floorNode = SCNNode(geometry: floor)
         scene.rootNode.addChildNode(floorNode)
@@ -321,6 +322,19 @@ public class Map : NSObject, SCNProgramDelegate {
 //                [self setupCollisionNodes:child];
 //            }
 //        }
+        
+        
+//        for n in scene.rootNode.childNodes {
+//            NSLog("NODE: %@", n)
+//            if let name = n.name {
+//                NSLog("NAME: %@", name)
+//            }
+//            if let g = n.geometry {
+//                NSLog("GEO: %@", g)
+//            }
+//            NSLog("----")
+//        }
+
     }
     
     /*****************************************************************************************************/

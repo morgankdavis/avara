@@ -151,7 +151,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         map = Map(scene: scene)
         localCharacter = Character(scene: scene)
-        localCharacter!.isRemote = true
+        //localCharacter!.isRemote = true
         
         scene.physicsWorld.timeStep = PHYSICS_TIMESTEP
         scene.physicsWorld.contactDelegate = self
@@ -208,7 +208,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 }
                 clientAccumMouseDelta = CGPoint(x: clientAccumMouseDelta.x + mouseDelta.x, y: clientAccumMouseDelta.y + mouseDelta.y)
                 
-                if NET_CLIENT_ENABLE_RECONCILIATION {
+                if NET_CLIENT_RECONCILIATION_ENABLED {
                     // check for server override before applying local input
                     if let override = serverOverrideSnapshot {
                         NSLog("** SERVER OVERRIDE **")
@@ -250,18 +250,20 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     public func physicsWorld(world: SCNPhysicsWorld, didBeginOrUpdateContact contact: SCNPhysicsContact) {
         //NSLog("physicsWorld(didBeginOrUpdateContact: %@)", contact)
         
-        // WARN: this is stupid. should be taken are of automatically with floor's collisionBitmask
-        guard contact.nodeA.physicsBody?.categoryBitMask != CollisionCategory.Floor.rawValue
-            && contact.nodeB.physicsBody?.categoryBitMask != CollisionCategory.Floor.rawValue else {
-                return
-        }
-        
-        if let character = localCharacter {
-            if (contact.nodeA.physicsBody?.categoryBitMask == CollisionCategory.Character.rawValue) {
-                character.bodyPart(contact.nodeA, mayHaveHitWall:contact.nodeB, withContact:contact)
+        if (COLLISION_DETECTION_ENABLED) {
+            // WARN: this is stupid. should be taken are of automatically with floor's collisionBitmask
+            guard contact.nodeA.physicsBody?.categoryBitMask != CollisionCategory.Floor.rawValue
+                && contact.nodeB.physicsBody?.categoryBitMask != CollisionCategory.Floor.rawValue else {
+                    return
             }
-            if (contact.nodeB.physicsBody?.categoryBitMask == CollisionCategory.Character.rawValue) {
-                character.bodyPart(contact.nodeB, mayHaveHitWall:contact.nodeA, withContact:contact)
+            
+            if let character = localCharacter {
+                if (contact.nodeA.physicsBody?.categoryBitMask == CollisionCategory.Character.rawValue) {
+                    character.bodyPart(contact.nodeA, mayHaveHitWall:contact.nodeB, withContact:contact)
+                }
+                if (contact.nodeB.physicsBody?.categoryBitMask == CollisionCategory.Character.rawValue) {
+                    character.bodyPart(contact.nodeB, mayHaveHitWall:contact.nodeA, withContact:contact)
+                }
             }
         }
     }
@@ -331,7 +333,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     }
     
     public func renderer(renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: NSTimeInterval) {
-        NSLog("renderer(didRenderScene: %@, atTime: %f)", scene, time)
+        //NSLog("renderer(didRenderScene: %@, atTime: %f)", scene, time)
     }
     
     public func renderer(renderer: SCNSceneRenderer, didSimulatePhysicsAtTime time: NSTimeInterval) {

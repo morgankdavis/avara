@@ -21,14 +21,14 @@ public class Character {
     private         let HEAD_VERT_ANG_CLAMP =       CGFloat(M_PI/4.0)
     private         let HEAD_HORIZ_ANG_CLAMP =      CGFloat(M_PI*(2.0/3.0))
     private         let MAX_JUMP_HEIGHT =           CGFloat(2.01)               // units -- arbitrary for now
-    private         let MAX_ALTITUDE_RISE =         CGFloat(0.07)               // units -- the distance above character.y to ray test for altitude
+    private         let MAX_ALTITUDE_RISE =         CGFloat(0.2)                // units -- the distance above character.y to ray test for altitude
     
     /*****************************************************************************************************/
     // MARK:   Properties
     /*****************************************************************************************************/
     
     public          let cameraNode =                SCNNode()
-    public          var isRemote =                  true
+    //public          var isRemote =                  true
     private(set)    var bodyNode =                  SCNNode()
     private(set)    var headNode:                   SCNNode?
     private(set)    var legsNode:                   SCNNode?
@@ -151,10 +151,11 @@ public class Character {
         
         if (rayResults.count > 0) {
             let resultHit = rayResults[0] as SCNHitTestResult
+            //NSLog("HIT %@", resultHit.node)
             groundY = resultHit.worldCoordinates.y;
             bodyNode.position.y = groundY
             
-            let THRESHOLD: CGFloat = 0.01//1e-5 // 0.1
+            let THRESHOLD: CGFloat = 1e-3 //1e-5 // 1e-5 == 0.00001
             let GRAVITY_ACCEL = scene.physicsWorld.gravity.y/10.0
             if (groundY < position.y - THRESHOLD) {
                 accelerationY -= dT * GRAVITY_ACCEL // approximation of acceleration for a delta time.
@@ -187,19 +188,19 @@ public class Character {
     
     public func didSimulatePhysicsAtTime(time: NSTimeInterval) {
         if let position = replacementPosition {
-            if isRemote {
-                NSLog("REMOTE REPLACEMENT")
+            //if isRemote {
+                //NSLog("REMOTE REPLACEMENT")
                 
                 NSLog("bodyNode.position: %@", NSStringFromSCNVector3(bodyNode.position))
                 NSLog("replacementPosition: %@", NSStringFromSCNVector3(position))
                 
                 bodyNode.position = position
-            }
+            //}
         }
     }
     
     public func bodyPart(bodyPartNode: SCNNode, mayHaveHitWall wallNode: SCNNode, withContact contact: SCNPhysicsContact) {
-        NSLog("bodyPart(%@, mayHaveHitWall: %@, withContact: %@", bodyPartNode.name!, wallNode.name!, contact)
+        //NSLog("bodyPart(%@, mayHaveHitWall: %@, withContact: %@", bodyPartNode.name!, wallNode.name!, contact)
         
         //NSLog("contact.penetrationDistance: %.2f", contact.penetrationDistance)
     

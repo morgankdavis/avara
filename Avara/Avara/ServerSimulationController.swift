@@ -205,28 +205,30 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     public func physicsWorld(world: SCNPhysicsWorld, didBeginOrUpdateContact contact: SCNPhysicsContact) {
         //NSLog("ServerSimulationController.physicsWorld(didBeginOrUpdateContact: %@)", contact)
         
-        // WARN: this is stupid. should be taken are of automatically with floor's collisionBitmask
-        guard contact.nodeA.physicsBody?.categoryBitMask != CollisionCategory.Floor.rawValue
-            && contact.nodeB.physicsBody?.categoryBitMask != CollisionCategory.Floor.rawValue else {
-                return
-        }
-        
-        // match node to a client character and update accordingly
-        
-        for (_,player) in netPlayers {
-            let character = player.character
-            //let childNodes = player.character.bodyNode.childNodes
-            // would be nice to do this recursively from bodyNode down
-            var bodyNodes = [SCNNode]()
-            bodyNodes.append(player.character.bodyNode)
-            bodyNodes.append(player.character.legsNode!)
-            bodyNodes.append(player.character.headNode!)
-            
-            if bodyNodes.contains(contact.nodeA) { // nodeA belongs to 'player'
-                character.bodyPart(contact.nodeA, mayHaveHitWall:contact.nodeB, withContact:contact)
+        if (COLLISION_DETECTION_ENABLED) {
+            // WARN: this is stupid. should be taken are of automatically with floor's collisionBitmask
+            guard contact.nodeA.physicsBody?.categoryBitMask != CollisionCategory.Floor.rawValue
+                && contact.nodeB.physicsBody?.categoryBitMask != CollisionCategory.Floor.rawValue else {
+                    return
             }
-            else if bodyNodes.contains(contact.nodeB) { // nodeB belongs to 'player'
-                character.bodyPart(contact.nodeB, mayHaveHitWall:contact.nodeA, withContact:contact)
+            
+            // match node to a client character and update accordingly
+            
+            for (_,player) in netPlayers {
+                let character = player.character
+                //let childNodes = player.character.bodyNode.childNodes
+                // would be nice to do this recursively from bodyNode down
+                var bodyNodes = [SCNNode]()
+                bodyNodes.append(player.character.bodyNode)
+                bodyNodes.append(player.character.legsNode!)
+                bodyNodes.append(player.character.headNode!)
+                
+                if bodyNodes.contains(contact.nodeA) { // nodeA belongs to 'player'
+                    character.bodyPart(contact.nodeA, mayHaveHitWall:contact.nodeB, withContact:contact)
+                }
+                else if bodyNodes.contains(contact.nodeB) { // nodeB belongs to 'player'
+                    character.bodyPart(contact.nodeB, mayHaveHitWall:contact.nodeA, withContact:contact)
+                }
             }
         }
     }
