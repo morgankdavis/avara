@@ -220,7 +220,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             }
         }
     }
-    
+
     private func clientPacketReceived(packetData: NSData, clientID: UInt32) {
         //NSLog("ServerSimulationController.clientPacketReceived(%@, clientID: %d)", packetData, clientID)
         

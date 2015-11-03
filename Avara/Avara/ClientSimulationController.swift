@@ -277,12 +277,12 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                     }
                 }
                 
-                if let u = mySnapshot {
+                if let s = mySnapshot {
                     //NSLog("Server update message with sq: %d, prev sent sq: %d", u.sequenceNumber, sequenceNumber)s
-                    if (u.sequenceNumber > sequenceNumber) && sentNoInputPacket {
-                        serverOverrideSnapshot = u // game loop will see and correct player state
+                    if (s.sequenceNumber > sequenceNumber) && sentNoInputPacket {
+                        serverOverrideSnapshot = s // game loop will see and correct player state
                     }
-                    sequenceNumber = u.sequenceNumber
+                    sequenceNumber = s.sequenceNumber
                 }
                 else {
                     NSLog("*** I can haz update? ***")
@@ -341,8 +341,8 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     }
     
     /*****************************************************************************************************/
-     // MARK:   SCNPhysicsContactDelegate
-     /*****************************************************************************************************/
+    // MARK:   SCNPhysicsContactDelegate
+    /*****************************************************************************************************/
     
     public func physicsWorld(world: SCNPhysicsWorld, didUpdateContact contact: SCNPhysicsContact) {
         //NSLog("physicsWorld(%@, didUpdateContact: %@)", world, contact)
@@ -365,8 +365,8 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     }
     
     /*****************************************************************************************************/
-     // MARK:   MKDNetClientDelegate
-     /*****************************************************************************************************/
+    // MARK:   MKDNetClientDelegate
+    /*****************************************************************************************************/
     
     public func client(client: MKDNetClient!, didConnectWithID clientID: UInt32) {
         NSLog("client(%@, didConnectWithID: %d)", client, clientID)

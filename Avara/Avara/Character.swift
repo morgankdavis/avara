@@ -36,6 +36,9 @@ public class Character {
     private         var accelerationY =             Double(0)
     private         var largestWallPenetration =    Double(0)
     private         var replacementPosition:        SCNVector3?
+    
+    private         var orientFinderTopNode:        SCNNode?
+    private         var orientFinderBottomNode:     SCNNode?
 
     /******************************************************************************************************
          MARK:   Public
@@ -296,6 +299,26 @@ public class Character {
         cameraNode.name = "Camera node"
         cameraNode.position = SCNVector3(x: 0, y: 0.25, z: -0.25) // move the camera slightly forward in the character's head
         hullNode?.addChildNode(cameraNode)
+        
+        // "orientation finders"
+        
+        let finderMaterial = SCNMaterial()
+        let finderImage = NSImage(named: "finder_blue.png")
+        finderMaterial.diffuse.contents = finderImage
+        finderMaterial.emission.contents = finderImage
+        finderMaterial.doubleSided = true
+        
+        orientFinderTopNode = SCNNode(geometry: SCNPlane(width: 0.5, height: 0.5))
+        orientFinderTopNode?.geometry?.materials = [finderMaterial]
+        orientFinderTopNode?.position = SCNVector3(x: 0, y: 2.25, z: -1.15)
+        orientFinderTopNode?.rotation = SCNVector4(x: 1.0, y: 0, z: 0, w: -CGFloat(M_PI)/2.0*5.0)
+        legsNode?.addChildNode(orientFinderTopNode!)
+        
+        orientFinderBottomNode = SCNNode(geometry: SCNPlane(width: 0.5, height: 0.5))
+        orientFinderBottomNode?.geometry?.materials = [finderMaterial]
+        orientFinderBottomNode?.position = SCNVector3(x: 0, y: 1.25, z: -1.15)
+        orientFinderBottomNode?.rotation = SCNVector4(x: 1.0, y: 0, z: 0, w: -CGFloat(M_PI)/2.0)
+        legsNode?.addChildNode(orientFinderBottomNode!)
     }
     
     /*****************************************************************************************************/
