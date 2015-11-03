@@ -21,7 +21,6 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private(set)    var scene =                     SCNScene()
     private         var map:                        Map?
     private         var localCharacter:             Character?
-    private         var gameLoopTimer:              NSTimer? // temporary
     private         let flyoverCamera =             FlyoverCamera()
     private         var isFlyoverMode =             false
     
@@ -37,8 +36,9 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private         var clientAccumMouseDelta =     CGPointZero
     private         var clientTickTimer:            NSTimer?
     private         var sentNoInputPacket =         false
-    
-    private         var lastLoopDate:               Double?
+
+    private         var magicSphereOfPower:         SCNNode?
+    private         var lastLoopTime:               Double?
     
     /*****************************************************************************************************/
     // MARK:   Public
@@ -50,14 +50,6 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         windowController?.showWindow(self)
         switchToCameraNode(localCharacter!.cameraNode)
         
-        //lastLoopDate = NSDate.timeIntervalSinceReferenceDate()
-        gameLoopTimer = NSTimer.scheduledTimerWithTimeInterval(
-            1.0/60.0,
-            target: self,
-            selector: "gameLoopTimer:",
-            userInfo: nil,
-            repeats: true)
-        
         netClient?.connect()
         startClientTickTimer()
     }
@@ -65,10 +57,6 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     /*****************************************************************************************************/
     // MARK:   Internal
     /*****************************************************************************************************/
-    
-    internal func gameLoopTimer(timer: NSTimer) {
-        gameLoop()
-    }
     
     internal func inputManagerDidBeginUserInputNotification(note: NSNotification) {
         //NSLog("inputManagerDidBeginUserInputNotification()")
@@ -107,7 +95,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                         sequenceNumber: sequenceNumber)
    
                     let packtData = updateMessage.encoded()
-                    client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue , flags: .Reliable) // WARN: change to unreliable
+                    client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue , flags: .Unsequenced)
                     
                     // reset accumulators
                     clientAccumButtonInputs = [ButtonInput: Double]()
@@ -128,7 +116,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                             sequenceNumber: sequenceNumber)
                         
                         let packtData = updateMessage.encoded()
-                        client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue , flags: .Reliable) // WARN: change to unreliable
+                        client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue , flags: .Unsequenced)
                         
                         sentNoInputPacket = true
                     }
@@ -150,6 +138,17 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         NSLog("ClientSimulationController.setup()")
         
         map = Map(scene: scene)
+        
+        // this is a hack to keep the render loop running
+        // unless the render loop "changes" something in the physics sim each iteration, the loop will eventually stop
+        magicSphereOfPower = SCNNode(geometry: SCNSphere(radius: 1e-5))
+        magicSphereOfPower?.position = SCNVector3Make(0, -100, 0)
+        magicSphereOfPower?.name = "MAGIC SPHERE OF POWER"
+        scene.rootNode.addChildNode(magicSphereOfPower!)
+        magicSphereOfPower?.physicsBody = SCNPhysicsBody.dynamicBody()
+        magicSphereOfPower?.physicsBody?.velocityFactor = SCNVector3Zero
+        magicSphereOfPower?.physicsBody?.affectedByGravity = false
+        
         localCharacter = Character(scene: scene)
         
         scene.physicsWorld.timeStep = PHYSICS_TIMESTEP
@@ -166,65 +165,58 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         netClient = MKDNetClient(destinationAddress: "127.0.0.1", port: NET_SERVER_PORT, maxChannels: NET_MAX_CHANNELS, delegate: self)
     }
     
-    private func gameLoop() {
-        let nowDate = NSDate.timeIntervalSinceReferenceDate()
+    private func gameLoop(dT: Double) {
+        //NSLog("gameLoop: %f", dT)
         
-        if let lastDate = lastLoopDate {
-            
-            let dT = CGFloat(nowDate - lastDate)
-            //NSLog("computed dT: %f", dT)
-            //dT = 1.0/60.0
-            
-            // pump direct input handler
-            if windowController!.isCursorCaptured {
-                if let directMouseHelper = inputManager.directMouseHelper {
-                    directMouseHelper.pump()
-                }
-            }
-            
-//            // pump net socket client
-//            if let client = netClient {
-//                client.pump()
-//            }
-            
-            // handle flyover or player movement
-            if isFlyoverMode {
-                flyoverCamera.gameLoopWithInputs(inputManager.activeButtonInputs, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
-                windowController?.renderView?.play(self) // why the fuck must we do this?? (force re-render)
-            }
-            else {
-                let activeButtonInput = inputManager.activeButtonInputs
-                let mouseDelta = inputManager.readMouseDeltaAndClear()
-                
-                // add input to the net client input accumulator
-                for input in activeButtonInput {
-                    if let total = clientAccumButtonInputs[input] {
-                        clientAccumButtonInputs[input] = total + Double(dT)
-                    }
-                    else {
-                        clientAccumButtonInputs[input] = Double(dT)
-                    }
-                }
-                clientAccumMouseDelta = CGPoint(x: clientAccumMouseDelta.x + mouseDelta.x, y: clientAccumMouseDelta.y + mouseDelta.y)
-                
-                if NET_CLIENT_RECONCILIATION_ENABLED {
-                    // check for server override before applying local input
-                    if let override = serverOverrideSnapshot {
-                        NSLog("** SERVER OVERRIDE **")
-                        
-                        localCharacter?.applyServerOverrideSnapshot(override)
-                        serverOverrideSnapshot = nil
-                    }
-                }
-
-                // IMPORTANT! initialPosition has to be set BEFORE any translation in each loop invocation
-                let initialPosition = localCharacter?.bodyNode.position
-                localCharacter?.updateForInputs(activeButtonInput, mouseDelta: mouseDelta, dT: dT)
-                localCharacter?.updateForLoopDelta(dT, initialPosition: initialPosition!)
+        // hack to keep loop running. see setup()
+        magicSphereOfPower!.physicsBody?.applyForce(SCNVector3(x: 0, y: 0, z: 0), impulse: true)
+        
+        // pump direct input handler
+        if windowController!.isCursorCaptured {
+            if let directMouseHelper = inputManager.directMouseHelper {
+                directMouseHelper.pump()
             }
         }
         
-        lastLoopDate = nowDate
+        // handle flyover or player movement
+        if isFlyoverMode {
+            flyoverCamera.gameLoopWithInputs(inputManager.activeButtonInputs, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
+            windowController?.renderView?.play(self) // why the fuck must we do this?? (force re-render)
+        }
+        else {
+            let activeButtonInput = inputManager.activeButtonInputs
+            let mouseDelta = inputManager.readMouseDeltaAndClear()
+            
+            // add input to the net client input accumulator
+            for input in activeButtonInput {
+                if let total = clientAccumButtonInputs[input] {
+//                    NSLog("clientAccumButtonInputs: %@", clientAccumButtonInputs.description) // keeps shit from crashing??
+//                    NSLog("input: %@", input.description)
+//                    NSLog("total: %f", total)
+//                    NSLog("dT: %f", dT)
+                    clientAccumButtonInputs[input] = total + dT
+                }
+                else {
+                    clientAccumButtonInputs[input] = dT
+                }
+            }
+            clientAccumMouseDelta = CGPoint(x: clientAccumMouseDelta.x + mouseDelta.x, y: clientAccumMouseDelta.y + mouseDelta.y)
+            
+            if NET_CLIENT_RECONCILIATION_ENABLED {
+                // check for server override before applying local input
+                if let override = serverOverrideSnapshot {
+                    NSLog("** SERVER OVERRIDE **")
+                    
+                    localCharacter?.applyServerOverrideSnapshot(override)
+                    serverOverrideSnapshot = nil
+                }
+            }
+            
+            // IMPORTANT! initialPosition has to be set BEFORE any translation in each loop invocation
+            let initialPosition = localCharacter?.bodyNode.position
+            localCharacter?.updateForInputs(activeButtonInput, mouseDelta: mouseDelta, dT: dT)
+            localCharacter?.updateForLoopDelta(dT, initialPosition: initialPosition!)
+        }
     }
     
     func switchToCameraNode(cameraNode: SCNNode) {
@@ -247,7 +239,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     }
     
     public func physicsWorld(world: SCNPhysicsWorld, didBeginOrUpdateContact contact: SCNPhysicsContact) {
-        NSLog("physicsWorld(didBeginOrUpdateContact: %@)", contact)
+        //NSLog("physicsWorld(didBeginOrUpdateContact: %@)", contact)
         
         if COLLISION_DETECTION_ENABLED {
             // WARN: this is stupid. should be taken are of automatically with floor's collisionBitmask
@@ -275,11 +267,6 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 
             case .ServerUpdate:
                 let updateMessage = message as! ServerUpdateNetMessage
-                
-                // TODO: loop through NetPlayerSnapshots
-                // for one matching our ID, perform reconciliation
-                // for others, find their characters and update accordingly
-                
                 
                 // WARN: there is probably a functional operation for this
                 var mySnapshot: NetPlayerSnapshot?
@@ -328,7 +315,17 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     /*****************************************************************************************************/
     
     public func renderer(renderer: SCNSceneRenderer, updateAtTime time: NSTimeInterval) {
-        //NSLog("renderer(%@, updateAtTime: %f)", renderer, time)
+        //NSLog("renderer(%@, updateAtTime: %f)", renderer.description, time)
+        
+        if let lastTime = self.lastLoopTime {
+            let dT = time - lastTime
+            
+            dispatch_async(dispatch_get_main_queue(),{
+                self.gameLoop(dT)
+            })
+        }
+        
+        lastLoopTime = time
     }
     
     public func renderer(renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: NSTimeInterval) {
@@ -336,32 +333,31 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     }
     
     public func renderer(renderer: SCNSceneRenderer, didSimulatePhysicsAtTime time: NSTimeInterval) {
-        //        NSLog("renderer(%@, didSimulatePhysicsAtTime: %f)", renderer, time)
-        //
-        //        deltaTime = time - lastUpdateTime
-        //        lastUpdateTime = time
-        //
-        //        gameLoop(CGFloat(deltaTime))
-        
-        if let character = localCharacter {
-            character.didSimulatePhysicsAtTime(time)
-        }
+        dispatch_async(dispatch_get_main_queue(),{
+            if let character = self.localCharacter {
+                character.didSimulatePhysicsAtTime(time)
+            }
+        })
     }
     
     /*****************************************************************************************************/
-    // MARK:   SCNPhysicsContactDelegate
-    /*****************************************************************************************************/
+     // MARK:   SCNPhysicsContactDelegate
+     /*****************************************************************************************************/
     
     public func physicsWorld(world: SCNPhysicsWorld, didUpdateContact contact: SCNPhysicsContact) {
         //NSLog("physicsWorld(%@, didUpdateContact: %@)", world, contact)
         
-        physicsWorld(world, didBeginOrUpdateContact: contact)
+        dispatch_async(dispatch_get_main_queue(),{
+            self.physicsWorld(world, didBeginOrUpdateContact: contact)
+        })
     }
     
     public func physicsWorld(world: SCNPhysicsWorld, didBeginContact contact: SCNPhysicsContact) {
         //NSLog("physicsWorld(%@, didBeginContact: %@)", world, contact)
         
-        physicsWorld(world, didBeginOrUpdateContact: contact)
+        dispatch_async(dispatch_get_main_queue(),{
+            self.physicsWorld(world, didBeginOrUpdateContact: contact)
+        })
     }
     
     public func physicsWorld(world: SCNPhysicsWorld, didEndContact contact: SCNPhysicsContact) {
@@ -369,8 +365,8 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     }
     
     /*****************************************************************************************************/
-    // MARK:   MKDNetClientDelegate
-    /*****************************************************************************************************/
+     // MARK:   MKDNetClientDelegate
+     /*****************************************************************************************************/
     
     public func client(client: MKDNetClient!, didConnectWithID clientID: UInt32) {
         NSLog("client(%@, didConnectWithID: %d)", client, clientID)

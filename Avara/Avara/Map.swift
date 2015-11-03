@@ -203,15 +203,17 @@ public class Map : NSObject, SCNProgramDelegate {
 
         // box physics
         box1Node.physicsBody = SCNPhysicsBody.dynamicBody()
-        box1Node.physicsBody?.friction = 1 // default is .5
-        box1Node.physicsBody?.rollingFriction = 1
+        box1Node.physicsBody?.friction = 0.25 // default is .5
+        box1Node.physicsBody?.rollingFriction = 0.25
+        //box1Node.physicsBody?.angularVelocityFactor = SCNVector3(x: 0, y: 0, z: 0)
         box1Node.physicsBody?.categoryBitMask = CollisionCategory.Movable.rawValue
         box1Node.physicsBody?.collisionBitMask = CollisionCategory.Character.rawValue
         //box1Node.physicsBody?.contactTestBitMask = CollisionCategory.Character.rawValue
 
         box2Node.physicsBody = SCNPhysicsBody.dynamicBody()
-        box2Node.physicsBody?.friction = 1 // default is .5
-        box2Node.physicsBody?.rollingFriction = 1
+        box2Node.physicsBody?.friction = 0.25 // default is .5
+        box2Node.physicsBody?.rollingFriction = 0.25
+        //box1Node.physicsBody?.angularVelocityFactor = SCNVector3(x: 0, y: 0, z: 0)
         box2Node.physicsBody?.categoryBitMask = CollisionCategory.Movable.rawValue
         box2Node.physicsBody?.collisionBitMask = CollisionCategory.Character.rawValue
         //box2Node.physicsBody?.contactTestBitMask = CollisionCategory.Character.rawValue

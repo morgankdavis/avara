@@ -16,15 +16,10 @@ public class NetPlayer {
     /*****************************************************************************************************/
     
     public          var     lastReceivedSequenceNumber =    UInt32(0) // sequence numbers are unique to each server<->client relationship
-//    public          var     activeInputs =                  Set<UserInput>()
-//    private(set)    var     accumulatedMouseDelta =         CGPointZero
-//    public          var     updateNetMessages =             [ClientUpdateNetMessage]()
     private(set)    var     name:                           String
     private(set)    var     id:                             UInt32
     private(set)    var     character:                      Character
     public          var     lastSentNetPlayerSnapshot:      NetPlayerSnapshot?
-//    public          var     lastSentInputActive:            Bool?
-    
     private(set)    var     accumButtonInputs =             [ButtonInput: Double]()
     private(set)    var     accumMouseDelta =               CGPointZero
   

@@ -12,16 +12,16 @@ import SceneKit
 
 public class Character {
     
-    /*****************************************************************************************************/
-    // MARK:   Constants
-    /*****************************************************************************************************/
+    /******************************************************************************************************
+        MARK:   Constants
+     ******************************************************************************************************/
     
-    private         let WALK_VELOCITY =             CGFloat(5.0)                // meters/sec
-    private         let TURN_ANG_VELOCITY =         CGFloat(M_PI*(2.0/3.0))     // radians/sec
-    private         let HEAD_VERT_ANG_CLAMP =       CGFloat(M_PI/4.0)
-    private         let HEAD_HORIZ_ANG_CLAMP =      CGFloat(M_PI*(2.0/3.0))
-    private         let MAX_JUMP_HEIGHT =           CGFloat(2.01)               // units -- arbitrary for now
-    private         let MAX_ALTITUDE_RISE =         CGFloat(0.2)                // units -- the distance above character.y to ray test for altitude
+    private         let WALK_VELOCITY =             Double(5.0)                // meters/sec
+    private         let TURN_ANG_VELOCITY =         Double(M_PI*(2.0/3.0))     // radians/sec
+    private         let HULL_VERT_ANG_CLAMP =       Double(M_PI/4.0)
+    private         let HULL_HORIZ_ANG_CLAMP =      Double(M_PI*(2.0/3.0))
+    private         let MAX_JUMP_HEIGHT =           Double(2.01)               // units -- arbitrary for now
+    private         let MAX_ALTITUDE_RISE =         Double(0.2)                // units -- the distance above character.y to ray test for altitude
     
     /*****************************************************************************************************/
     // MARK:   Properties
@@ -30,23 +30,23 @@ public class Character {
     public          let cameraNode =                SCNNode()
     public          var serverInstance =            false
     private(set)    var bodyNode =                  SCNNode()
-    private(set)    var headNode:                   SCNNode?
+    private(set)    var hullNode:                   SCNNode?
     private(set)    var legsNode:                   SCNNode?
     private         var scene:                      SCNScene
-    private         var accelerationY =             CGFloat(0)
-    private         var largestWallPenetration =    CGFloat(0)
+    private         var accelerationY =             Double(0)
+    private         var largestWallPenetration =    Double(0)
     private         var replacementPosition:        SCNVector3?
+
+    /******************************************************************************************************
+         MARK:   Public
+     ******************************************************************************************************/
     
-    /*****************************************************************************************************/
-    // MARK:   Public
-    /*****************************************************************************************************/
-    
-    public func updateForInputs(buttonInputs: Set<ButtonInput>, mouseDelta: CGPoint, dT: CGFloat) {
+    public func updateForInputs(buttonInputs: Set<ButtonInput>, mouseDelta: CGPoint, dT: Double) {
         // called for local simulation where dT for all push imports is uniform
         
         var inputs = [ButtonInput: Double]()
         for i in buttonInputs {
-            inputs[i] = Double(dT)
+            inputs[i] = dT
         }
         
         updateForInputs(inputs, mouseDelta: mouseDelta)
@@ -57,15 +57,15 @@ public class Character {
     
         // body
         if pushInputs.keys.contains(.MoveForward) {
-            let dT = CGFloat(pushInputs[.MoveForward]!)
+            let dT = pushInputs[.MoveForward]!
             let positionDelta = WALK_VELOCITY * dT
             
             let transform = bodyNode.transform
             let sinYRot = transform.m13
             let cosYRot = transform.m33
             
-            let dx = positionDelta * sinYRot
-            let dz = positionDelta * cosYRot
+            let dx = CGFloat(positionDelta) * sinYRot
+            let dz = CGFloat(positionDelta) * cosYRot
             
             bodyNode.position = SCNVector3(
                 x: bodyNode.position.x + dx,
@@ -73,15 +73,15 @@ public class Character {
                 z: bodyNode.position.z - dz)
         }
         if pushInputs.keys.contains(.MoveBackward) {
-            let dT = CGFloat(pushInputs[.MoveBackward]!)
+            let dT = pushInputs[.MoveBackward]!
             let positionDelta = WALK_VELOCITY * dT
             
             let transform = bodyNode.transform
             let sinYRot = transform.m13
             let cosYRot = transform.m33
             
-            let dx = positionDelta * sinYRot
-            let dz = positionDelta * cosYRot
+            let dx = CGFloat(positionDelta) * sinYRot
+            let dz = CGFloat(positionDelta) * cosYRot
             
             bodyNode.position = SCNVector3(
                 x: bodyNode.position.x - dx,
@@ -90,7 +90,7 @@ public class Character {
         }
         
         if pushInputs.keys.contains(.TurnLeft) {
-            let dT = CGFloat(pushInputs[.TurnLeft]!)
+            let dT = pushInputs[.TurnLeft]!
             let rotationDelta = TURN_ANG_VELOCITY * dT
             bodyNode.rotation = SCNVector4(
                 x: 0,
@@ -99,7 +99,7 @@ public class Character {
                 w: bodyNode.rotation.w + CGFloat(rotationDelta))
         }
         if pushInputs.keys.contains(.TurnRight) {
-            let dT = CGFloat(pushInputs[.TurnRight]!)
+            let dT = pushInputs[.TurnRight]!
             let rotationDelta = TURN_ANG_VELOCITY * dT
             bodyNode.rotation = SCNVector4(
                 x: 0,
@@ -108,24 +108,24 @@ public class Character {
                 w: bodyNode.rotation.w - CGFloat(rotationDelta))
         }
         
-        // head
+        // hull
         let viewDistanceFactor = 1.0/(MOUSE_SENSITIVITY*MOUSE_SENSITIVITY_MULTIPLIER)
         
         let hAngle = acos(CGFloat(mouseDelta.x) / viewDistanceFactor) - CGFloat(M_PI_2)
         let vAngle = acos(CGFloat(mouseDelta.y) / viewDistanceFactor) - CGFloat(M_PI_2)
         
         var nAngles = SCNVector3(
-            x: headNode!.eulerAngles.x + vAngle,
-            y: headNode!.eulerAngles.y - hAngle,
-            z: headNode!.eulerAngles.z)
+            x: hullNode!.eulerAngles.x + vAngle,
+            y: hullNode!.eulerAngles.y - hAngle,
+            z: hullNode!.eulerAngles.z)
         
-        nAngles.x = max(-HEAD_VERT_ANG_CLAMP, min(HEAD_VERT_ANG_CLAMP, nAngles.x)) // clamp vertical angle
-        nAngles.y = max(-HEAD_HORIZ_ANG_CLAMP, min(HEAD_HORIZ_ANG_CLAMP, nAngles.y)) // clamp horizontal angle
+        nAngles.x = max(-CGFloat(HULL_VERT_ANG_CLAMP), min(CGFloat(HULL_VERT_ANG_CLAMP), nAngles.x)) // clamp vertical angle
+        nAngles.y = max(-CGFloat(HULL_HORIZ_ANG_CLAMP), min(CGFloat(HULL_HORIZ_ANG_CLAMP), nAngles.y)) // clamp horizontal angle
         
-        headNode?.eulerAngles = nAngles
+        hullNode?.eulerAngles = nAngles
     }
     
-    public func updateForLoopDelta(dT: CGFloat, initialPosition: SCNVector3) {
+    public func updateForLoopDelta(dT: Double, initialPosition: SCNVector3) {
         // called every iteration of the simulation loop for things like physics
         // IMPORTANT! initialPosition is the position BEFORE ANY TRANSLATIONS THIS LOOP ITERATION
         
@@ -140,9 +140,9 @@ public class Character {
         
         var position = bodyNode.position
         var rayOrigin = position
-        rayOrigin.y += MAX_ALTITUDE_RISE
+        rayOrigin.y += CGFloat(MAX_ALTITUDE_RISE)
         var rayEnd = position
-        rayEnd.y -= MAX_JUMP_HEIGHT
+        rayEnd.y -= CGFloat(MAX_JUMP_HEIGHT)
         
         let rayResults = scene.physicsWorld.rayTestWithSegmentFromPoint(
             rayOrigin,
@@ -156,7 +156,7 @@ public class Character {
             bodyNode.position.y = groundY
             
             let THRESHOLD: CGFloat = 1e-3 //1e-5 // 1e-5 == 0.00001
-            let GRAVITY_ACCEL = scene.physicsWorld.gravity.y/10.0
+            let GRAVITY_ACCEL = Double(scene.physicsWorld.gravity.y/10.0)
             if (groundY < position.y - THRESHOLD) {
                 accelerationY -= dT * GRAVITY_ACCEL // approximation of acceleration for a delta time.
             }
@@ -164,7 +164,7 @@ public class Character {
                 accelerationY = 0
             }
             
-            position.y -= accelerationY
+            position.y -= CGFloat(accelerationY)
             
             // reset acceleration if we touch the ground
             if (groundY > position.y) {
@@ -204,7 +204,7 @@ public class Character {
     
         let LEG_BOTTOM_THRESHOLD: CGFloat = 0.05
         if let legContactPoint = legsNode?.convertPosition(contact.contactPoint, fromNode: scene.rootNode) {
-            guard bodyPartNode == headNode || (bodyPartNode == legsNode && legContactPoint.y > LEG_BOTTOM_THRESHOLD) else {
+            guard bodyPartNode == hullNode || (bodyPartNode == legsNode && legContactPoint.y > LEG_BOTTOM_THRESHOLD) else {
                 //NSLog("Contact at bottom of legs.")
                 return
             }
@@ -215,12 +215,12 @@ public class Character {
 //            return
 //        }
         
-        guard bodyPartNode == headNode || bodyPartNode == legsNode else {
+        guard bodyPartNode == hullNode || bodyPartNode == legsNode else {
             NSLog("Doesn't look like a character body part...")
             return
         }
         
-        guard contact.penetrationDistance > largestWallPenetration else {
+        guard contact.penetrationDistance > CGFloat(largestWallPenetration) else {
             //NSLog("Low penetration")
             return
         }
@@ -229,7 +229,7 @@ public class Character {
             //NSLog("*** WALL CONTACT ***")
         }
         
-        largestWallPenetration = contact.penetrationDistance;
+        largestWallPenetration = Double(contact.penetrationDistance)
         
         let scaledNormal = SCNVector3(
             x: contact.contactNormal.x * contact.penetrationDistance,
@@ -248,7 +248,7 @@ public class Character {
 
         bodyNode.position = override.position
         bodyNode.rotation = override.bodyRotation
-        headNode?.eulerAngles = override.headEulerAngles
+        hullNode?.eulerAngles = override.headEulerAngles
     }
     
     /*****************************************************************************************************/
@@ -276,15 +276,15 @@ public class Character {
         }
         
         // head
-        if let meshScene = SCNScene(named: "Models.scnassets/hector_head.dae") {
-            headNode = meshScene.rootNode.childNodeWithName("head", recursively: true)
-            headNode?.name = "Head node"
-            headNode?.position = SCNVector3(x: 0, y: 1.6, z: 0)
-            headNode?.physicsBody = SCNPhysicsBody.kinematicBody()
-            headNode?.physicsBody?.categoryBitMask = CollisionCategory.Character.rawValue
-            //headNode?.physicsBody?.collisionBitMask = CollisionCategory.Wall.rawValue | CollisionCategory.Movable.rawValue
-            headNode?.physicsBody?.contactTestBitMask = CollisionCategory.Wall.rawValue | CollisionCategory.Movable.rawValue
-            legsNode?.addChildNode(headNode!)
+        if let meshScene = SCNScene(named: "Models.scnassets/hector_hull.dae") {
+            hullNode = meshScene.rootNode.childNodeWithName("head", recursively: true)
+            hullNode?.name = "Hull node"
+            hullNode?.position = SCNVector3(x: 0, y: 1.6, z: 0)
+            hullNode?.physicsBody = SCNPhysicsBody.kinematicBody()
+            hullNode?.physicsBody?.categoryBitMask = CollisionCategory.Character.rawValue
+            //hullNode?.physicsBody?.collisionBitMask = CollisionCategory.Wall.rawValue | CollisionCategory.Movable.rawValue
+            hullNode?.physicsBody?.contactTestBitMask = CollisionCategory.Wall.rawValue | CollisionCategory.Movable.rawValue
+            legsNode?.addChildNode(hullNode!)
         }
         
         // camera
@@ -293,9 +293,9 @@ public class Character {
         camera.zNear = 0.01
         camera.zFar = 1000.0
         cameraNode.camera = camera
-        cameraNode.name = "Head node"
+        cameraNode.name = "Camera node"
         cameraNode.position = SCNVector3(x: 0, y: 0.25, z: -0.25) // move the camera slightly forward in the character's head
-        headNode?.addChildNode(cameraNode)
+        hullNode?.addChildNode(cameraNode)
     }
     
     /*****************************************************************************************************/

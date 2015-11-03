@@ -21,7 +21,7 @@ public class ClientUpdateNetMessage: NetMessage {
     
     override public var     opcode:             NetMessageOpcode { get { return .ClientUpdate } }
     public          var     sequenceNumber:     UInt32?
-    private(set)    var     buttonInputs =        [ButtonInput: Double]()
+    private(set)    var     buttonInputs =      [ButtonInput: Double]()
     private(set)    var     mouseDelta =        CGPointZero
     
     /*****************************************************************************************************/
@@ -37,7 +37,7 @@ public class ClientUpdateNetMessage: NetMessage {
         pushUInt8(buttonInputCount, toData: &encodedData)
         for (input, duration) in buttonInputs {
             pushUInt8(input.rawValue, toData: &encodedData)
-            pushFloat32(Float32(duration), toData: &encodedData)
+            pushFloat64(Float64(duration), toData: &encodedData)
         }
         
         pushCGPoint(mouseDelta, toData: &encodedData)
@@ -59,7 +59,7 @@ public class ClientUpdateNetMessage: NetMessage {
             for _ in 0..<buttonInputCount {
                 let inputRaw = pullUInt8FromData(&data)
                 if let input = ButtonInput(rawValue: inputRaw) {
-                    buttonInputs[input] = Double(pullFloat32FromData(&data))
+                    buttonInputs[input] = Double(pullFloat64FromData(&data))
                 }
                 else {
                     NSLog("Unknown UserInput raw value: %d", inputRaw) // this would likely only happen due to encoding/transport error...

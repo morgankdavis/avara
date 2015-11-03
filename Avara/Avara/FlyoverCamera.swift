@@ -16,8 +16,8 @@ public class FlyoverCamera {
     // MARK:   Types
     /*****************************************************************************************************/
     
-    private         let MOVE_RATE =                 CGFloat(10.0)                // units/sec
-    private         let VERT_CLAMP =                CGFloat(M_PI/2.0)
+    private         let MOVE_RATE =                 Double(10.0)                // units/sec
+    private         let VERT_CLAMP =                Double(M_PI/2.0)
     
     /*****************************************************************************************************/
     // MARK:   Properties
@@ -29,7 +29,7 @@ public class FlyoverCamera {
     // MARK:   Public
     /*****************************************************************************************************/
     
-    public func gameLoopWithInputs(inputs: Set<ButtonInput>, mouseDelta: CGPoint, dT: CGFloat) {
+    public func gameLoopWithInputs(inputs: Set<ButtonInput>, mouseDelta: CGPoint, dT: Double) {
         // keys
         let positionDelta = MOVE_RATE * dT
         let transform = node.transform
@@ -39,9 +39,9 @@ public class FlyoverCamera {
             let cosYRot = transform.m33
             let sinXRot = transform.m32
             
-            let dx = positionDelta * sinYRot
-            let dy = positionDelta * sinXRot
-            let dz = positionDelta * cosYRot
+            let dx = CGFloat(positionDelta) * sinYRot
+            let dy = CGFloat(positionDelta) * sinXRot
+            let dz = CGFloat(positionDelta) * cosYRot
             
             node.position = SCNVector3(
                 x: node.position.x + dx,
@@ -53,9 +53,9 @@ public class FlyoverCamera {
             let cosYRot = transform.m33
             let sinXRot = transform.m32
             
-            let dx = positionDelta * sinYRot
-            let dy = positionDelta * sinXRot
-            let dz = positionDelta * cosYRot
+            let dx = CGFloat(positionDelta) * sinYRot
+            let dy = CGFloat(positionDelta) * sinXRot
+            let dz = CGFloat(positionDelta) * cosYRot
             
             node.position = SCNVector3(
                 x: node.position.x - dx,
@@ -67,8 +67,8 @@ public class FlyoverCamera {
             let sinYRot = transform.m13
             let cosYRot = transform.m33
             
-            let dx = positionDelta * sinYRot
-            let dz = positionDelta * cosYRot
+            let dx = CGFloat(positionDelta) * sinYRot
+            let dz = CGFloat(positionDelta) * cosYRot
             
             // take the cross product with a unit Y vector, should point out an orthogonal vector (right or left?)
             // scale the orthogonal vector to our distance and move!
@@ -89,8 +89,8 @@ public class FlyoverCamera {
             let sinYRot = transform.m13
             let cosYRot = transform.m33
             
-            let dx = positionDelta * sinYRot
-            let dz = positionDelta * cosYRot
+            let dx = CGFloat(positionDelta) * sinYRot
+            let dz = CGFloat(positionDelta) * cosYRot
             
             // take the cross product with a unit Y vector, should point out an orthogonal vector (right or left?)
             // scale the orthogonal vector to our distance and move!
@@ -113,9 +113,9 @@ public class FlyoverCamera {
             let cosYRot = transform.m33
             let sinXRot = transform.m32
             
-            let dx = positionDelta * sinYRot
-            let dy = positionDelta * sinXRot
-            let dz = positionDelta * cosYRot
+            let dx = CGFloat(positionDelta) * sinYRot
+            let dy = CGFloat(positionDelta) * sinXRot
+            let dz = CGFloat(positionDelta) * cosYRot
             
             // take the cross product with a unit x vector, should point out an orthogonal vector (up or down?)
             // scale the orthogonal vector to our distance and move!
@@ -144,7 +144,7 @@ public class FlyoverCamera {
             y: node.eulerAngles.y - hAngle,
             z: node.eulerAngles.z)
         
-        nAngles.x = max(-VERT_CLAMP, min(VERT_CLAMP, nAngles.x)) // clamp angle to PI/4 < a < PI/4
+        nAngles.x = max(-CGFloat(VERT_CLAMP), min(CGFloat(VERT_CLAMP), nAngles.x)) // clamp angle to PI/4 < a < PI/4
         
         node.eulerAngles = nAngles
     }

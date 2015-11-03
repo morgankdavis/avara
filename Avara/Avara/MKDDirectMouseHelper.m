@@ -32,13 +32,6 @@
     return nil;
 }
 
-//- (MKDDirectMouseHelper *)sharedHelper
-//{
-//    static MKDDirectMouseHelper *helper = nil;
-//    if (!helper) helper = [[MKDDirectMouseHelper alloc] init];
-//    return helper;
-//}
-
 - (void)findMice
 {
     const int available_mice = ManyMouse_Init();
@@ -69,10 +62,10 @@
 {
     while (ManyMouse_PollEvent(&event)) {
         if (event.type == MANYMOUSE_EVENT_ABSMOTION) {
-            //NSLog(@"Mouse #%u absolute motion %s %d\n", event.device, event.item == 0 ? "X" : "Y", event.value);
+            NSLog(@"Mouse #%u absolute motion %s %d\n", event.device, event.item == 0 ? "X" : "Y", event.value);
         }
         else if (event.type == MANYMOUSE_EVENT_RELMOTION) {
-            //NSLog(@"Mouse #%u relative motion %s %d\n", event.device, event.item == 0 ? "X" : "Y", event.value);
+            NSLog(@"Mouse #%u relative motion %s %d\n", event.device, event.item == 0 ? "X" : "Y", event.value);
             [self.delegate directMouseHelper:self didGetRelativeMotion:event.value axis:event.item mouseID:event.device];
         }
         else if (event.type == MANYMOUSE_EVENT_BUTTON) {
