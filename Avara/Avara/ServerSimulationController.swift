@@ -63,7 +63,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 id: id,
                 position: player.character.bodyNode.position,
                 bodyRotation: player.character.bodyNode.rotation,
-                headEulerAngles: player.character.hullNode!.eulerAngles)
+                headEulerAngles: player.character.hullInnerNode!.eulerAngles) // WARN: change to "hull" + add roll
             
             if snapshot != player.lastSentNetPlayerSnapshot {
                 //NSLog("-- SERVER SENDING --")
@@ -209,7 +209,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 var bodyNodes = [SCNNode]()
                 bodyNodes.append(player.character.bodyNode)
                 bodyNodes.append(player.character.legsNode!)
-                bodyNodes.append(player.character.hullNode!)
+                bodyNodes.append(player.character.hullInnerNode!)
                 
                 if bodyNodes.contains(contact.nodeA) { // nodeA belongs to 'player'
                     character.bodyPart(contact.nodeA, mayHaveHitWall:contact.nodeB, withContact:contact)

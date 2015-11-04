@@ -31,7 +31,8 @@ public class Character {
     public          let cameraNode =                SCNNode()
     public          var serverInstance =            false
     private(set)    var bodyNode =                  SCNNode()
-    private(set)    var hullNode:                   SCNNode?
+    private(set)    var hullOuterNode:              SCNNode? // contains hullInnerNode. pitch+yaw
+    private(set)    var hullInnerNode:              SCNNode? // contains geometry. roll
     private(set)    var legsNode:                   SCNNode?
     private         var scene:                      SCNScene
     private         var accelerationY =             Double(0)
@@ -119,35 +120,18 @@ public class Character {
         let dY = acos(CGFloat(mouseDelta.y) / viewDistanceFactor) - CGFloat(M_PI_2)
         
         var nAngles = SCNVector3(
-            x: hullNode!.eulerAngles.x + dY,
-            y: hullNode!.eulerAngles.y - dP,
-            z: hullNode!.eulerAngles.z)
+            x: hullOuterNode!.eulerAngles.x + dY,
+            y: hullOuterNode!.eulerAngles.y - dP,
+            z: hullOuterNode!.eulerAngles.z)
         
         nAngles.x = max(-CGFloat(HULL_VERT_ANG_CLAMP), min(CGFloat(HULL_VERT_ANG_CLAMP), nAngles.x)) // clamp vertical angle
         nAngles.y = max(-CGFloat(HULL_HORIZ_ANG_CLAMP), min(CGFloat(HULL_HORIZ_ANG_CLAMP), nAngles.y)) // clamp horizontal angle
-        
-        NSLog("YAW: %f", nAngles.y)
-        
-        // add roll effect
-        var roll = CGFloat(HULL_LOOK_ROLL_FACTOR) * nAngles.y
-//        if nAngles.y < -CGFloat(M_PI/2.0) { // + 90deg CW
-//            let rollTurnPoint = -CGFloat(HULL_LOOK_ROLL_FACTOR) * CGFloat(M_PI/2.0) // 3*PI/4
-//            let over = roll + turnPoint
-//            roll = turnPoint + over
-//        }
-//        if nAngles.y > CGFloat(M_PI/4.0) { // 45deg CCW
-//            NSLog("DICKS")
-//            let rollTurnPoint = CGFloat(HULL_LOOK_ROLL_FACTOR) * CGFloat(M_PI/4.0)
-//            let exceedingRollTurnPoint = roll - rollTurnPoint
-//            let newRoll = rollTurnPoint - exceedingRollTurnPoint
-//            roll = newRoll
-//        }
 
-        
-        NSLog("ROLL: %f", roll)
-        nAngles.z = roll
-        
-        hullNode?.eulerAngles = nAngles
+        hullOuterNode?.eulerAngles = nAngles
+
+        // add roll effect
+        let roll = CGFloat(HULL_LOOK_ROLL_FACTOR) * nAngles.y
+        hullInnerNode?.eulerAngles.z = roll
     }
     
     public func updateForLoopDelta(dT: Double, initialPosition: SCNVector3) {
@@ -229,7 +213,7 @@ public class Character {
     
         let LEG_BOTTOM_THRESHOLD: CGFloat = 0.05
         if let legContactPoint = legsNode?.convertPosition(contact.contactPoint, fromNode: scene.rootNode) {
-            guard bodyPartNode == hullNode || (bodyPartNode == legsNode && legContactPoint.y > LEG_BOTTOM_THRESHOLD) else {
+            guard bodyPartNode == hullInnerNode || (bodyPartNode == legsNode && legContactPoint.y > LEG_BOTTOM_THRESHOLD) else {
                 //NSLog("Contact at bottom of legs.")
                 return
             }
@@ -240,7 +224,7 @@ public class Character {
 //            return
 //        }
         
-        guard bodyPartNode == hullNode || bodyPartNode == legsNode else {
+        guard bodyPartNode == hullInnerNode || bodyPartNode == legsNode else {
             NSLog("Doesn't look like a character body part...")
             return
         }
@@ -273,7 +257,7 @@ public class Character {
 
         bodyNode.position = override.position
         bodyNode.rotation = override.bodyRotation
-        hullNode?.eulerAngles = override.headEulerAngles
+        hullOuterNode?.eulerAngles = override.headEulerAngles // WARN: Change to "hull" + add roll
     }
     
     /*****************************************************************************************************/
@@ -302,14 +286,18 @@ public class Character {
         
         // head
         if let meshScene = SCNScene(named: "Models.scnassets/hector_hull.dae") {
-            hullNode = meshScene.rootNode.childNodeWithName("head", recursively: true)
-            hullNode?.name = "Hull node"
-            hullNode?.position = SCNVector3(x: 0, y: 1.6, z: 0)
-            hullNode?.physicsBody = SCNPhysicsBody.kinematicBody()
-            hullNode?.physicsBody?.categoryBitMask = CollisionCategory.Character.rawValue
+            hullInnerNode = meshScene.rootNode.childNodeWithName("head", recursively: true)
+            hullInnerNode?.name = "Hull node"
+            //hullInnerNode?.position = SCNVector3(x: 0, y: 1.6, z: 0)
+            hullInnerNode?.physicsBody = SCNPhysicsBody.kinematicBody()
+            hullInnerNode?.physicsBody?.categoryBitMask = CollisionCategory.Character.rawValue
             //hullNode?.physicsBody?.collisionBitMask = CollisionCategory.Wall.rawValue | CollisionCategory.Movable.rawValue
-            hullNode?.physicsBody?.contactTestBitMask = CollisionCategory.Wall.rawValue | CollisionCategory.Movable.rawValue
-            legsNode?.addChildNode(hullNode!)
+            hullInnerNode?.physicsBody?.contactTestBitMask = CollisionCategory.Wall.rawValue | CollisionCategory.Movable.rawValue
+            hullOuterNode = SCNNode()
+            hullOuterNode?.addChildNode(hullInnerNode!)
+            hullOuterNode?.position = SCNVector3(x: 0, y: 1.6, z: 0)
+            //hullOuterNode?.pivot = SCNMatrix4MakeTranslation(0, 1.0, 0)
+            legsNode?.addChildNode(hullOuterNode!)
         }
         
         // camera
@@ -320,7 +308,7 @@ public class Character {
         cameraNode.camera = camera
         cameraNode.name = "Camera node"
         cameraNode.position = SCNVector3(x: 0, y: 0.25, z: -0.25) // move the camera slightly forward in the character's head
-        hullNode?.addChildNode(cameraNode)
+        hullInnerNode?.addChildNode(cameraNode)
         
         // "orientation finders"
         
