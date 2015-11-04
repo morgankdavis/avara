@@ -19,6 +19,7 @@
 		416933241B75C5B800DB59BA /* protocol.c in Sources */ = {isa = PBXBuildFile; fileRef = 416933171B75C5B800DB59BA /* protocol.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		416933251B75C5B800DB59BA /* unix.c in Sources */ = {isa = PBXBuildFile; fileRef = 4169331B1B75C5B800DB59BA /* unix.c */; settings = {COMPILER_FLAGS = "-w"; }; };
 		4169CC421BE8A04D0035FF29 /* finder_blue.png in Resources */ = {isa = PBXBuildFile; fileRef = 4169CC411BE8A04D0035FF29 /* finder_blue.png */; };
+		4169CC441BE9E2AE0035FF29 /* crosshair.png in Resources */ = {isa = PBXBuildFile; fileRef = 4169CC431BE9E2AE0035FF29 /* crosshair.png */; };
 		417CC38C1B645260006B21F3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC38B1B645260006B21F3 /* AppDelegate.swift */; };
 		417CC3911B645260006B21F3 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 417CC38F1B645260006B21F3 /* MainMenu.xib */; };
 		417CC3A71B645310006B21F3 /* Character.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3981B645310006B21F3 /* Character.swift */; };
@@ -92,6 +93,7 @@
 		4169331C1B75C5B800DB59BA /* unix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unix.h; sourceTree = "<group>"; };
 		4169331D1B75C5B800DB59BA /* utility.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utility.h; sourceTree = "<group>"; };
 		4169CC411BE8A04D0035FF29 /* finder_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = finder_blue.png; path = Textures/finder_blue.png; sourceTree = "<group>"; };
+		4169CC431BE9E2AE0035FF29 /* crosshair.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = crosshair.png; path = Textures/crosshair.png; sourceTree = "<group>"; };
 		417CC3881B645260006B21F3 /* Avara.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Avara.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		417CC38B1B645260006B21F3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		417CC3901B645260006B21F3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
@@ -233,6 +235,7 @@
 		417CC3BE1B6454D1006B21F3 /* Textures */ = {
 			isa = PBXGroup;
 			children = (
+				4169CC431BE9E2AE0035FF29 /* crosshair.png */,
 				4169CC411BE8A04D0035FF29 /* finder_blue.png */,
 				417CC3BF1B645507006B21F3 /* floor.png */,
 				417CC3C01B645507006B21F3 /* floorBump.jpg */,
@@ -399,6 +402,7 @@
 				417CC3DD1B645507006B21F3 /* sky_miramar_1.png in Resources */,
 				417CC3D51B645507006B21F3 /* needlepointSteel_normal.png in Resources */,
 				417CC3D61B645507006B21F3 /* sky_interstellar_0.png in Resources */,
+				4169CC441BE9E2AE0035FF29 /* crosshair.png in Resources */,
 				417CC3D71B645507006B21F3 /* sky_interstellar_1.png in Resources */,
 				417CC3DF1B645507006B21F3 /* sky_miramar_3.png in Resources */,
 				417CC3E81B645676006B21F3 /* TODO.rtf in Resources */,

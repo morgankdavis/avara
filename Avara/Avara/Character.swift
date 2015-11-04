@@ -41,6 +41,9 @@ public class Character {
     
     private         var orientFinderTopNode:        SCNNode?
     private         var orientFinderBottomNode:     SCNNode?
+    
+    private         var crosshairRNode:             SCNNode?
+    private         var crosshairLNode:             SCNNode?
 
     /******************************************************************************************************
          MARK:   Public
@@ -134,6 +137,9 @@ public class Character {
             
             updateHullRoll()
         }
+        
+        // crosshair
+        
     }
     
     public func updateForLoopDelta(dT: Double, initialPosition: SCNVector3) {
@@ -141,11 +147,6 @@ public class Character {
         // IMPORTANT! initialPosition is the position BEFORE ANY TRANSLATIONS THIS LOOP ITERATION
         
         // altitude
-        
-        //let initialPosition = bodyNode.position
-//        if initialPosition == nil {
-//            initialPosition = bodyNode.position
-//        }
         
         var groundY: CGFloat = 0
         
@@ -333,6 +334,31 @@ public class Character {
         orientFinderBottomNode?.position = SCNVector3(x: 0, y: 1.25, z: -1.15)
         orientFinderBottomNode?.rotation = SCNVector4(x: 1.0, y: 0, z: 0, w: -CGFloat(M_PI)/2.0)
         legsNode?.addChildNode(orientFinderBottomNode!)
+        
+        // crosshairs
+        
+        let crosshairMaterial = SCNMaterial()
+        let crosshairImage = NSImage(named: "crosshair.png") // WARN: check this
+        crosshairMaterial.diffuse.contents = crosshairImage
+        crosshairMaterial.emission.contents = crosshairImage
+        crosshairMaterial.doubleSided = true
+        
+        let crosshairWRatio = crosshairImage!.size.width / crosshairImage!.size.height
+        let CROSSHAIR_HEIGHT = CGFloat(0.25)
+        let crosshairWidth = CROSSHAIR_HEIGHT * crosshairWRatio
+        
+        crosshairRNode = SCNNode(geometry: SCNPlane(width: crosshairWidth, height: CROSSHAIR_HEIGHT))
+        crosshairLNode = SCNNode(geometry: SCNPlane(width: crosshairWidth, height: CROSSHAIR_HEIGHT))
+        
+        crosshairRNode!.geometry!.materials = [crosshairMaterial]
+        crosshairLNode!.geometry!.materials = [crosshairMaterial]
+        
+        crosshairRNode!.position = SCNVector3Make(CROSSHAIR_HEIGHT/2.0 - crosshairWidth/2.0, 1.6, -2)
+        crosshairLNode!.rotation = SCNVector4Make(0, 1, 0, CGFloat(M_PI))
+        crosshairLNode!.position = SCNVector3Make(-CROSSHAIR_HEIGHT/2.0 + crosshairWidth/2.0, 1.6, -2)
+        
+        scene.rootNode.addChildNode(crosshairRNode!)
+        scene.rootNode.addChildNode(crosshairLNode!)
     }
     
     private func updateHullRoll() {
