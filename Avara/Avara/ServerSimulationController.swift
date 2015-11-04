@@ -27,7 +27,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private         var sentNoChangePacket =        [UInt32:Bool]()                 // id:sent
     
     private         var magicSphereOfPower:         SCNNode?
-    private         var lastLoopTime:               Double?
+    private         var lastRenderTime:             Double?
     
     /*****************************************************************************************************/
     // MARK:   Public
@@ -283,15 +283,17 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     public func renderer(aRenderer: SCNSceneRenderer, updateAtTime time: NSTimeInterval) {
         //NSLog("renderer(%@, updateAtTime: %f)", renderer.description, time)
         
-        if let lastTime = lastLoopTime {
+        if let lastTime = lastRenderTime {
             let dT = time - lastTime
             
             dispatch_async(dispatch_get_main_queue(),{
                 self.gameLoop(dT)
             })
         }
-        
-        lastLoopTime = time
+    }
+    
+    public func renderer(renderer: SCNSceneRenderer, didApplyAnimationsAtTime time: NSTimeInterval) {
+        //NSLog("renderer(%@, didApplyAnimationsAtTime: %f)", renderer.description, time)
     }
     
     public func renderer(aRenderer: SCNSceneRenderer, didSimulatePhysicsAtTime time: NSTimeInterval) {
@@ -302,6 +304,16 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 player.character.didSimulatePhysicsAtTime(time)
             }
         })
+    }
+    
+    public func renderer(renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: NSTimeInterval) {
+        //NSLog("renderer(%@, willRenderScene: %@, scene: %@, atTime: %f)", renderer.description, scene, time)
+    }
+    
+    public func renderer(renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: NSTimeInterval) {
+        //NSLog("renderer(%@, didRenderScene: %@, atTime: %f)", renderer.description, scene, time)
+        
+        lastRenderTime = time
     }
     
     /*****************************************************************************************************/

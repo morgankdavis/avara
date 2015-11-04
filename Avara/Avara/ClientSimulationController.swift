@@ -38,7 +38,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private         var sentNoInputPacket =         false
 
     private         var magicSphereOfPower:         SCNNode?
-    private         var lastLoopTime:               Double?
+    private         var lastRenderTime:               Double?
     
     /*****************************************************************************************************/
     // MARK:   Public
@@ -324,7 +324,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     public func renderer(renderer: SCNSceneRenderer, updateAtTime time: NSTimeInterval) {
         //NSLog("renderer(%@, updateAtTime: %f)", renderer.description, time)
         
-        if let lastTime = self.lastLoopTime {
+        if let lastTime = self.lastRenderTime {
             let dT = time - lastTime
             
             dispatch_async(dispatch_get_main_queue(),{
@@ -332,19 +332,31 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             })
         }
         
-        lastLoopTime = time
+        
     }
     
-    public func renderer(renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: NSTimeInterval) {
-        //NSLog("renderer(didRenderScene: %@, atTime: %f)", scene, time)
+    public func renderer(renderer: SCNSceneRenderer, didApplyAnimationsAtTime time: NSTimeInterval) {
+        //NSLog("renderer(%@, didApplyAnimationsAtTime: %f)", renderer.description, time)
     }
     
     public func renderer(renderer: SCNSceneRenderer, didSimulatePhysicsAtTime time: NSTimeInterval) {
+        //NSLog("renderer(%@, didSimulatePhysicsAtTime: %f)", renderer.description, time)
+        
         dispatch_async(dispatch_get_main_queue(),{
             if let character = self.localCharacter {
                 character.didSimulatePhysicsAtTime(time)
             }
         })
+    }
+    
+    public func renderer(renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: NSTimeInterval) {
+        //NSLog("renderer(%@, willRenderScene: %@, scene: %@, atTime: %f)", renderer.description, scene, time)
+    }
+    
+    public func renderer(renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: NSTimeInterval) {
+        //NSLog("renderer(%@, didRenderScene: %@, atTime: %f)", renderer.description, scene, time)
+        
+        lastRenderTime = time
     }
     
     /*****************************************************************************************************/

@@ -44,11 +44,13 @@ public class Character {
     private         var orientFinderTopNode:        SCNNode?
     private         var orientFinderBottomNode:     SCNNode?
     
-    private         var crosshairRNode:             SCNNode?
+    public         var crosshairRNode:             SCNNode?
     private         var crosshairLNode:             SCNNode?
     
 //    private         var originSphereNode:           SCNNode?
 //    private         var destinationSphereNode:      SCNNode?
+    
+    private         var lineNode:      SCNNode?
 
     /******************************************************************************************************
          MARK:   Public
@@ -398,7 +400,76 @@ public class Character {
         hullInnerNode?.eulerAngles.z = roll
     }
     
+    
+    
+//    private func lineBetweenNodeA(nodeA: SCNNode, nodeB: SCNNode) -> SCNNode {
+//        let positions: [Float32] = [
+//            Float32(nodeA.position.x), Float32(nodeA.position.y), Float32(nodeA.position.z),
+//            Float32(nodeB.position.x), Float32(nodeB.position.y), Float32(nodeB.position.z)]
+//        let positionData = NSData(bytes: positions, length: sizeof(Float32)*positions.count)
+//        let indices: [Int32] = [0, 1]
+//        let indexData = NSData(bytes: indices, length: sizeof(Int32) * indices.count)
+//        
+//        let source = SCNGeometrySource(data: positionData, semantic: SCNGeometrySourceSemanticVertex, vectorCount: indices.count, floatComponents: true, componentsPerVector: 3, bytesPerComponent: sizeof(Float32), dataOffset: 0, dataStride: sizeof(Float32) * 3)
+//        let element = SCNGeometryElement(data: indexData, primitiveType: SCNGeometryPrimitiveType.Line, primitiveCount: indices.count, bytesPerIndex: sizeof(Int32))
+//        
+//        let line = SCNGeometry(sources: [source], elements: [element])
+//        return SCNNode(geometry: line)
+//    }
+
+//    private func lineBetweenPoint(pointA: SCNVector3, pointB: SCNVector3) -> SCNNode {
+//        let positions: [Float32] = [
+//            Float32(pointA.x), Float32(pointA.y), Float32(pointA.z),
+//            Float32(pointB.x), Float32(pointB.y), Float32(pointB.z)]
+//        let positionData = NSData(bytes: positions, length: sizeof(Float32)*positions.count)
+//        let indices: [Int32] = [0, 1]
+//        let indexData = NSData(bytes: indices, length: sizeof(Int32) * indices.count)
+//        
+//        let source = SCNGeometrySource(data: positionData, semantic: SCNGeometrySourceSemanticVertex, vectorCount: indices.count, floatComponents: true, componentsPerVector: 3, bytesPerComponent: sizeof(Float32), dataOffset: 0, dataStride: sizeof(Float32) * 3)
+//        let element = SCNGeometryElement(data: indexData, primitiveType: SCNGeometryPrimitiveType.Line, primitiveCount: indices.count, bytesPerIndex: sizeof(Int32))
+//        
+//        let line = SCNGeometry(sources: [source], elements: [element])
+//        return SCNNode(geometry: line)
+//    }
+    
+    
+    
     private func updateCrosshairs() {
+        
+        
+//        let lines = [SCNVector3Make(0,0,0), SCNVector3Make(5,5,-5)]
+//        let indicies = [0,1]
+//        let vertexSource = SCNGeometrySource(vertices: lines, count: 1)
+//        
+//        SCNVector3 lines[] = {
+//            SCNVector3Make(0, 0, -2),
+//            SCNVector3Make(0, 0, 2),
+//            
+//        };
+//        
+//        int indices[] = {0,1};
+//        
+//        SCNGeometrySource *vertexSource = [SCNGeometrySource geometrySourceWithVertices:lines count:2];
+//        
+//        
+//        NSData *indexData = [NSData dataWithBytes:indices length:sizeof(indices)];
+//        SCNGeometryElement *element = [SCNGeometryElement geometryElementWithData:indexData
+//                primitiveType:SCNGeometryPrimitiveTypeLine
+//                primitiveCount:1
+//                bytesPerIndex:sizeof(int)];
+//        SCNGeometry *line = [SCNGeometry geometryWithSources:@[vertexSource]
+//        elements:@[element]];
+//        SCNMaterial *material = [SCNMaterial material];
+//        [[material diffuse] setContents:[UIColor whiteColor]];
+//        material.lightingModelName = SCNLightingModelConstant;
+//        [line setMaterials:@[material]];
+//        
+//        SCNNode *lineNode = [SCNNode nodeWithGeometry:line];
+//        [BaseDna addChildNode:lineNode];
+        
+        
+        
+        
         
         let crosshairPlane = crosshairRNode!.geometry as! SCNPlane
         let crosshairWidth = crosshairPlane.width
@@ -426,10 +497,19 @@ public class Character {
                 SCNVector3Make(sourcePoints[s].x, sourcePoints[s].y, sourcePoints[s].z - CGFloat(CROSSHAIR_PROJECTION_LENGTH)),
                 toNode:scene.rootNode)
             
-        let rayResults = scene.physicsWorld.rayTestWithSegmentFromPoint(
-            sourcePoint,
-            toPoint: destinationPoint,
-            options: [SCNPhysicsTestSearchModeKey : SCNPhysicsTestSearchModeClosest])
+            
+//            let newLineNote = lineBetweenPoint(sourcePoint, pointB: destinationPoint)
+//            if lineNode != nil {
+//                lineNode?.removeFromParentNode()
+//            }
+//            lineNode = newLineNote
+//            scene.rootNode.addChildNode(lineNode!)
+            
+            
+            let rayResults = scene.physicsWorld.rayTestWithSegmentFromPoint(
+                sourcePoint,
+                toPoint: destinationPoint,
+                options: [SCNPhysicsTestSearchModeKey : SCNPhysicsTestSearchModeClosest])
             
             if rayResults.count > 0 {
                 //results.append(rayResults[0])
@@ -458,22 +538,24 @@ public class Character {
             s++
         }
         
-        if let (result, distance) = closestResult {
-            //NSLog("closestResult: (%@, %f)", cR.result, cR.distance)
-  
-            crosshairRNode!.position = SCNVector3Make(
-                CROSSHAIR_HEIGHT/2.0 - crosshairWidth/2.0,
-                crosshairWidth/2.0 + crosshairWidth/2.0,
-                -distance)
-            
-            //crosshairRNode!.position = result.worldCoordinates
-        }
-        else {
-            crosshairRNode!.position = SCNVector3Make(
-                CROSSHAIR_HEIGHT/2.0 - crosshairWidth/2.0,
-                crosshairWidth/2.0 + crosshairWidth/2.0,
-                -CGFloat(CROSSHAIR_PROJECTION_LENGTH))
-        }
+//        if let (result, distance) = closestResult {
+//            //NSLog("closestResult: (%@, %f)", cR.result, cR.distance)
+//  
+//            crosshairRNode!.position = SCNVector3Make(
+//                CROSSHAIR_HEIGHT/2.0 - crosshairWidth/2.0,
+//                crosshairWidth/2.0 + crosshairWidth/2.0,
+//                -distance)
+//            
+//            //crosshairRNode!.position = result.worldCoordinates
+//        }
+//        else {
+//            crosshairRNode!.position = SCNVector3Make(
+//                CROSSHAIR_HEIGHT/2.0 - crosshairWidth/2.0,
+//                crosshairWidth/2.0 + crosshairWidth/2.0,
+//                -CGFloat(CROSSHAIR_PROJECTION_LENGTH))
+//        }
+        
+    
         
         //NSLog("results: %d", results.count)
         
