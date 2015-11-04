@@ -22,6 +22,7 @@ public class Character {
     private         let HULL_HORIZ_ANG_CLAMP =      Double(M_PI*(2.0/3.0))
     private         let MAX_JUMP_HEIGHT =           Double(2.01)               // units -- arbitrary for now
     private         let MAX_ALTITUDE_RISE =         Double(0.2)                // units -- the distance above character.y to ray test for altitude
+    private         let HULL_LOOK_ROLL_FACTOR =     Double(M_PI/24.0)
     
     /*****************************************************************************************************/
     // MARK:   Properties
@@ -114,16 +115,37 @@ public class Character {
         // hull
         let viewDistanceFactor = 1.0/(MOUSE_SENSITIVITY*MOUSE_SENSITIVITY_MULTIPLIER)
         
-        let hAngle = acos(CGFloat(mouseDelta.x) / viewDistanceFactor) - CGFloat(M_PI_2)
-        let vAngle = acos(CGFloat(mouseDelta.y) / viewDistanceFactor) - CGFloat(M_PI_2)
+        let dP = acos(CGFloat(mouseDelta.x) / viewDistanceFactor) - CGFloat(M_PI_2)
+        let dY = acos(CGFloat(mouseDelta.y) / viewDistanceFactor) - CGFloat(M_PI_2)
         
         var nAngles = SCNVector3(
-            x: hullNode!.eulerAngles.x + vAngle,
-            y: hullNode!.eulerAngles.y - hAngle,
+            x: hullNode!.eulerAngles.x + dY,
+            y: hullNode!.eulerAngles.y - dP,
             z: hullNode!.eulerAngles.z)
         
         nAngles.x = max(-CGFloat(HULL_VERT_ANG_CLAMP), min(CGFloat(HULL_VERT_ANG_CLAMP), nAngles.x)) // clamp vertical angle
         nAngles.y = max(-CGFloat(HULL_HORIZ_ANG_CLAMP), min(CGFloat(HULL_HORIZ_ANG_CLAMP), nAngles.y)) // clamp horizontal angle
+        
+        NSLog("YAW: %f", nAngles.y)
+        
+        // add roll effect
+        var roll = CGFloat(HULL_LOOK_ROLL_FACTOR) * nAngles.y
+//        if nAngles.y < -CGFloat(M_PI/2.0) { // + 90deg CW
+//            let rollTurnPoint = -CGFloat(HULL_LOOK_ROLL_FACTOR) * CGFloat(M_PI/2.0) // 3*PI/4
+//            let over = roll + turnPoint
+//            roll = turnPoint + over
+//        }
+//        if nAngles.y > CGFloat(M_PI/4.0) { // 45deg CCW
+//            NSLog("DICKS")
+//            let rollTurnPoint = CGFloat(HULL_LOOK_ROLL_FACTOR) * CGFloat(M_PI/4.0)
+//            let exceedingRollTurnPoint = roll - rollTurnPoint
+//            let newRoll = rollTurnPoint - exceedingRollTurnPoint
+//            roll = newRoll
+//        }
+
+        
+        NSLog("ROLL: %f", roll)
+        nAngles.z = roll
         
         hullNode?.eulerAngles = nAngles
     }
@@ -310,7 +332,7 @@ public class Character {
         
         orientFinderTopNode = SCNNode(geometry: SCNPlane(width: 0.5, height: 0.5))
         orientFinderTopNode?.geometry?.materials = [finderMaterial]
-        orientFinderTopNode?.position = SCNVector3(x: 0, y: 2.25, z: -1.15)
+        orientFinderTopNode?.position = SCNVector3(x: 0, y: 2.30, z: -1.15)
         orientFinderTopNode?.rotation = SCNVector4(x: 1.0, y: 0, z: 0, w: -CGFloat(M_PI)/2.0*5.0)
         legsNode?.addChildNode(orientFinderTopNode!)
         
