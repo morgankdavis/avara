@@ -57,13 +57,17 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             // make a snapshot for each player
             // if that snapshot is different from player.lastSentPlayerSnapshot, add it to the list to send
             
-            // TODO: add convenience method to NetPlayer to make its own snapshot?
+            // pack up inner&outer hull angles
+            let hullAngles = SCNVector3Make(
+                player.character.hullOuterNode!.eulerAngles.x,
+                player.character.hullOuterNode!.eulerAngles.y,
+                player.character.hullInnerNode!.eulerAngles.z)
             let snapshot = NetPlayerSnapshot(
                 sequenceNumber: player.lastReceivedSequenceNumber+1,
                 id: id,
                 position: player.character.bodyNode.position,
                 bodyRotation: player.character.bodyNode.rotation,
-                headEulerAngles: player.character.hullInnerNode!.eulerAngles) // WARN: change to "hull" + add roll
+                hullEulerAngles: hullAngles) // WARN: change to "hull" + add roll
             
             if snapshot != player.lastSentNetPlayerSnapshot {
                 //NSLog("-- SERVER SENDING --")

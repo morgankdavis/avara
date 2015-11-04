@@ -7,7 +7,7 @@
 //
 //  The ganddaddy unreliable server message. Sends player state to clients.
 //
-//  FORMAT: [UINT8]<NumPlayers>{[UInt32]<sequenceNumber>[UInt32]<clientID>[VEC3]<position>[VEC4]<bodyOrientation>[VEC4]<headOrientation>}
+//  FORMAT: [UINT8]<NumPlayers>{[UInt32]<sequenceNumber>[UInt32]<clientID>[VEC3]<position>[VEC4]<bodyOrientation>[VEC3]<hullEulerAngles>}
 //
 
 import Foundation
@@ -37,7 +37,7 @@ public class ServerUpdateNetMessage: NetMessage {
             pushUInt32(u.id, toData: &encodedData)
             pushVector3(u.position, toData: &encodedData)
             pushVector4(u.bodyRotation, toData: &encodedData)
-            pushVector3(u.headEulerAngles, toData: &encodedData)
+            pushVector3(u.hullEulerAngles, toData: &encodedData)
         }
 
         return encodedData as NSData
@@ -60,14 +60,14 @@ public class ServerUpdateNetMessage: NetMessage {
                 let clientID = pullUInt32FromData(&data)
                 let position = pullVector3FromData(&data)
                 let bodyRotation = pullVector4FromData(&data)
-                let headEulerAngles = pullVector3FromData(&data)
+                let hullEulerAngles = pullVector3FromData(&data)
                 
                 let snapshot = NetPlayerSnapshot(
                     sequenceNumber: sequenceNumber,
                     id: clientID,
                     position: position,
                     bodyRotation: bodyRotation,
-                    headEulerAngles: headEulerAngles)
+                    hullEulerAngles: hullEulerAngles)
                 
                 snapshots.append(snapshot)
             }

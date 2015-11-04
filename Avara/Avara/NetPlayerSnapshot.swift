@@ -23,18 +23,18 @@ public class NetPlayerSnapshot: Equatable, CustomStringConvertible {
     private(set)    var     id:                     UInt32
     private(set)    var     position:               SCNVector3
     private(set)    var     bodyRotation:           SCNVector4
-    private(set)    var     headEulerAngles:        SCNVector3
+    private(set)    var     hullEulerAngles:        SCNVector3
     
     /*****************************************************************************************************/
     // MARK:   Object
     /*****************************************************************************************************/
     
-    public init(sequenceNumber: UInt32, id: UInt32, position: SCNVector3, bodyRotation: SCNVector4, headEulerAngles: SCNVector3) {
+    public init(sequenceNumber: UInt32, id: UInt32, position: SCNVector3, bodyRotation: SCNVector4, hullEulerAngles: SCNVector3) {
         self.sequenceNumber = sequenceNumber
         self.id = id
         self.position = position
         self.bodyRotation = bodyRotation
-        self.headEulerAngles = headEulerAngles
+        self.hullEulerAngles = hullEulerAngles
     }
     
     /*****************************************************************************************************/
@@ -42,8 +42,8 @@ public class NetPlayerSnapshot: Equatable, CustomStringConvertible {
     /*****************************************************************************************************/
     
     public var description: String { get {
-        return NSString(format: "[NetPlayerSnapshot] sequenceNumber: %d, id: %d, position: %@, bodyRotation: %@, headEulerAngles: %@",
-            sequenceNumber, id, NSStringFromSCNVector3(position), NSStringFromSCNVector4(bodyRotation), NSStringFromSCNVector3(headEulerAngles)) as String
+        return NSString(format: "[NetPlayerSnapshot] sequenceNumber: %d, id: %d, position: %@, bodyRotation: %@, hullEulerAngles: %@",
+            sequenceNumber, id, NSStringFromSCNVector3(position), NSStringFromSCNVector4(bodyRotation), NSStringFromSCNVector3(hullEulerAngles)) as String
         }
     }
 }
@@ -54,7 +54,7 @@ public class NetPlayerSnapshot: Equatable, CustomStringConvertible {
 /*****************************************************************************************************/
 
 public func ==(lhs: NetPlayerSnapshot, rhs: NetPlayerSnapshot) -> Bool {
-    return (lhs.id == rhs.id) && (lhs.position == rhs.position) && (lhs.bodyRotation == rhs.bodyRotation) && (lhs.headEulerAngles == rhs.headEulerAngles)
+    return (lhs.id == rhs.id) && (lhs.position == rhs.position) && (lhs.bodyRotation == rhs.bodyRotation) && (lhs.hullEulerAngles == rhs.hullEulerAngles)
 }
 
 public func !=(lhs: NetPlayerSnapshot, rhs: NetPlayerSnapshot) -> Bool {

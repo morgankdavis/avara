@@ -257,7 +257,9 @@ public class Character {
 
         bodyNode.position = override.position
         bodyNode.rotation = override.bodyRotation
-        hullOuterNode?.eulerAngles = override.headEulerAngles // WARN: Change to "hull" + add roll
+        let angles = override.hullEulerAngles
+        hullOuterNode?.eulerAngles = SCNVector3Make(angles.x, angles.y, 0)
+        hullInnerNode?.eulerAngles = SCNVector3Make(0, 0, angles.z)
     }
     
     /*****************************************************************************************************/
