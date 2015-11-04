@@ -10,21 +10,32 @@ import Foundation
 import SceneKit
 
 
+func allChildNodesRecursive(node: SCNNode) -> [SCNNode] {
+    var result = [node]
+    if node.childNodes.count > 0 {
+        for child in node.childNodes {
+            result.appendContentsOf(allChildNodesRecursive(child))
+        }
+    }
+    return result
+}
+
+
 public class Character {
     
     /******************************************************************************************************
         MARK:   Constants
      ******************************************************************************************************/
     
-    private         let WALK_VELOCITY =                 Double(5.0)                 // meters/sec
-    private         let TURN_ANG_VELOCITY =             Double(M_PI*(2.0/3.0))      // radians/sec
-    private         let HULL_VERT_ANG_CLAMP =           Double(M_PI/4.0)
-    private         let HULL_HORIZ_ANG_CLAMP =          Double(M_PI*(2.0/3.0))
-    private         let MAX_JUMP_HEIGHT =               Double(2.01)                // units -- arbitrary for now
-    private         let MAX_ALTITUDE_RISE =             Double(0.2)                 // units -- the distance above character.y to ray test for altitude
-    private         let HULL_LOOK_ROLL_FACTOR =         Double(M_PI/24.0)
-    private         let CROSSHAIR_HEIGHT =              CGFloat(0.25)
-    private         let CROSSHAIR_PROJECTION_LENGTH =   Double(10.0)               // units
+    private         let WALK_VELOCITY =             Double(5.0)                 // meters/sec
+    private         let TURN_ANG_VELOCITY =         Double(M_PI*(2.0/3.0))      // radians/sec
+    private         let HULL_VERT_ANG_CLAMP =       Double(M_PI/4.0)
+    private         let HULL_HORIZ_ANG_CLAMP =      Double(M_PI*(2.0/3.0))
+    private         let MAX_JUMP_HEIGHT =           Double(2.01)                // units -- arbitrary for now
+    private         let MAX_ALTITUDE_RISE =         Double(0.2)                 // units -- the distance above character.y to ray test for altitude
+    private         let HULL_LOOK_ROLL_FACTOR =     Double(M_PI/24.0)
+    private         let CROSSHAIR_HEIGHT =          CGFloat(0.25)
+    private         let CROSSHAIR_FAR =             Double(15.0)                // units
     
     /*****************************************************************************************************/
     // MARK:   Properties
@@ -44,13 +55,8 @@ public class Character {
     private         var orientFinderTopNode:        SCNNode?
     private         var orientFinderBottomNode:     SCNNode?
     
-    public         var crosshairRNode:             SCNNode?
+    private         var crosshairRNode:             SCNNode?
     private         var crosshairLNode:             SCNNode?
-    
-//    private         var originSphereNode:           SCNNode?
-//    private         var destinationSphereNode:      SCNNode?
-    
-    private         var lineNode:      SCNNode?
 
     /******************************************************************************************************
          MARK:   Public
@@ -303,13 +309,14 @@ public class Character {
         // head
         if let meshScene = SCNScene(named: "Models.scnassets/hector_hull.dae") {
             hullInnerNode = meshScene.rootNode.childNodeWithName("head", recursively: true)
-            hullInnerNode?.name = "Hull node"
+            hullInnerNode?.name = "Hull inner node"
             //hullInnerNode?.position = SCNVector3(x: 0, y: 1.6, z: 0)
             hullInnerNode?.physicsBody = SCNPhysicsBody.kinematicBody()
             hullInnerNode?.physicsBody?.categoryBitMask = CollisionCategory.Character.rawValue
             //hullNode?.physicsBody?.collisionBitMask = CollisionCategory.Wall.rawValue | CollisionCategory.Movable.rawValue
             hullInnerNode?.physicsBody?.contactTestBitMask = CollisionCategory.Wall.rawValue | CollisionCategory.Movable.rawValue
             hullOuterNode = SCNNode()
+            hullOuterNode?.name = "Hull outer node"
             hullOuterNode?.addChildNode(hullInnerNode!)
             hullOuterNode?.position = SCNVector3(x: 0, y: 1.6, z: 0)
             //hullOuterNode?.pivot = SCNMatrix4MakeTranslation(0, 1.0, 0)
@@ -335,16 +342,21 @@ public class Character {
         finderMaterial.doubleSided = true
         
         orientFinderTopNode = SCNNode(geometry: SCNPlane(width: 0.5, height: 0.5))
+        orientFinderTopNode?.name = "Top orientation finder"
         orientFinderTopNode?.geometry?.materials = [finderMaterial]
         orientFinderTopNode?.position = SCNVector3(x: 0, y: 2.30, z: -1.15)
         orientFinderTopNode?.rotation = SCNVector4(x: 1.0, y: 0, z: 0, w: -CGFloat(M_PI)/2.0*5.0)
         legsNode?.addChildNode(orientFinderTopNode!)
         
         orientFinderBottomNode = SCNNode(geometry: SCNPlane(width: 0.5, height: 0.5))
+        orientFinderBottomNode?.name = "Bottom orientation finder"
         orientFinderBottomNode?.geometry?.materials = [finderMaterial]
         orientFinderBottomNode?.position = SCNVector3(x: 0, y: 1.25, z: -1.15)
         orientFinderBottomNode?.rotation = SCNVector4(x: 1.0, y: 0, z: 0, w: -CGFloat(M_PI)/2.0)
         legsNode?.addChildNode(orientFinderBottomNode!)
+        
+        orientFinderTopNode?.castsShadow = false
+        orientFinderBottomNode?.castsShadow = false
         
         // crosshairs
         
@@ -365,6 +377,12 @@ public class Character {
         
         crosshairRNode = SCNNode(geometry: SCNPlane(width: crosshairWidth, height: CROSSHAIR_HEIGHT))
         crosshairLNode = SCNNode(geometry: SCNPlane(width: crosshairWidth, height: CROSSHAIR_HEIGHT))
+        
+        crosshairRNode?.castsShadow = false
+        crosshairLNode?.castsShadow = false
+        
+        crosshairRNode?.name = "Right crosshair node"
+        crosshairLNode?.name = "Left crosshair node"
         
         crosshairRNode!.geometry!.materials = [crosshairRMaterial]
         crosshairLNode!.geometry!.materials = [crosshairLMaterial]
@@ -392,6 +410,10 @@ public class Character {
 //        destinationSphereNode = SCNNode(geometry: SCNSphere(radius: 0.25))
 //        scene.rootNode.addChildNode(originSphereNode!)
 //        scene.rootNode.addChildNode(destinationSphereNode!)
+        
+        
+        let allBodyNodes = allChildNodesRecursive(bodyNode)
+        NSLog("allBodyNodes: %@", allBodyNodes)
     }
     
     private func updateHullRoll() {
@@ -400,160 +422,73 @@ public class Character {
         hullInnerNode?.eulerAngles.z = roll
     }
     
-    
-    
-//    private func lineBetweenNodeA(nodeA: SCNNode, nodeB: SCNNode) -> SCNNode {
-//        let positions: [Float32] = [
-//            Float32(nodeA.position.x), Float32(nodeA.position.y), Float32(nodeA.position.z),
-//            Float32(nodeB.position.x), Float32(nodeB.position.y), Float32(nodeB.position.z)]
-//        let positionData = NSData(bytes: positions, length: sizeof(Float32)*positions.count)
-//        let indices: [Int32] = [0, 1]
-//        let indexData = NSData(bytes: indices, length: sizeof(Int32) * indices.count)
-//        
-//        let source = SCNGeometrySource(data: positionData, semantic: SCNGeometrySourceSemanticVertex, vectorCount: indices.count, floatComponents: true, componentsPerVector: 3, bytesPerComponent: sizeof(Float32), dataOffset: 0, dataStride: sizeof(Float32) * 3)
-//        let element = SCNGeometryElement(data: indexData, primitiveType: SCNGeometryPrimitiveType.Line, primitiveCount: indices.count, bytesPerIndex: sizeof(Int32))
-//        
-//        let line = SCNGeometry(sources: [source], elements: [element])
-//        return SCNNode(geometry: line)
-//    }
-
-//    private func lineBetweenPoint(pointA: SCNVector3, pointB: SCNVector3) -> SCNNode {
-//        let positions: [Float32] = [
-//            Float32(pointA.x), Float32(pointA.y), Float32(pointA.z),
-//            Float32(pointB.x), Float32(pointB.y), Float32(pointB.z)]
-//        let positionData = NSData(bytes: positions, length: sizeof(Float32)*positions.count)
-//        let indices: [Int32] = [0, 1]
-//        let indexData = NSData(bytes: indices, length: sizeof(Int32) * indices.count)
-//        
-//        let source = SCNGeometrySource(data: positionData, semantic: SCNGeometrySourceSemanticVertex, vectorCount: indices.count, floatComponents: true, componentsPerVector: 3, bytesPerComponent: sizeof(Float32), dataOffset: 0, dataStride: sizeof(Float32) * 3)
-//        let element = SCNGeometryElement(data: indexData, primitiveType: SCNGeometryPrimitiveType.Line, primitiveCount: indices.count, bytesPerIndex: sizeof(Int32))
-//        
-//        let line = SCNGeometry(sources: [source], elements: [element])
-//        return SCNNode(geometry: line)
-//    }
-    
-    
-    
     private func updateCrosshairs() {
-        
-        
-//        let lines = [SCNVector3Make(0,0,0), SCNVector3Make(5,5,-5)]
-//        let indicies = [0,1]
-//        let vertexSource = SCNGeometrySource(vertices: lines, count: 1)
-//        
-//        SCNVector3 lines[] = {
-//            SCNVector3Make(0, 0, -2),
-//            SCNVector3Make(0, 0, 2),
-//            
-//        };
-//        
-//        int indices[] = {0,1};
-//        
-//        SCNGeometrySource *vertexSource = [SCNGeometrySource geometrySourceWithVertices:lines count:2];
-//        
-//        
-//        NSData *indexData = [NSData dataWithBytes:indices length:sizeof(indices)];
-//        SCNGeometryElement *element = [SCNGeometryElement geometryElementWithData:indexData
-//                primitiveType:SCNGeometryPrimitiveTypeLine
-//                primitiveCount:1
-//                bytesPerIndex:sizeof(int)];
-//        SCNGeometry *line = [SCNGeometry geometryWithSources:@[vertexSource]
-//        elements:@[element]];
-//        SCNMaterial *material = [SCNMaterial material];
-//        [[material diffuse] setContents:[UIColor whiteColor]];
-//        material.lightingModelName = SCNLightingModelConstant;
-//        [line setMaterials:@[material]];
-//        
-//        SCNNode *lineNode = [SCNNode nodeWithGeometry:line];
-//        [BaseDna addChildNode:lineNode];
-        
-        
-        
-        
-        
         let crosshairPlane = crosshairRNode!.geometry as! SCNPlane
         let crosshairWidth = crosshairPlane.width
         let crosshairHight = crosshairPlane.height
-        
-        let rootSourcePoint = hullOuterNode!.convertPosition(SCNVector3Zero, toNode:scene.rootNode)
-        
-        let sourcePoints = [
-            SCNVector3Make(rootSourcePoint.x - (crosshairWidth/2.0), rootSourcePoint.y - (crosshairHight/2.0), rootSourcePoint.z), // top left
-            SCNVector3Make(rootSourcePoint.x + (crosshairWidth/2.0), rootSourcePoint.y - (crosshairHight/2.0), rootSourcePoint.z), // top right
-            SCNVector3Make(rootSourcePoint.x + (crosshairWidth/2.0), rootSourcePoint.y + (crosshairHight/2.0), rootSourcePoint.z), // bottom right
-            SCNVector3Make(rootSourcePoint.x - (crosshairWidth/2.0), rootSourcePoint.y + (crosshairHight/2.0), rootSourcePoint.z), // bottom left
-            SCNVector3Make(rootSourcePoint.x - 3*(crosshairWidth/4.0), rootSourcePoint.y, rootSourcePoint.z), // center inside
-            SCNVector3Make(rootSourcePoint.x + (crosshairWidth/2.0), rootSourcePoint.y, rootSourcePoint.z)] // center outside
-   
-//        let sourcePoint = hullOuterNode!.convertPosition(SCNVector3Zero, toNode:scene.rootNode)
-//        let destinationPoint = hullOuterNode!.convertPosition(SCNVector3Make(0, 0, -CGFloat(CROSSHAIR_PROJECTION_LENGTH)), toNode:scene.rootNode)
-        
-        //var results = [SCNHitTestResult]()
+
+        let offsetPoints = [
+            SCNVector3Make( -crosshairWidth/2.0,    -crosshairHight/2.0,    0), // top left
+            SCNVector3Make( crosshairWidth/2.0,     -crosshairHight/2.0,    0), // top right
+            SCNVector3Make( crosshairWidth/2.0,     -crosshairHight/2.0,    0), // bottom right
+            SCNVector3Make( -crosshairWidth/2.0,    -crosshairHight/2.0,    0), // bottom left
+            SCNVector3Make( crosshairWidth/4.0,     0,                      0), // center inside
+            SCNVector3Make( crosshairWidth/2.0,     0,                      0)] // center outside
+
         var closestResult: (result: SCNHitTestResult, distance: CGFloat)?
-        var s = 0
-        for sourcePoint in sourcePoints {
+        
+        let allBodyNodes = allChildNodesRecursive(bodyNode)
+        
+        for offsetPoint in offsetPoints {
+            let worldSourcePoint = hullOuterNode!.convertPosition(offsetPoint, toNode:scene.rootNode)
             
-            let destinationPoint = hullOuterNode!.convertPosition(
-                SCNVector3Make(sourcePoints[s].x, sourcePoints[s].y, sourcePoints[s].z - CGFloat(CROSSHAIR_PROJECTION_LENGTH)),
+            let worldDestinationPoint = hullOuterNode!.convertPosition(
+                SCNVector3Make(offsetPoint.x, offsetPoint.y, offsetPoint.z - CGFloat(CROSSHAIR_FAR)),
                 toNode:scene.rootNode)
             
-            
-//            let newLineNote = lineBetweenPoint(sourcePoint, pointB: destinationPoint)
-//            if lineNode != nil {
-//                lineNode?.removeFromParentNode()
-//            }
-//            lineNode = newLineNote
-//            scene.rootNode.addChildNode(lineNode!)
-            
-            
             let rayResults = scene.physicsWorld.rayTestWithSegmentFromPoint(
-                sourcePoint,
-                toPoint: destinationPoint,
-                options: [SCNPhysicsTestSearchModeKey : SCNPhysicsTestSearchModeClosest])
+                worldSourcePoint,
+                toPoint: worldDestinationPoint,
+                options: [SCNPhysicsTestSearchModeKey : SCNPhysicsTestSearchModeAll])
             
             if rayResults.count > 0 {
-                //results.append(rayResults[0])
-                
-                let result = rayResults[0]
-                
-                // find just how far this ray is -- magnitude of (source minus result's worldCoordinates)
-                let difference = SCNVector3Make(
-                    result.worldCoordinates.x - sourcePoint.x,
-                    result.worldCoordinates.y - sourcePoint.y,
-                    result.worldCoordinates.z - sourcePoint.z)
-                let magnitude = CGFloat(GLKVector3Length(SCNVector3ToGLKVector3(difference)))
-                
-                //NSLog("HIT WITH MAG: %f", magnitude)
-                
-                if let (_, cD) = closestResult {
-                    if magnitude < cD {
-                        closestResult = (result, magnitude)
+                for result in rayResults {
+                    // find how long this ray is
+                    let difference = SCNVector3Make(
+                        result.worldCoordinates.x - worldSourcePoint.x,
+                        result.worldCoordinates.y - worldSourcePoint.y,
+                        result.worldCoordinates.z - worldSourcePoint.z)
+                    let magnitude = CGFloat(GLKVector3Length(SCNVector3ToGLKVector3(difference)))
+                    
+                    //NSLog("HIT WITH MAG: %f", magnitude)
+                    
+                    if !allBodyNodes.contains(result.node) { // don't project onto parts of the hector's own body...
+                        if let (_, cD) = closestResult {
+                            if magnitude < cD {
+                                closestResult = (result, magnitude)
+                            }
+                        }
+                        else {
+                            closestResult = (result, magnitude)
+                        }
                     }
                 }
-                else {
-                    closestResult = (result, magnitude)
-                }
             }
-            
-            s++
         }
         
-//        if let (result, distance) = closestResult {
-//            //NSLog("closestResult: (%@, %f)", cR.result, cR.distance)
-//  
-//            crosshairRNode!.position = SCNVector3Make(
-//                CROSSHAIR_HEIGHT/2.0 - crosshairWidth/2.0,
-//                crosshairWidth/2.0 + crosshairWidth/2.0,
-//                -distance)
-//            
-//            //crosshairRNode!.position = result.worldCoordinates
-//        }
-//        else {
-//            crosshairRNode!.position = SCNVector3Make(
-//                CROSSHAIR_HEIGHT/2.0 - crosshairWidth/2.0,
-//                crosshairWidth/2.0 + crosshairWidth/2.0,
-//                -CGFloat(CROSSHAIR_PROJECTION_LENGTH))
-//        }
+        if let (_, distance) = closestResult {
+            crosshairRNode!.position = SCNVector3Make(
+                CROSSHAIR_HEIGHT/2.0 - crosshairWidth/2.0,
+                crosshairWidth/2.0 + crosshairWidth/2.0,
+                -(distance - 0.05))
+            //crosshairRNode!.position = SCNVector3Make(0, 0, -(distance - 0.05))
+        }
+        else { // so results. project out to CROSSHAIR_FAR
+            crosshairRNode!.position = SCNVector3Make(
+                CROSSHAIR_HEIGHT/2.0 - crosshairWidth/2.0,
+                crosshairWidth/2.0 + crosshairWidth/2.0,
+                -CGFloat(CROSSHAIR_FAR))
+        }
         
     
         

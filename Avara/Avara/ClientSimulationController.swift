@@ -20,7 +20,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private(set)    var inputManager:               InputManager
     private(set)    var scene =                     SCNScene()
     private         var map:                        Map?
-    private         var localCharacter:             Character?
+    private         var character:             Character?
     private         let flyoverCamera =             FlyoverCamera()
     private         var isFlyoverMode =             false
     
@@ -48,7 +48,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         NSLog("play()")
         
         windowController?.showWindow(self)
-        switchToCameraNode(localCharacter!.cameraNode)
+        switchToCameraNode(character!.cameraNode)
         
         netClient?.connect()
         startClientTickTimer()
@@ -68,7 +68,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 switch input {
                 case .ToggleFocus:      windowController?.toggleIsCursorCaptured()
                 case .ToggleFlyover:    toggleFlyoverMode()
-                case .HeadCamera:       switchToCameraNode(localCharacter!.cameraNode)
+                case .HeadCamera:       switchToCameraNode(character!.cameraNode)
                 case .FlyoverCamera:    switchToCameraNode(flyoverCamera.node)
                 case .MoveForward, .MoveBackward, .TurnLeft, .TurnRight:
                     break // game loop will process
@@ -85,9 +85,9 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             if client.isConnected {
                 
                 let hullEulerAngles = SCNVector3Make(
-                    localCharacter!.hullOuterNode!.eulerAngles.x,
-                    localCharacter!.hullOuterNode!.eulerAngles.y,
-                    localCharacter!.hullInnerNode!.eulerAngles.z)
+                    character!.hullOuterNode!.eulerAngles.x,
+                    character!.hullOuterNode!.eulerAngles.y,
+                    character!.hullInnerNode!.eulerAngles.z)
                 
                 let newInput = clientAccumButtonInputs.count > 0 || abs(clientAccumMouseDelta.x) > 0 || abs(clientAccumMouseDelta.y) > 0
                 if newInput {
@@ -156,7 +156,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         magicSphereOfPower?.physicsBody?.velocityFactor = SCNVector3Zero
         magicSphereOfPower?.physicsBody?.affectedByGravity = false
         
-        localCharacter = Character(scene: scene)
+        character = Character(scene: scene)
         
         scene.physicsWorld.timeStep = PHYSICS_TIMESTEP
         scene.physicsWorld.contactDelegate = self
@@ -212,17 +212,17 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             if NET_CLIENT_RECONCILIATION_ENABLED {
                 // check for server override before applying local input
                 if let override = serverOverrideSnapshot {
-                    NSLog("** SERVER OVERRIDE **")
+                    NSLog("* SERVER OVERRIDE *")
                     
-                    localCharacter?.applyServerOverrideSnapshot(override)
+                    character?.applyServerOverrideSnapshot(override)
                     serverOverrideSnapshot = nil
                 }
             }
             
             // IMPORTANT! initialPosition has to be set BEFORE any translation in each loop invocation
-            let initialPosition = localCharacter?.bodyNode.position
-            localCharacter?.updateForInputs(activeButtonInput, mouseDelta: mouseDelta, dT: dT)
-            localCharacter?.updateForLoopDelta(dT, initialPosition: initialPosition!)
+            let initialPosition = character?.bodyNode.position
+            character?.updateForInputs(activeButtonInput, mouseDelta: mouseDelta, dT: dT)
+            character?.updateForLoopDelta(dT, initialPosition: initialPosition!)
         }
     }
     
@@ -255,7 +255,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                     return
             }
             
-            if let character = localCharacter {
+            if let character = character {
                 if (contact.nodeA.physicsBody?.categoryBitMask == CollisionCategory.Character.rawValue) {
                     character.bodyPart(contact.nodeA, mayHaveHitWall:contact.nodeB, withContact:contact)
                 }
@@ -325,14 +325,17 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         //NSLog("renderer(%@, updateAtTime: %f)", renderer.description, time)
         
         if let lastTime = self.lastRenderTime {
+            lastRenderTime = time
+            
             let dT = time - lastTime
             
             dispatch_async(dispatch_get_main_queue(),{
                 self.gameLoop(dT)
             })
         }
-        
-        
+        else {
+            lastRenderTime = time
+        }
     }
     
     public func renderer(renderer: SCNSceneRenderer, didApplyAnimationsAtTime time: NSTimeInterval) {
@@ -343,7 +346,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         //NSLog("renderer(%@, didSimulatePhysicsAtTime: %f)", renderer.description, time)
         
         dispatch_async(dispatch_get_main_queue(),{
-            if let character = self.localCharacter {
+            if let character = self.character {
                 character.didSimulatePhysicsAtTime(time)
             }
         })
@@ -351,12 +354,12 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     
     public func renderer(renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: NSTimeInterval) {
         //NSLog("renderer(%@, willRenderScene: %@, scene: %@, atTime: %f)", renderer.description, scene, time)
+        
+        //character?.crosshairRNode?.rotation = SCNVector4Make(1, 1, 0, CGFloat(M_PI/3.0))
     }
     
     public func renderer(renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: NSTimeInterval) {
         //NSLog("renderer(%@, didRenderScene: %@, atTime: %f)", renderer.description, scene, time)
-        
-        lastRenderTime = time
     }
     
     /*****************************************************************************************************/

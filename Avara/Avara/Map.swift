@@ -299,6 +299,73 @@ public class Map : NSObject, SCNProgramDelegate {
 //        scene.rootNode.addChildNode(wallNode)
         
         setupCollisionNode(wallNode)
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        // LINE
+        
+//        let verticies: [SCNVector3] = [
+//            SCNVector3Make(0, 0, -2),
+//            SCNVector3Make(0, 0, 2)]
+//
+//        let indices: [CInt] = [0, 1]
+//        
+//        let vertexSource = SCNGeometrySource(vertices: verticies, count: 2)
+//        let indexData = NSData(bytes: indices, length: sizeof(CInt) * indices.count)
+//        
+//        let element = SCNGeometryElement(data: indexData, primitiveType: .Line, primitiveCount: 1, bytesPerIndex: sizeof(CInt))
+//        let line = SCNGeometry(sources: [vertexSource], elements: [element])
+//        
+//        let material = SCNMaterial()
+//        material.diffuse.contents = NSColor.redColor()
+//        material.lightingModelName = SCNLightingModelConstant
+//        line.materials = [material]
+//
+//        let lineNode = SCNNode(geometry: line)
+//        scene.rootNode.addChildNode(lineNode)
+        
+        
+        
+        
+//        let positions: [Float32] = [
+//            Float32(0), Float32(0), Float32(0),
+//            Float32(0), Float32(5), Float32(-5)]
+//        let positionData = NSData(bytes: positions, length: sizeof(Float32)*positions.count)
+//        let indices: [Int32] = [0, 1]
+//        let indexData = NSData(bytes: indices, length: sizeof(Int32) * indices.count)
+//        
+//        let source = SCNGeometrySource(
+//            data: positionData,
+//            semantic: SCNGeometrySourceSemanticVertex,
+//            vectorCount: indices.count,
+//            floatComponents: true,
+//            componentsPerVector: 3,
+//            bytesPerComponent: sizeof(Float32),
+//            dataOffset: 0,
+//            dataStride: sizeof(Float32) * 3)
+//        
+//        let element = SCNGeometryElement(
+//            data: indexData,
+//            primitiveType: .Line,
+//            primitiveCount: indices.count,
+//            bytesPerIndex: sizeof(Int32))
+//        
+//        let line = SCNGeometry(sources: [source], elements: [element])
+//        
+////        let material = SCNMaterial()
+////        material.diffuse.contents = NSColor.redColor()
+////        material.lightingModelName = SCNLightingModelConstant
+////        line.materials = [material]
+//        
+//        let lineNode = SCNNode(geometry: line)
+//        scene.rootNode.addChildNode(lineNode)
     }
     
     func setupCollisionNode(node: SCNNode) {

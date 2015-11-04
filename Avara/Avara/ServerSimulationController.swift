@@ -284,11 +284,16 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         //NSLog("renderer(%@, updateAtTime: %f)", renderer.description, time)
         
         if let lastTime = lastRenderTime {
+            lastRenderTime = time
+            
             let dT = time - lastTime
             
             dispatch_async(dispatch_get_main_queue(),{
                 self.gameLoop(dT)
             })
+        }
+        else {
+            lastRenderTime = time
         }
     }
     
@@ -312,8 +317,6 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     
     public func renderer(renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: NSTimeInterval) {
         //NSLog("renderer(%@, didRenderScene: %@, atTime: %f)", renderer.description, scene, time)
-        
-        lastRenderTime = time
     }
     
     /*****************************************************************************************************/
