@@ -152,23 +152,17 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         for (_, player) in netPlayers {
             let character = player.character
-            let inputs = player.readAndClearAccums() //(buttonInputs: [ButtonInput: Double], mouseDelta: CGPoint, largestDuration: Double)
-            
-            //                if inputs.buttonInputs.count > 0 {
-            //                    NSLog("pushInputs: %@", inputs.buttonInputs.description)
-            //                }
-            //                if abs(inputs.mouseDelta.x) > 0 || abs(inputs.mouseDelta.y) > 0 {
-            //                    NSLog("mouseDelta: {%.2f, %.2f}", inputs.mouseDelta.x, inputs.mouseDelta.y)
-            //                }
-            //                if inputs.largestDuration > 0 {
-            //                    NSLog("largestDuration: %f", inputs.largestDuration)
-            //                }
+            //let inputs = player.readAndClearAccums() //(buttonInputs: [ButtonInput: Double], mouseDelta: CGPoint, largestDuration: Double)
+            let inputs = player.readAndClearButtonAccum() //(buttonInputs: [ButtonInput: Double], largestDuration: Double)
+            let hullEulerAngles = player.lastReceivedHullEulerAngles
             
             // WARN: SANITY CHECK CLIENT INPUT TIME DELTAS
             
             // IMPORTANT! initialPosition has to be set BEFORE translation in each loop invocation
             let initialPosition = character.bodyNode.position
-            character.updateForInputs(inputs.buttonInputs, mouseDelta: inputs.mouseDelta)
+            character.updateForInputs(inputs.buttonInputs, mouseDelta: nil)
+            character.hullOuterNode?.eulerAngles = SCNVector3Make(hullEulerAngles.x, hullEulerAngles.y, 0)
+            character.hullInnerNode?.eulerAngles = SCNVector3Make(0, 0, hullEulerAngles.z)
             character.updateForLoopDelta(dT, initialPosition:initialPosition)
             
             
@@ -249,7 +243,8 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 if let player = netPlayers[clientID] {
                     let updateMessage = message as! ClientUpdateNetMessage
                     let buttonInputs = updateMessage.buttonInputs
-                    let mouseDelta = updateMessage.mouseDelta
+                    //let mouseDelta = updateMessage.mouseDelta
+                    let hullEulerAngles = updateMessage.hullEulerAngles
                     let sequenceNumber = updateMessage.sequenceNumber!
                     
                     //                    NSLog("Client update message. inputs: %@, mouse delta: (%.2f, %.2f), sq: %d",
@@ -259,7 +254,8 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                         player.lastReceivedSequenceNumber = sequenceNumber
                         
                         player.addInputs(buttonInputs)
-                        player.addMouseDelta(mouseDelta)
+                        //player.addMouseDelta(mouseDelta)
+                        player.lastReceivedHullEulerAngles = hullEulerAngles
                     }
                     else {
                         NSLog("*** SQ \(sequenceNumber) not greater than \(player.lastReceivedSequenceNumber)! **")

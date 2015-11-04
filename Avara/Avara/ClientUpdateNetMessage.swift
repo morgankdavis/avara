@@ -11,6 +11,7 @@
 //
 
 import Foundation
+import SceneKit
 
 
 public class ClientUpdateNetMessage: NetMessage {
@@ -22,7 +23,7 @@ public class ClientUpdateNetMessage: NetMessage {
     override public var     opcode:             NetMessageOpcode { get { return .ClientUpdate } }
     public          var     sequenceNumber:     UInt32?
     private(set)    var     buttonInputs =      [ButtonInput: Double]()
-    private(set)    var     mouseDelta =        CGPointZero
+    private(set)    var     hullEulerAngles =   SCNVector3Zero
     
     /*****************************************************************************************************/
     // MARK:   Public, NetMessage
@@ -40,7 +41,8 @@ public class ClientUpdateNetMessage: NetMessage {
             pushFloat64(Float64(duration), toData: &encodedData)
         }
         
-        pushCGPoint(mouseDelta, toData: &encodedData)
+        //pushCGPoint(mouseDelta, toData: &encodedData)
+        pushVector3(hullEulerAngles, toData: &encodedData)
         
         return encodedData as NSData
     }
@@ -66,7 +68,8 @@ public class ClientUpdateNetMessage: NetMessage {
                 }
             }
 
-            mouseDelta = pullCGPointFromData(&data)
+            //mouseDelta = pullCGPointFromData(&data)
+            hullEulerAngles = pullVector3FromData(&data)
         }
         return nil
     }
@@ -75,9 +78,11 @@ public class ClientUpdateNetMessage: NetMessage {
     // MARK:   Object
     /*****************************************************************************************************/
     
-    public required init(buttonInputs: [ButtonInput: Double], mouseDelta: CGPoint, sequenceNumber: UInt32) {
+    //public required init(buttonInputs: [ButtonInput: Double], mouseDelta: CGPoint, sequenceNumber: UInt32) {
+    public required init(buttonInputs: [ButtonInput: Double], hullEulerAngles: SCNVector3, sequenceNumber: UInt32) {
         self.buttonInputs = buttonInputs
-        self.mouseDelta = mouseDelta
+        //self.mouseDelta = mouseDelta
+        self.hullEulerAngles = hullEulerAngles
         self.sequenceNumber = sequenceNumber
         super.init()
     }

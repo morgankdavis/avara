@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SceneKit
 
 
 public class NetPlayer {
@@ -21,7 +22,8 @@ public class NetPlayer {
     private(set)    var     character:                      Character
     public          var     lastSentNetPlayerSnapshot:      NetPlayerSnapshot?
     private(set)    var     accumButtonInputs =             [ButtonInput: Double]()
-    private(set)    var     accumMouseDelta =               CGPointZero
+    //private(set)    var     accumMouseDelta =               CGPointZero
+    public          var     lastReceivedHullEulerAngles =   SCNVector3Zero
   
     /*****************************************************************************************************/
     // MARK:   Public
@@ -38,13 +40,14 @@ public class NetPlayer {
         }
     }
     
-    public func addMouseDelta(delta: CGPoint) {
-        accumMouseDelta = CGPoint(
-            x: accumMouseDelta.x + delta.x,
-            y: accumMouseDelta.y + delta.y)
-    }
+//    public func addMouseDelta(delta: CGPoint) {
+//        accumMouseDelta = CGPoint(
+//            x: accumMouseDelta.x + delta.x,
+//            y: accumMouseDelta.y + delta.y)
+//    }
 
-    public func readAndClearAccums() -> (buttonInputs: [ButtonInput: Double], mouseDelta: CGPoint, largestDuration: Double) { // last element is largest input time
+    //public func readAndClearAccums() -> (buttonInputs: [ButtonInput: Double], mouseDelta: CGPoint, largestDuration: Double) { // last element is largest input time
+    public func readAndClearButtonAccum() -> (buttonInputs: [ButtonInput: Double], largestDuration: Double) { // last element is largest input time
         // calculate largest input duration
         var largestDuration = Double(0)
         for (_, duration) in accumButtonInputs {
@@ -53,10 +56,10 @@ public class NetPlayer {
             }
         }
         
-        let retval  = (accumButtonInputs, accumMouseDelta, largestDuration)
+        let retval  = (accumButtonInputs, largestDuration)
         
         accumButtonInputs = [ButtonInput: Double]() // leaves old object intact for retval (instead of removeAll())
-        accumMouseDelta = CGPointZero
+//        accumMouseDelta = CGPointZero
         
         return retval
     }

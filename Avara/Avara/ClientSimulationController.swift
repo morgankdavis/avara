@@ -84,6 +84,11 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         if let client = netClient {
             if client.isConnected {
                 
+                let hullEulerAngles = SCNVector3Make(
+                    localCharacter!.hullOuterNode!.eulerAngles.x,
+                    localCharacter!.hullOuterNode!.eulerAngles.y,
+                    localCharacter!.hullInnerNode!.eulerAngles.z)
+                
                 let newInput = clientAccumButtonInputs.count > 0 || abs(clientAccumMouseDelta.x) > 0 || abs(clientAccumMouseDelta.y) > 0
                 if newInput {
                     //NSLog("-- CLIENT SENDING HIGH --")
@@ -91,7 +96,8 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                     ++sequenceNumber
                     let updateMessage = ClientUpdateNetMessage(
                         buttonInputs: clientAccumButtonInputs,
-                        mouseDelta: clientAccumMouseDelta,
+                        //mouseDelta: clientAccumMouseDelta,
+                        hullEulerAngles: hullEulerAngles,
                         sequenceNumber: sequenceNumber)
    
                     let packtData = updateMessage.encoded()
@@ -112,7 +118,8 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                         ++sequenceNumber
                         let updateMessage = ClientUpdateNetMessage(
                             buttonInputs: clientAccumButtonInputs,
-                            mouseDelta: clientAccumMouseDelta,
+                            //mouseDelta: clientAccumMouseDelta,
+                            hullEulerAngles: hullEulerAngles,
                             sequenceNumber: sequenceNumber)
                         
                         let packtData = updateMessage.encoded()

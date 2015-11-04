@@ -57,8 +57,9 @@ public class Character {
         updateForInputs(inputs, mouseDelta: mouseDelta)
     }
     
-    public func updateForInputs(pushInputs: [ButtonInput: Double], mouseDelta: CGPoint) {
-        // called every net update
+    public func updateForInputs(pushInputs: [ButtonInput: Double], mouseDelta: CGPoint?) {
+        // called every loop iteration or net update
+        // when local mouseDelta is set. when network hull node angles are set externally
     
         // body
         if pushInputs.keys.contains(.MoveForward) {
@@ -114,24 +115,25 @@ public class Character {
         }
         
         // hull
-        let viewDistanceFactor = 1.0/(MOUSE_SENSITIVITY*MOUSE_SENSITIVITY_MULTIPLIER)
         
-        let dP = acos(CGFloat(mouseDelta.x) / viewDistanceFactor) - CGFloat(M_PI_2)
-        let dY = acos(CGFloat(mouseDelta.y) / viewDistanceFactor) - CGFloat(M_PI_2)
-        
-        var nAngles = SCNVector3(
-            x: hullOuterNode!.eulerAngles.x + dY,
-            y: hullOuterNode!.eulerAngles.y - dP,
-            z: hullOuterNode!.eulerAngles.z)
-        
-        nAngles.x = max(-CGFloat(HULL_VERT_ANG_CLAMP), min(CGFloat(HULL_VERT_ANG_CLAMP), nAngles.x)) // clamp vertical angle
-        nAngles.y = max(-CGFloat(HULL_HORIZ_ANG_CLAMP), min(CGFloat(HULL_HORIZ_ANG_CLAMP), nAngles.y)) // clamp horizontal angle
-
-        hullOuterNode?.eulerAngles = nAngles
-
-        // add roll effect
-        let roll = CGFloat(HULL_LOOK_ROLL_FACTOR) * nAngles.y
-        hullInnerNode?.eulerAngles.z = roll
+        if let mD = mouseDelta {
+            let viewDistanceFactor = 1.0/(MOUSE_SENSITIVITY*MOUSE_SENSITIVITY_MULTIPLIER)
+            
+            let dP = acos(CGFloat(mD.x) / viewDistanceFactor) - CGFloat(M_PI_2)
+            let dY = acos(CGFloat(mD.y) / viewDistanceFactor) - CGFloat(M_PI_2)
+            
+            var nAngles = SCNVector3(
+                x: hullOuterNode!.eulerAngles.x + dY,
+                y: hullOuterNode!.eulerAngles.y - dP,
+                z: hullOuterNode!.eulerAngles.z)
+            
+            nAngles.x = max(-CGFloat(HULL_VERT_ANG_CLAMP), min(CGFloat(HULL_VERT_ANG_CLAMP), nAngles.x)) // clamp vertical angle
+            nAngles.y = max(-CGFloat(HULL_HORIZ_ANG_CLAMP), min(CGFloat(HULL_HORIZ_ANG_CLAMP), nAngles.y)) // clamp horizontal angle
+            
+            hullOuterNode?.eulerAngles = nAngles
+            
+            updateHullRoll()
+        }
     }
     
     public func updateForLoopDelta(dT: Double, initialPosition: SCNVector3) {
@@ -331,6 +333,12 @@ public class Character {
         orientFinderBottomNode?.position = SCNVector3(x: 0, y: 1.25, z: -1.15)
         orientFinderBottomNode?.rotation = SCNVector4(x: 1.0, y: 0, z: 0, w: -CGFloat(M_PI)/2.0)
         legsNode?.addChildNode(orientFinderBottomNode!)
+    }
+    
+    private func updateHullRoll() {
+        // add roll effect
+        let roll = CGFloat(HULL_LOOK_ROLL_FACTOR) * hullOuterNode!.eulerAngles.y
+        hullInnerNode?.eulerAngles.z = roll
     }
     
     /*****************************************************************************************************/
