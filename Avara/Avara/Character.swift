@@ -10,11 +10,11 @@ import Foundation
 import SceneKit
 
 
-func allChildNodesRecursive(node: SCNNode) -> [SCNNode] {
+func AllChildNodesRecursive(node: SCNNode) -> [SCNNode] {
     var result = [node]
     if node.childNodes.count > 0 {
         for child in node.childNodes {
-            result.appendContentsOf(allChildNodesRecursive(child))
+            result.appendContentsOf(AllChildNodesRecursive(child))
         }
     }
     return result
@@ -27,15 +27,15 @@ public class Character {
         MARK:   Constants
      ******************************************************************************************************/
     
-    private         let WALK_VELOCITY =             Double(5.0)                 // meters/sec
-    private         let TURN_ANG_VELOCITY =         Double(M_PI*(2.0/3.0))      // radians/sec
-    private         let HULL_VERT_ANG_CLAMP =       Double(M_PI/4.0)
-    private         let HULL_HORIZ_ANG_CLAMP =      Double(M_PI*(2.0/3.0))
-    private         let MAX_JUMP_HEIGHT =           Double(2.01)                // units -- arbitrary for now
-    private         let MAX_ALTITUDE_RISE =         Double(0.2)                 // units -- the distance above character.y to ray test for altitude
-    private         let HULL_LOOK_ROLL_FACTOR =     Double(M_PI/24.0)
+    private         let WALK_VELOCITY =             CGFloat(5.0)                 // meters/sec
+    private         let TURN_ANG_VELOCITY =         CGFloat(M_PI*(2.0/3.0))      // radians/sec
+    private         let HULL_VERT_ANG_CLAMP =       CGFloat(M_PI/4.0)
+    private         let HULL_HORIZ_ANG_CLAMP =      CGFloat(M_PI*(2.0/3.0))
+    private         let MAX_JUMP_HEIGHT =           CGFloat(2.01)                // units -- arbitrary for now
+    private         let MAX_ALTITUDE_RISE =         CGFloat(0.2)                 // units -- the distance above character.y to ray test for altitude
+    private         let HULL_LOOK_ROLL_FACTOR =     CGFloat(M_PI/24.0)
     private         let CROSSHAIR_HEIGHT =          CGFloat(0.25)
-    private         let CROSSHAIR_FAR =             Double(15.0)                // units
+    private         let CROSSHAIR_FAR =             CGFloat(15.0)                // units
     
     /*****************************************************************************************************/
     // MARK:   Properties
@@ -57,86 +57,90 @@ public class Character {
     
     private         var crosshairRNode:             SCNNode?
     private         var crosshairLNode:             SCNNode?
+    
+    private         var allBNodes =                 [SCNNode]()
 
     /******************************************************************************************************
          MARK:   Public
      ******************************************************************************************************/
     
-    public func updateForInputs(buttonInputs: Set<ButtonInput>, mouseDelta: CGPoint, dT: Double) {
-        // called for local simulation where dT for all push imports is uniform
-        
-        var inputs = [ButtonInput: Double]()
-        for i in buttonInputs {
-            inputs[i] = dT
-        }
-        
-        updateForInputs(inputs, mouseDelta: mouseDelta)
-    }
+//    public func updateForInputs(buttonInputs: Set<ButtonInput>, mouseDelta: CGPoint, dT: Double) {
+//        // called for local simulation where dT for all push imports is uniform
+//        
+//        var inputs = [ButtonInput: Double]()
+//        for i in buttonInputs {
+//            inputs[i] = dT
+//        }
+//        
+//        updateForInputs(inputs, mouseDelta: mouseDelta)
+//    }
     
-    public func updateForInputs(pushInputs: [ButtonInput: Double], mouseDelta: CGPoint?) {
-        // called every loop iteration or net update
-        // when local mouseDelta is set. when network hull node angles are set externally
-    
-        // body
-        if pushInputs.keys.contains(.MoveForward) {
-            let dT = pushInputs[.MoveForward]!
-            let positionDelta = WALK_VELOCITY * dT
-            
-            let transform = bodyNode.transform
-            let sinYRot = transform.m13
-            let cosYRot = transform.m33
-            
-            let dx = CGFloat(positionDelta) * sinYRot
-            let dz = CGFloat(positionDelta) * cosYRot
-            
-            bodyNode.position = SCNVector3(
-                x: bodyNode.position.x + dx,
-                y: bodyNode.position.y,
-                z: bodyNode.position.z - dz)
-        }
-        if pushInputs.keys.contains(.MoveBackward) {
-            let dT = pushInputs[.MoveBackward]!
-            let positionDelta = WALK_VELOCITY * dT
-            
-            let transform = bodyNode.transform
-            let sinYRot = transform.m13
-            let cosYRot = transform.m33
-            
-            let dx = CGFloat(positionDelta) * sinYRot
-            let dz = CGFloat(positionDelta) * cosYRot
-            
-            bodyNode.position = SCNVector3(
-                x: bodyNode.position.x - dx,
-                y: bodyNode.position.y,
-                z: bodyNode.position.z + dz)
-        }
-        
-        if pushInputs.keys.contains(.TurnLeft) {
-            let dT = pushInputs[.TurnLeft]!
-            let rotationDelta = TURN_ANG_VELOCITY * dT
-            bodyNode.rotation = SCNVector4(
-                x: 0,
-                y: 1,
-                z: 0,
-                w: bodyNode.rotation.w + CGFloat(rotationDelta))
-        }
-        if pushInputs.keys.contains(.TurnRight) {
-            let dT = pushInputs[.TurnRight]!
-            let rotationDelta = TURN_ANG_VELOCITY * dT
-            bodyNode.rotation = SCNVector4(
-                x: 0,
-                y: 1,
-                z: 0,
-                w: bodyNode.rotation.w - CGFloat(rotationDelta))
+    //public func updateForInputs(pushInputs: [ButtonInput: Double], mouseDelta: CGPoint?) {
+    public func updateForInputs(buttonEntries: [(buttons: [(button: ButtonInput, magnitude: CGFloat)], dT: CGFloat)], mouseDelta: CGPoint?) {
+       
+        for (buttonMag, dT) in buttonEntries {
+            for (button, magnitude) in buttonMag {
+                // body
+                if button == .MoveForward {
+                    //let dT = pushInputs[.MoveForward]!
+                    let positionDelta = WALK_VELOCITY * dT * magnitude
+                    
+                    let transform = bodyNode.transform
+                    let sinYRot = transform.m13
+                    let cosYRot = transform.m33
+                    
+                    let dx = CGFloat(positionDelta) * sinYRot
+                    let dz = CGFloat(positionDelta) * cosYRot
+                    
+                    bodyNode.position = SCNVector3(
+                        x: bodyNode.position.x + dx,
+                        y: bodyNode.position.y,
+                        z: bodyNode.position.z - dz)
+                }
+                else if button == .MoveBackward {
+                    //let dT = pushInputs[.MoveBackward]!
+                    let positionDelta = WALK_VELOCITY * dT * magnitude
+                    
+                    let transform = bodyNode.transform
+                    let sinYRot = transform.m13
+                    let cosYRot = transform.m33
+                    
+                    let dx = CGFloat(positionDelta) * sinYRot
+                    let dz = CGFloat(positionDelta) * cosYRot
+                    
+                    bodyNode.position = SCNVector3(
+                        x: bodyNode.position.x - dx,
+                        y: bodyNode.position.y,
+                        z: bodyNode.position.z + dz)
+                }
+                else if button == .TurnLeft {
+                    //let dT = pushInputs[.TurnLeft]!
+                    let rotationDelta = TURN_ANG_VELOCITY * dT * magnitude
+                    bodyNode.rotation = SCNVector4(
+                        x: 0,
+                        y: 1,
+                        z: 0,
+                        w: bodyNode.rotation.w + CGFloat(rotationDelta))
+                }
+                else if button == .TurnRight {
+                    //let dT = pushInputs[.TurnRight]!
+                    let rotationDelta = TURN_ANG_VELOCITY * dT * magnitude
+                    bodyNode.rotation = SCNVector4(
+                        x: 0,
+                        y: 1,
+                        z: 0,
+                        w: bodyNode.rotation.w - CGFloat(rotationDelta))
+                }
+            }
         }
         
         // hull
         
-        if let mD = mouseDelta {
+        if let dM = mouseDelta {
             let viewDistanceFactor = 1.0/(MOUSE_SENSITIVITY*MOUSE_SENSITIVITY_MULTIPLIER)
             
-            let dP = acos(CGFloat(mD.x) / viewDistanceFactor) - CGFloat(M_PI_2)
-            let dY = acos(CGFloat(mD.y) / viewDistanceFactor) - CGFloat(M_PI_2)
+            let dP = acos(CGFloat(dM.x) / viewDistanceFactor) - CGFloat(M_PI_2)
+            let dY = acos(CGFloat(dM.y) / viewDistanceFactor) - CGFloat(M_PI_2)
             
             var nAngles = SCNVector3(
                 x: hullOuterNode!.eulerAngles.x + dY,
@@ -212,7 +216,20 @@ public class Character {
         
         // crosshairs
         
-        updateCrosshairs()
+        //updateCrosshairs()
+    }
+    
+    public func shootAFuckingBall() {
+        NSLog("shootAFuckingBall")
+        let ballGeo = SCNSphere(radius: 0.25)
+        let ballNode = SCNNode(geometry: ballGeo)
+        ballNode.physicsBody = SCNPhysicsBody.dynamicBody()
+        ballNode.physicsBody?.restitution = 1.0
+        scene.rootNode.addChildNode(ballNode)
+        let posInFromOfHull = SCNVector3Make(0, 0, -75)
+        let worldPosInFromOfHull = hullOuterNode!.convertPosition(posInFromOfHull, toNode: scene.rootNode)
+        ballNode.position = hullOuterNode!.convertPosition(SCNVector3Make(0, -0.15, 0), toNode: scene.rootNode)
+        ballNode.physicsBody?.applyForce(worldPosInFromOfHull, impulse: true)
     }
     
     public func didSimulatePhysicsAtTime(time: NSTimeInterval) {
@@ -280,6 +297,15 @@ public class Character {
         let angles = override.hullEulerAngles
         hullOuterNode?.eulerAngles = SCNVector3Make(angles.x, angles.y, 0)
         hullInnerNode?.eulerAngles = SCNVector3Make(0, 0, angles.z)
+    }
+    
+    public func allBodyNodes() -> [SCNNode] {
+        // WARN: needs to be maintained as character composition changes
+        
+        // this is an optimization method. when other places need to check something against all character nodes
+        // this method should be consulted instead of doing a recuivive search each time (such as collision detection)
+        
+        return allBNodes
     }
     
     /*****************************************************************************************************/
@@ -358,62 +384,65 @@ public class Character {
         orientFinderTopNode?.castsShadow = false
         orientFinderBottomNode?.castsShadow = false
         
-        // crosshairs
-        
-        let crosshairLMaterial = SCNMaterial()
-        let crosshairLImage = NSImage(named: "crosshairL.png") // WARN: check this
-        crosshairLMaterial.diffuse.contents = crosshairLImage
-        crosshairLMaterial.emission.contents = crosshairLImage
-        crosshairLMaterial.doubleSided = true
-        
-        let crosshairRMaterial = SCNMaterial()
-        let crosshairRImage = NSImage(named: "crosshairR.png") // WARN: check this
-        crosshairRMaterial.diffuse.contents = crosshairRImage
-        crosshairRMaterial.emission.contents = crosshairRImage
-        crosshairRMaterial.doubleSided = true
-        
-        let crosshairWRatio = crosshairLImage!.size.width / crosshairLImage!.size.height
-        let crosshairWidth = CROSSHAIR_HEIGHT * crosshairWRatio
-        
-        crosshairRNode = SCNNode(geometry: SCNPlane(width: crosshairWidth, height: CROSSHAIR_HEIGHT))
-        crosshairLNode = SCNNode(geometry: SCNPlane(width: crosshairWidth, height: CROSSHAIR_HEIGHT))
-        
-        crosshairRNode?.castsShadow = false
-        crosshairLNode?.castsShadow = false
-        
-        crosshairRNode?.name = "Right crosshair node"
-        crosshairLNode?.name = "Left crosshair node"
-        
-        crosshairRNode!.geometry!.materials = [crosshairRMaterial]
-        crosshairLNode!.geometry!.materials = [crosshairLMaterial]
-        
-        crosshairRNode!.position = SCNVector3Make(CROSSHAIR_HEIGHT/2.0 - crosshairWidth/2.0, 1.6, -2)
-        crosshairLNode!.rotation = SCNVector4Make(0, 1, 0, CGFloat(M_PI))
-        crosshairLNode!.position = SCNVector3Make(-CROSSHAIR_HEIGHT/2.0 + crosshairWidth/2.0, 1.6, -2)
-        
-        let lookAtConstraint = SCNLookAtConstraint(target: hullOuterNode!)
-        lookAtConstraint.gimbalLockEnabled = true
-        crosshairRNode!.constraints = [lookAtConstraint]
-        crosshairLNode!.constraints = [lookAtConstraint]
-        
-//        scene.rootNode.addChildNode(crosshairRNode!)
-//        scene.rootNode.addChildNode(crosshairLNode!)
-        
-        hullOuterNode!.addChildNode(crosshairRNode!)
-        //hullOuterNode!.addChildNode(crosshairLNode!)
-        
-        
-        
-        // for ray trace debugging
-        
-//        originSphereNode = SCNNode(geometry: SCNSphere(radius: 0.25))
-//        destinationSphereNode = SCNNode(geometry: SCNSphere(radius: 0.25))
-//        scene.rootNode.addChildNode(originSphereNode!)
-//        scene.rootNode.addChildNode(destinationSphereNode!)
-        
-        
-        let allBodyNodes = allChildNodesRecursive(bodyNode)
-        NSLog("allBodyNodes: %@", allBodyNodes)
+//        // crosshairs
+//        
+//        let crosshairLMaterial = SCNMaterial()
+//        let crosshairLImage = NSImage(named: "crosshairL.png") // WARN: check this
+//        crosshairLMaterial.diffuse.contents = crosshairLImage
+//        crosshairLMaterial.emission.contents = crosshairLImage
+//        crosshairLMaterial.doubleSided = true
+//        
+//        let crosshairRMaterial = SCNMaterial()
+//        let crosshairRImage = NSImage(named: "crosshairR.png") // WARN: check this
+//        crosshairRMaterial.diffuse.contents = crosshairRImage
+//        crosshairRMaterial.emission.contents = crosshairRImage
+//        crosshairRMaterial.doubleSided = true
+//        
+//        let crosshairWRatio = crosshairLImage!.size.width / crosshairLImage!.size.height
+//        let crosshairWidth = CROSSHAIR_HEIGHT * crosshairWRatio
+//        
+//        crosshairRNode = SCNNode(geometry: SCNPlane(width: crosshairWidth, height: CROSSHAIR_HEIGHT))
+//        crosshairLNode = SCNNode(geometry: SCNPlane(width: crosshairWidth, height: CROSSHAIR_HEIGHT))
+//        
+//        crosshairRNode?.castsShadow = false
+//        crosshairLNode?.castsShadow = false
+//        
+//        crosshairRNode?.name = "Right crosshair node"
+//        crosshairLNode?.name = "Left crosshair node"
+//        
+//        crosshairRNode!.geometry!.materials = [crosshairRMaterial]
+//        crosshairLNode!.geometry!.materials = [crosshairLMaterial]
+//        
+//        crosshairRNode!.position = SCNVector3Make(CROSSHAIR_HEIGHT/2.0 - crosshairWidth/2.0, 1.6, -2)
+//        crosshairLNode!.rotation = SCNVector4Make(0, 1, 0, CGFloat(M_PI))
+//        crosshairLNode!.position = SCNVector3Make(-CROSSHAIR_HEIGHT/2.0 + crosshairWidth/2.0, 1.6, -2)
+//        
+//        let lookAtConstraint = SCNLookAtConstraint(target: hullOuterNode!)
+//        lookAtConstraint.gimbalLockEnabled = true
+//        crosshairRNode!.constraints = [lookAtConstraint]
+//        crosshairLNode!.constraints = [lookAtConstraint]
+//        
+////        scene.rootNode.addChildNode(crosshairRNode!)
+////        scene.rootNode.addChildNode(crosshairLNode!)
+//        
+//        hullOuterNode!.addChildNode(crosshairRNode!)
+//        //hullOuterNode!.addChildNode(crosshairLNode!)
+//        
+//        // update allNodes
+//        allBNodes = AllChildNodesRecursive(bodyNode)
+//        
+//        if let i = allBNodes.indexOf(crosshairRNode!) {
+//            allBNodes.removeAtIndex(i)
+//        }
+//        if let i = allBNodes.indexOf(crosshairLNode!) {
+//            allBNodes.removeAtIndex(i)
+//        }
+//        if let i = allBNodes.indexOf(orientFinderTopNode!) {
+//            allBNodes.removeAtIndex(i)
+//        }
+//        if let i = allBNodes.indexOf(orientFinderBottomNode!) {
+//            allBNodes.removeAtIndex(i)
+//        }
     }
     
     private func updateHullRoll() {
@@ -428,16 +457,16 @@ public class Character {
         let crosshairHight = crosshairPlane.height
 
         let offsetPoints = [
-            SCNVector3Make( -crosshairWidth/2.0,    -crosshairHight/2.0,    0), // top left
-            SCNVector3Make( crosshairWidth/2.0,     -crosshairHight/2.0,    0), // top right
-            SCNVector3Make( crosshairWidth/2.0,     -crosshairHight/2.0,    0), // bottom right
-            SCNVector3Make( -crosshairWidth/2.0,    -crosshairHight/2.0,    0), // bottom left
-            SCNVector3Make( crosshairWidth/4.0,     0,                      0), // center inside
-            SCNVector3Make( crosshairWidth/2.0,     0,                      0)] // center outside
+            SCNVector3Make( -crosshairWidth/2.0,    -crosshairHight/2.0,    0),     // top left
+            SCNVector3Make( crosshairWidth/2.0,     -crosshairHight/2.0,    0),     // top right
+            SCNVector3Make( crosshairWidth/2.0,     -crosshairHight/2.0,    0),     // bottom right
+            SCNVector3Make( -crosshairWidth/2.0,    -crosshairHight/2.0,    0),     // bottom left
+            SCNVector3Make( crosshairWidth/4.0,     0,                      0),     // center inside
+            SCNVector3Make( crosshairWidth/2.0,     0,                      0)]     // center outside
 
         var closestResult: (result: SCNHitTestResult, distance: CGFloat)?
         
-        let allBodyNodes = allChildNodesRecursive(bodyNode)
+        let allBodyNodes = allBNodes // generated periodically
         
         for offsetPoint in offsetPoints {
             let worldSourcePoint = hullOuterNode!.convertPosition(offsetPoint, toNode:scene.rootNode)

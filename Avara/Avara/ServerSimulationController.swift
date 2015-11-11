@@ -16,18 +16,18 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     // MARK:   Properties
     /*****************************************************************************************************/
     
-    private         var windowController:           ServerWindowController?
-    private(set)    var scene =                     SCNScene()
-    private         var map:                        Map?
-    private         var netPlayers =                [UInt32:NetPlayer]()            // id:player
-    private         var netServer:                  MKDNetServer?
-    private         var cameraNode =                SCNNode()
+    private         var windowController:               ServerWindowController?
+    private(set)    var scene =                         SCNScene()
+    private         var map:                            Map?
+    private         var netPlayers =                    [UInt32:NetPlayer]()            // id:player
+    private         var netServer:                      MKDNetServer?
+    private         var cameraNode =                    SCNNode()
     
-    private         var serverTickTimer:            NSTimer?
-    private         var sentNoChangePacket =        [UInt32:Bool]()                 // id:sent
+    private         var serverTickTimer:                NSTimer?
+    private         var serverSentNoChangePacket =      [UInt32:Bool]()                 // id:sent
     
-    private         var magicSphereOfPower:         SCNNode?
-    private         var lastRenderTime:             Double?
+    private         var magicSphereOfPower:             SCNNode?
+    private         var lastRenderTime:                 Double?
     
     /*****************************************************************************************************/
     // MARK:   Public
@@ -75,10 +75,10 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 player.lastSentNetPlayerSnapshot = snapshot
                 player.lastReceivedSequenceNumber++
                 
-                sentNoChangePacket[id] = false
+                serverSentNoChangePacket[id] = false
             }
             else {
-                if sentNoChangePacket[id] == nil || sentNoChangePacket[id] == false {
+                if serverSentNoChangePacket[id] == nil || serverSentNoChangePacket[id] == false {
                     // send a single packet indicating there is no new input
                     
                     //NSLog("-- SERVER SENDING DUPLICATE --")
@@ -87,7 +87,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                     player.lastSentNetPlayerSnapshot = snapshot
                     player.lastReceivedSequenceNumber++
                     
-                    sentNoChangePacket[id] = true
+                    serverSentNoChangePacket[id] = true
                 }
                 else {
                     //NSLog("-- SERVER SKIPPING --")
@@ -152,15 +152,15 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         for (_, player) in netPlayers {
             let character = player.character
-            //let inputs = player.readAndClearAccums() //(buttonInputs: [ButtonInput: Double], mouseDelta: CGPoint, largestDuration: Double)
-            let inputs = player.readAndClearButtonAccum() //(buttonInputs: [ButtonInput: Double], largestDuration: Double)
+            let (buttonEntries, totalDuration) = player.readAndClearButtonEntries() // ([([(ButtonInput, CGFloat)], CGFloat)], CGFloat)
             let hullEulerAngles = player.lastReceivedHullEulerAngles
             
             // WARN: SANITY CHECK CLIENT INPUT TIME DELTAS
             
             // IMPORTANT! initialPosition has to be set BEFORE translation in each loop invocation
             let initialPosition = character.bodyNode.position
-            character.updateForInputs(inputs.buttonInputs, mouseDelta: nil)
+            character.updateForInputs(buttonEntries, mouseDelta: nil)
+//            character.updateForInputs(inputs.buttonInputs, mouseDelta: nil)
             character.hullOuterNode?.eulerAngles = SCNVector3Make(hullEulerAngles.x, hullEulerAngles.y, 0)
             character.hullInnerNode?.eulerAngles = SCNVector3Make(0, 0, hullEulerAngles.z)
             character.updateForLoopDelta(dT, initialPosition:initialPosition)
@@ -169,6 +169,25 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             // make camera follow player
             cameraNode.position = SCNVector3(x: character.bodyNode.position.x, y: cameraNode.position.y, z: character.bodyNode.position.z)
         }
+        
+        
+        
+//        // put the buttons into a format Character likes
+//        var buttonEntries = [(buttons: [(button: ButtonInput, magnitude: CGFloat)], dT: CGFloat)]()
+//        var buttons = [(button: ButtonInput, magnitude: CGFloat)]()
+//        for (button, magnitude) in pressedButtons {
+//            buttons.append((button, magnitude))
+//        }
+//        buttonEntries.append((buttons, CGFloat(dT)))
+//        
+//        // add to net client output array
+//        netClientAccumButtonEntries.append((buttons, CGFloat(dT)))
+//        
+//        // IMPORTANT! initialPosition has to be set BEFORE any translation in each loop invocation
+//        let initialPosition = character?.bodyNode.position
+//        character?.updateForInputs(buttonEntries, mouseDelta: mouseDelta)
+//        //character?.updateForInputs(activeButtonInput, mouseDelta: mouseDelta, dT: dT)
+//        character?.updateForLoopDelta(dT, initialPosition: initialPosition!)
     }
     
     func switchToCameraNode(cameraNode: SCNNode) {
@@ -242,8 +261,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 
                 if let player = netPlayers[clientID] {
                     let updateMessage = message as! ClientUpdateNetMessage
-                    let buttonInputs = updateMessage.buttonInputs
-                    //let mouseDelta = updateMessage.mouseDelta
+                    let buttonEntries = updateMessage.buttonEntries!
                     let hullEulerAngles = updateMessage.hullEulerAngles
                     let sequenceNumber = updateMessage.sequenceNumber!
                     
@@ -253,12 +271,11 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                     if sequenceNumber > player.lastReceivedSequenceNumber {
                         player.lastReceivedSequenceNumber = sequenceNumber
                         
-                        player.addInputs(buttonInputs)
-                        //player.addMouseDelta(mouseDelta)
+                        player.addButtonEntries(buttonEntries)
                         player.lastReceivedHullEulerAngles = hullEulerAngles
                     }
                     else {
-                        NSLog("*** SQ \(sequenceNumber) not greater than \(player.lastReceivedSequenceNumber)! **")
+                        NSLog("*** SQ \(sequenceNumber) not greater than \(player.lastReceivedSequenceNumber)! ***")
                     }
                 }
                 else {

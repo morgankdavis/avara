@@ -16,29 +16,26 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     // MARK:   Properties
     /*****************************************************************************************************/
     
-    private         var windowController:           ClientWindowController?
-    private(set)    var inputManager:               InputManager
-    private(set)    var scene =                     SCNScene()
-    private         var map:                        Map?
-    private         var character:             Character?
-    private         let flyoverCamera =             FlyoverCamera()
-    private         var isFlyoverMode =             false
+    private         var windowController:                   ClientWindowController?
+    private(set)    var inputManager:                       InputManager
+    private(set)    var scene =                             SCNScene()
+    private         var map:                                Map?
+    private         var character:                          Character?
+    private         let flyoverCamera =                     FlyoverCamera()
+    private         var isFlyoverMode =                     false
     
-    private         var netClient:                  MKDNetClient?
-    private         var sequenceNumber =            UInt32(0)
+    private         var netClient:                          MKDNetClient?
+    private         var sequenceNumber =                    UInt32(0)
     
-    private         var lastActiveInput:            Set<ButtonInput>?
-    private         var lastMouseDelta:             CGPoint?
+    private         var netServerOverrideSnapshot:          NetPlayerSnapshot?
     
-    private         var serverOverrideSnapshot:     NetPlayerSnapshot?
-    
-    private         var clientAccumButtonInputs =   [ButtonInput: Double]()
-    private         var clientAccumMouseDelta =     CGPointZero
-    private         var clientTickTimer:            NSTimer?
-    private         var sentNoInputPacket =         false
+    private         var clientAccumButtonEntries =          [(buttons: [(button: ButtonInput, magnitude: CGFloat)], dT: CGFloat)]()
+    private         var clientLastSentHullEulerAngles =     SCNVector3Zero
+    private         var clientTickTimer:                    NSTimer?
+    private         var sentNoInputPacket =                 false
 
-    private         var magicSphereOfPower:         SCNNode?
-    private         var lastRenderTime:               Double?
+    private         var magicSphereOfPower:                 SCNNode?
+    private         var lastRenderTime:                     Double?
     
     /*****************************************************************************************************/
     // MARK:   Public
@@ -58,18 +55,19 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     // MARK:   Internal
     /*****************************************************************************************************/
     
-    internal func inputManagerDidBeginUserInputNotification(note: NSNotification) {
-        //NSLog("inputManagerDidBeginUserInputNotification()")
+    internal func inputManagerDidStartPressingButtonNotification(note: NSNotification) {
+        //NSLog("inputManagerDidStartPressingButtonNotification(%@)", note)
         
-        if let inputRawValue = note.userInfo?[InputManager.Notifications.DidBeginButtonInput.UserInfoKeys.inputRawValue] as? Int {
-            if let input = ButtonInput(rawValue: UInt8(inputRawValue)) {
-                NSLog("Input began: %@", input.description)
+        if let buttonRawValue = note.userInfo?[InputManager.Notifications.DidStartPressingButton.UserInfoKeys.buttonRawValue] as? Int {
+            if let button = ButtonInput(rawValue: UInt8(buttonRawValue)) {
+                NSLog("Button down: %@", button.description)
                 
-                switch input {
+                switch button {
                 case .ToggleFocus:      windowController?.toggleIsCursorCaptured()
                 case .ToggleFlyover:    toggleFlyoverMode()
                 case .HeadCamera:       switchToCameraNode(character!.cameraNode)
                 case .FlyoverCamera:    switchToCameraNode(flyoverCamera.node)
+                case .Fire:             character?.shootAFuckingBall()
                 case .MoveForward, .MoveBackward, .TurnLeft, .TurnRight:
                     break // game loop will process
                 default: break
@@ -89,23 +87,25 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                     character!.hullOuterNode!.eulerAngles.y,
                     character!.hullInnerNode!.eulerAngles.z)
                 
-                let newInput = clientAccumButtonInputs.count > 0 || abs(clientAccumMouseDelta.x) > 0 || abs(clientAccumMouseDelta.y) > 0
+                let newInput = (clientAccumButtonEntries.count > 0)
+                    || (hullEulerAngles.x != clientLastSentHullEulerAngles.x)
+                    || (hullEulerAngles.y != clientLastSentHullEulerAngles.y)
+                    || (hullEulerAngles.z != clientLastSentHullEulerAngles.z)
                 if newInput {
-                    //NSLog("-- CLIENT SENDING HIGH --")
+                    NSLog("-- CLIENT SENDING HIGH --")
                     
                     ++sequenceNumber
                     let updateMessage = ClientUpdateNetMessage(
-                        buttonInputs: clientAccumButtonInputs,
-                        //mouseDelta: clientAccumMouseDelta,
+                        buttonEntries: clientAccumButtonEntries,
                         hullEulerAngles: hullEulerAngles,
                         sequenceNumber: sequenceNumber)
    
                     let packtData = updateMessage.encoded()
                     client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue , flags: .Unsequenced)
                     
-                    // reset accumulators
-                    clientAccumButtonInputs = [ButtonInput: Double]()
-                    clientAccumMouseDelta = CGPointZero
+                    // reset accumulator/last sent hull angles
+                    clientAccumButtonEntries = [(buttons: [(button: ButtonInput, magnitude: CGFloat)], dT: CGFloat)]()
+                    clientLastSentHullEulerAngles = hullEulerAngles
                     
                     sentNoInputPacket = false
                 }
@@ -117,8 +117,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                         
                         ++sequenceNumber
                         let updateMessage = ClientUpdateNetMessage(
-                            buttonInputs: clientAccumButtonInputs,
-                            //mouseDelta: clientAccumMouseDelta,
+                            buttonEntries: clientAccumButtonEntries,
                             hullEulerAngles: hullEulerAngles,
                             sequenceNumber: sequenceNumber)
                         
@@ -165,8 +164,8 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         NSNotificationCenter.defaultCenter().addObserver(
             self,
-            selector: "inputManagerDidBeginUserInputNotification:",
-            name: InputManager.Notifications.DidBeginButtonInput.name,
+            selector: "inputManagerDidStartPressingButtonNotification:",
+            name: InputManager.Notifications.DidStartPressingButton.name,
             object: nil)
         
         netClient = MKDNetClient(destinationAddress: "127.0.0.1", port: NET_SERVER_PORT, maxChannels: NET_MAX_CHANNELS, delegate: self)
@@ -185,45 +184,46 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             }
         }
         
-        // handle flyover or player movement
-        if isFlyoverMode {
-            flyoverCamera.gameLoopWithInputs(inputManager.activeButtonInputs, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
-            windowController?.renderView?.play(self) // why the fuck must we do this?? (force re-render)
-        }
-        else {
-            let activeButtonInput = inputManager.activeButtonInputs
+//        // handle flyover or player movement
+//        if isFlyoverMode {
+//            flyoverCamera.gameLoopWithInputs(inputManager.pressedButtons, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
+//            windowController?.renderView?.play(self) // why the fuck must we do this?? (force re-render)
+//        }
+//        else {
+            let pressedButtons = inputManager.pressedButtons
             let mouseDelta = inputManager.readMouseDeltaAndClear()
-            
-            // add input to the net client input accumulator
-            for input in activeButtonInput {
-                if let total = clientAccumButtonInputs[input] {
-//                    NSLog("clientAccumButtonInputs: %@", clientAccumButtonInputs.description) // keeps shit from crashing??
-//                    NSLog("input: %@", input.description)
-//                    NSLog("total: %f", total)
-//                    NSLog("dT: %f", dT)
-                    clientAccumButtonInputs[input] = total + dT
-                }
-                else {
-                    clientAccumButtonInputs[input] = dT
-                }
+
+        if NET_CLIENT_RECONCILIATION_ENABLED {
+            // check for server override before applying local input
+            if let override = netServerOverrideSnapshot {
+                NSLog("* SERVER OVERRIDE *")
+                
+                character?.applyServerOverrideSnapshot(override)
+                netServerOverrideSnapshot = nil
             }
-            clientAccumMouseDelta = CGPoint(x: clientAccumMouseDelta.x + mouseDelta.x, y: clientAccumMouseDelta.y + mouseDelta.y)
-            
-            if NET_CLIENT_RECONCILIATION_ENABLED {
-                // check for server override before applying local input
-                if let override = serverOverrideSnapshot {
-                    NSLog("* SERVER OVERRIDE *")
-                    
-                    character?.applyServerOverrideSnapshot(override)
-                    serverOverrideSnapshot = nil
-                }
-            }
-            
-            // IMPORTANT! initialPosition has to be set BEFORE any translation in each loop invocation
-            let initialPosition = character?.bodyNode.position
-            character?.updateForInputs(activeButtonInput, mouseDelta: mouseDelta, dT: dT)
-            character?.updateForLoopDelta(dT, initialPosition: initialPosition!)
         }
+
+        // put the buttons into a format Character likes
+        var buttonEntries = [(buttons: [(button: ButtonInput, magnitude: CGFloat)], dT: CGFloat)]()
+        var buttons = [(button: ButtonInput, magnitude: CGFloat)]()
+        var somethingDown = false // this is a hack for apparent .count namespace error.. ?
+        for (button, magnitude) in pressedButtons {
+            buttons.append((button, magnitude))
+            somethingDown = true
+        }
+        buttonEntries.append((buttons, CGFloat(dT)))
+        
+        // add to net client output accumulator
+        if somethingDown {
+            clientAccumButtonEntries.append((buttons, CGFloat(dT)))
+        }
+        
+        // IMPORTANT! initialPosition has to be set BEFORE any translation in each loop invocation
+        let initialPosition = character?.bodyNode.position
+            character?.updateForInputs(buttonEntries, mouseDelta: mouseDelta)
+            //character?.updateForInputs(activeButtonInput, mouseDelta: mouseDelta, dT: dT)
+            character?.updateForLoopDelta(dT, initialPosition: initialPosition!)
+//        }
     }
     
     func switchToCameraNode(cameraNode: SCNNode) {
@@ -287,7 +287,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 if let s = mySnapshot {
                     //NSLog("Server update message with sq: %d, prev sent sq: %d", u.sequenceNumber, sequenceNumber)s
                     if (s.sequenceNumber > sequenceNumber) && sentNoInputPacket {
-                        serverOverrideSnapshot = s // game loop will see and correct player state
+                        netServerOverrideSnapshot = s // game loop will see and correct player state
                     }
                     sequenceNumber = s.sequenceNumber
                 }

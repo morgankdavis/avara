@@ -102,11 +102,11 @@ public class NetMessage {
         data.appendBytes(&numArray[0], length: sizeof(UInt32))
     }
     
-    internal func pushFloat64(num: Float64, inout toData data: NSMutableData) {
+    internal func pushFloat32(num: Float32, inout toData data: NSMutableData) {
         // WARN: This is a shitty way to do sign
         let sign = (num < 0 ? Int8(-1) : Int8(1))
 //        let whole = UInt16(nwwum)q
-//        let fraction = UInt16(Float64(fabs(num - Float64(whole))) * Float64(UINT16_MAX))
+//        let fraction = UInt16(Float32(fabs(num - Float32(whole))) * Float32(UINT16_MAX))
         
         let (numInt, numFract) = modf(num)
         let whole = UInt16(fabs(numInt))
@@ -126,21 +126,21 @@ public class NetMessage {
     }
     
     internal func pushCGPoint(point: CGPoint, inout toData data: NSMutableData) {
-        pushFloat64(Float64(point.x), toData: &data)
-        pushFloat64(Float64(point.y), toData: &data)
+        pushFloat32(Float32(point.x), toData: &data)
+        pushFloat32(Float32(point.y), toData: &data)
     }
     
     internal func pushVector3(vec: SCNVector3, inout toData data: NSMutableData) {
-        pushFloat64(Float64(vec.x), toData: &data)
-        pushFloat64(Float64(vec.y), toData: &data)
-        pushFloat64(Float64(vec.z), toData: &data)
+        pushFloat32(Float32(vec.x), toData: &data)
+        pushFloat32(Float32(vec.y), toData: &data)
+        pushFloat32(Float32(vec.z), toData: &data)
     }
     
     internal func pushVector4(vec: SCNVector4, inout toData data: NSMutableData) {
-        pushFloat64(Float64(vec.x), toData: &data)
-        pushFloat64(Float64(vec.y), toData: &data)
-        pushFloat64(Float64(vec.z), toData: &data)
-        pushFloat64(Float64(vec.w), toData: &data)
+        pushFloat32(Float32(vec.x), toData: &data)
+        pushFloat32(Float32(vec.y), toData: &data)
+        pushFloat32(Float32(vec.z), toData: &data)
+        pushFloat32(Float32(vec.w), toData: &data)
     }
     
     internal func pushUInt8Array(array: [UInt8], inout toData data: NSMutableData) {
@@ -215,7 +215,7 @@ public class NetMessage {
         return num
     }
     
-    internal func pullFloat64FromData(inout data: NSMutableData) -> Float64 {
+    internal func pullFloat32FromData(inout data: NSMutableData) -> Float32 {
         let signData = data.subdataWithRange(NSMakeRange(0, sizeof(Int8)))
         let wholeData = data.subdataWithRange(NSMakeRange(sizeof(Int8), sizeof(UInt16)))
         let fractionData = data.subdataWithRange(NSMakeRange(sizeof(Int8) + sizeof(UInt16), sizeof(UInt16)))
@@ -237,28 +237,28 @@ public class NetMessage {
         let whole = wholeArray[0]
         let fraction = fractionArray[0]
         
-        return Float64(sign) * (Float64(whole) + (Float64(fraction) / Float64(UINT16_MAX)))
+        return Float32(sign) * (Float32(whole) + (Float32(fraction) / Float32(UINT16_MAX)))
     }
     
     internal func pullCGPointFromData(inout data: NSMutableData) -> CGPoint {
         return CGPoint(
-            x: CGFloat(pullFloat64FromData(&data)),
-            y: CGFloat(pullFloat64FromData(&data)))
+            x: CGFloat(pullFloat32FromData(&data)),
+            y: CGFloat(pullFloat32FromData(&data)))
     }
     
     internal func pullVector3FromData(inout data: NSMutableData) -> SCNVector3 {
         return SCNVector3(
-            x: CGFloat(pullFloat64FromData(&data)),
-            y: CGFloat(pullFloat64FromData(&data)),
-            z: CGFloat(pullFloat64FromData(&data)))
+            x: CGFloat(pullFloat32FromData(&data)),
+            y: CGFloat(pullFloat32FromData(&data)),
+            z: CGFloat(pullFloat32FromData(&data)))
     }
     
     internal func pullVector4FromData(inout data: NSMutableData) -> SCNVector4 {
         return SCNVector4(
-            x: CGFloat(pullFloat64FromData(&data)),
-            y: CGFloat(pullFloat64FromData(&data)),
-            z: CGFloat(pullFloat64FromData(&data)),
-            w: CGFloat(pullFloat64FromData(&data)))
+            x: CGFloat(pullFloat32FromData(&data)),
+            y: CGFloat(pullFloat32FromData(&data)),
+            z: CGFloat(pullFloat32FromData(&data)),
+            w: CGFloat(pullFloat32FromData(&data)))
     }
     
     internal func pullStringFromData(inout data: NSMutableData) -> NSString? {

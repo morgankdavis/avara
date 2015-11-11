@@ -9,9 +9,6 @@
 import Foundation
 
 
-//public typealias MouseDelta = CGPoint
-
-
 // WARN: Temporary. This mapping will eventually reside as a user preference
 public func ButtonInputForKey(key: Key) -> ButtonInput? {
     switch key {
@@ -24,6 +21,7 @@ public func ButtonInputForKey(key: Key) -> ButtonInput? {
     case .NumPadStar, .Equal:       return .ToggleFlyover
     case .NumPad0:                  return .FlyoverCamera
     case .NumPad1, .One:            return .HeadCamera
+    case .Mouse1:                   return .Fire
     default:                        return nil
     }
 }
@@ -39,6 +37,7 @@ public enum ButtonInput: UInt8, CustomStringConvertible {
     case ToggleFlyover =    101
     case HeadCamera =       150
     case FlyoverCamera =    151
+    case Fire =             200
     
     public var description : String {
         get {
@@ -89,6 +88,7 @@ public enum Key: Int, CustomStringConvertible {
     case Three =            20
     case Four =             21
     case Five =             23
+    case Mouse1 =           500
     
     public var description : String {
         get {
@@ -123,6 +123,7 @@ public enum Key: Int, CustomStringConvertible {
             case .Three:            return "Three"
             case .Four:             return "Four"
             case .Five:             return "Five"
+            case .Mouse1:           return "Mouse1"
             default:                return "[unknown]"
             }
         }
@@ -137,20 +138,30 @@ public class InputManager: NSObject, MKDDirectMouseHelperDelegate {
     /*****************************************************************************************************/
     
     public struct Notifications {
-        struct DidBeginButtonInput {
-            static let name = "DidBeginButtonInputNotification"
+        struct DidStartPressingButton {
+            static let name = "DidStartPressingButtonNotification"
             struct UserInfoKeys {
-                static let inputRawValue = "inputRawValue"
+                static let buttonRawValue = "buttonRawValue"
             }
         }
     }
+    
+//    public struct Notifications {
+//        struct DidBeginButtonInput {
+//            static let name = "DidBeginButtonInputNotification"
+//            struct UserInfoKeys {
+//                static let inputRawValue = "inputRawValue"
+//            }
+//        }
+//    }
     
     /*****************************************************************************************************/
     // MARK:   Properties
     /*****************************************************************************************************/
     
     private(set)    var directMouseHelper:              MKDDirectMouseHelper?
-    private(set)    var activeButtonInputs =            Set<ButtonInput>()
+    //private(set)    var pressedButtons =                Set<ButtonInput>()
+    private(set)    var pressedButtons =                [ButtonInput : CGFloat]()   // button:magnitude
     private         var accumulatedMouseDelta =         CGPointZero
     
     /*****************************************************************************************************/
@@ -169,10 +180,6 @@ public class InputManager: NSObject, MKDDirectMouseHelperDelegate {
         directMouseHelper = nil
     }
     
-    public func isInputActive(action: ButtonInput) -> Bool {
-        return activeButtonInputs.contains(action)
-    }
-    
     public func readMouseDeltaAndClear() -> CGPoint {
         let delta = accumulatedMouseDelta
         accumulatedMouseDelta = CGPointZero
@@ -185,33 +192,83 @@ public class InputManager: NSObject, MKDDirectMouseHelperDelegate {
             y: accumulatedMouseDelta.y + delta.y)
     }
     
+//    public func updateKeyCode(keyCode: UInt16, pressed: Bool) {
+//        if let key = Key(rawValue: Int(keyCode)) {
+//            if let action = ButtonInputForKey(key) {
+//                
+//                var prevInputs = Set<ButtonInput>()
+//                // this is super lame but can't seem to find a better copy/clone method
+//                for a in pressedButtons {
+//                    prevInputs.insert(a)
+//                }
+//                
+//                if pressed {
+//                    pressedButtons.insert(action)
+//                }
+//                else {
+//                    pressedButtons.remove(action)
+//                }
+//                
+//                if pressedButtons != prevInputs {
+//                    let str = NSMutableString()
+//                    for a in pressedButtons {
+//                        str.appendString(NSString(format: "%@, ", a.description) as String)
+//                    }
+//                    //NSLog("Active user inputs: %@", str)
+//                }
+//                
+//                if !prevInputs.contains(action) {
+//                    didBeginUserInput(action)
+//                }
+//            }
+//            else {
+//                NSLog("No button input bound to key: %@", key.description)
+//            }
+//        }
+//        else {
+//            NSLog("Unknown key code: %d", keyCode)
+//        }
+//    }
+    
     public func updateKeyCode(keyCode: UInt16, pressed: Bool) {
         if let key = Key(rawValue: Int(keyCode)) {
-            if let action = ButtonInputForKey(key) {
+            if let button = ButtonInputForKey(key) {
                 
-                var prevInputs = Set<ButtonInput>()
-                // this is super lame but can't seem to find a better copy/clone method
-                for a in activeButtonInputs {
-                    prevInputs.insert(a)
-                }
+                var prevInputs = pressedButtons // Swift dictionaries are Structs, so this *should* copy the old dict
                 
                 if pressed {
-                    activeButtonInputs.insert(action)
+                    pressedButtons[button] = 1.0
                 }
                 else {
-                    activeButtonInputs.remove(action)
+                    pressedButtons.removeValueForKey(button)
                 }
                 
-                if activeButtonInputs != prevInputs {
-                    let str = NSMutableString()
-                    for a in activeButtonInputs {
-                        str.appendString(NSString(format: "%@, ", a.description) as String)
+                // print input if changed
+                var changed = false
+                for (b, _) in pressedButtons {
+                    if prevInputs[b] == nil {
+                        changed = true
+                        break
                     }
-                    //NSLog("Active user inputs: %@", str)
+                }
+                if !changed {
+                    for (b, _) in prevInputs {
+                        if pressedButtons[b] == nil {
+                            changed = true
+                            break
+                        }
+                    }
+                }
+                if changed {
+                    let str = NSMutableString()
+                    for (b, m) in pressedButtons {
+                        str.appendString(NSString(format: "(%@, %f), ", b.description, m) as String)
+                    }
+                    NSLog("Pushed buttons: %@", str)
                 }
                 
-                if !prevInputs.contains(action) {
-                    didBeginUserInput(action)
+                if prevInputs[button] == nil {
+                    didStartPressingButton(button)
                 }
             }
             else {
@@ -239,10 +296,14 @@ public class InputManager: NSObject, MKDDirectMouseHelperDelegate {
     
     public func directMouseHelper(helper: MKDDirectMouseHelper!, didGetButtonDown buttonID: Int32, mouseID: Int32) {
         NSLog("directMouseHelper(%@, didGetButtonDown: %d, mouseID: %d)", helper, buttonID, mouseID)
+        
+        updateKeyCode(UInt16(buttonID), pressed: true)
     }
     
     public func directMouseHelper(helper: MKDDirectMouseHelper!, didGetButtonUp buttonID: Int32, mouseID: Int32) {
         NSLog("directMouseHelper(%@, didGetButtonUp: %d, mouseID: %d)", helper, buttonID, mouseID)
+        
+        updateKeyCode(UInt16(buttonID), pressed: false)
     }
     
     public func directMouseHelper(helper: MKDDirectMouseHelper!, didGetVerticalScroll direction: MKDDirectMouseVerticalScrollDirection, mouseID: Int32) {
@@ -261,12 +322,19 @@ public class InputManager: NSObject, MKDDirectMouseHelperDelegate {
     // MARK:   Private
     /*****************************************************************************************************/
     
-    private func didBeginUserInput(action: ButtonInput) {
+    private func didStartPressingButton(button: ButtonInput) {
         NSNotificationCenter.defaultCenter().postNotificationName(
-            Notifications.DidBeginButtonInput.name,
+            Notifications.DidStartPressingButton.name,
             object: nil,
-            userInfo: [Notifications.DidBeginButtonInput.UserInfoKeys.inputRawValue: Int(action.rawValue)])
+            userInfo: [Notifications.DidStartPressingButton.UserInfoKeys.buttonRawValue: Int(button.rawValue)])
     }
+    
+//    private func didBeginUserInput(action: ButtonInput) {
+//        NSNotificationCenter.defaultCenter().postNotificationName(
+//            Notifications.DidBeginButtonInput.name,
+//            object: nil,
+//            userInfo: [Notifications.DidBeginButtonInput.UserInfoKeys.inputRawValue: Int(action.rawValue)])
+//    }
     
     /*****************************************************************************************************/
     // MARK:   Object

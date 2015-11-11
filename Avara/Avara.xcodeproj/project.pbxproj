@@ -21,6 +21,13 @@
 		4169CC421BE8A04D0035FF29 /* finder_blue.png in Resources */ = {isa = PBXBuildFile; fileRef = 4169CC411BE8A04D0035FF29 /* finder_blue.png */; };
 		4169CC471BE9F7ED0035FF29 /* crosshairL.png in Resources */ = {isa = PBXBuildFile; fileRef = 4169CC451BE9F7ED0035FF29 /* crosshairL.png */; };
 		4169CC481BE9F7ED0035FF29 /* crosshairR.png in Resources */ = {isa = PBXBuildFile; fileRef = 4169CC461BE9F7ED0035FF29 /* crosshairR.png */; };
+		4169CC4A1BEC69CF0035FF29 /* SCNNode+RecursiveChildNodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4169CC491BEC69CF0035FF29 /* SCNNode+RecursiveChildNodes.swift */; };
+		4169CC4D1BEC6C060035FF29 /* Array+RemoveObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4169CC4C1BEC6C060035FF29 /* Array+RemoveObject.swift */; };
+		416CF3051BEEE54900411BE9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 416CF3041BEEE54900411BE9 /* AppDelegate.swift */; };
+		416CF3071BEEE54900411BE9 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 416CF3061BEEE54900411BE9 /* ViewController.swift */; };
+		416CF30A1BEEE54900411BE9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 416CF3081BEEE54900411BE9 /* Main.storyboard */; };
+		416CF30C1BEEE54900411BE9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 416CF30B1BEEE54900411BE9 /* Assets.xcassets */; };
+		416CF30F1BEEE54900411BE9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 416CF30D1BEEE54900411BE9 /* LaunchScreen.storyboard */; };
 		417CC38C1B645260006B21F3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC38B1B645260006B21F3 /* AppDelegate.swift */; };
 		417CC3911B645260006B21F3 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 417CC38F1B645260006B21F3 /* MainMenu.xib */; };
 		417CC3A71B645310006B21F3 /* Character.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3981B645310006B21F3 /* Character.swift */; };
@@ -96,6 +103,16 @@
 		4169CC411BE8A04D0035FF29 /* finder_blue.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = finder_blue.png; path = Textures/finder_blue.png; sourceTree = "<group>"; };
 		4169CC451BE9F7ED0035FF29 /* crosshairL.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = crosshairL.png; path = Textures/crosshairL.png; sourceTree = "<group>"; };
 		4169CC461BE9F7ED0035FF29 /* crosshairR.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = crosshairR.png; path = Textures/crosshairR.png; sourceTree = "<group>"; };
+		4169CC491BEC69CF0035FF29 /* SCNNode+RecursiveChildNodes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SCNNode+RecursiveChildNodes.swift"; sourceTree = "<group>"; };
+		4169CC4C1BEC6C060035FF29 /* Array+RemoveObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+RemoveObject.swift"; sourceTree = "<group>"; };
+		416CF3021BEEE54900411BE9 /* Avara-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Avara-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		416CF3041BEEE54900411BE9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		416CF3061BEEE54900411BE9 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		416CF3091BEEE54900411BE9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		416CF30B1BEEE54900411BE9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		416CF30E1BEEE54900411BE9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		416CF3101BEEE54900411BE9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		416CF3161BEEE5C700411BE9 /* ClientViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientViewController.swift; sourceTree = "<group>"; };
 		417CC3881B645260006B21F3 /* Avara.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Avara.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		417CC38B1B645260006B21F3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		417CC3901B645260006B21F3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
@@ -157,6 +174,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		416CF2FF1BEEE54900411BE9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		417CC3851B645260006B21F3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -167,11 +191,52 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		4169CC4B1BEC69D40035FF29 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				4169CC4C1BEC6C060035FF29 /* Array+RemoveObject.swift */,
+				4169CC491BEC69CF0035FF29 /* SCNNode+RecursiveChildNodes.swift */,
+			);
+			name = Extensions;
+			sourceTree = "<group>";
+		};
+		416CF3031BEEE54900411BE9 /* Avara-iOS */ = {
+			isa = PBXGroup;
+			children = (
+				416CF3041BEEE54900411BE9 /* AppDelegate.swift */,
+				416CF3061BEEE54900411BE9 /* ViewController.swift */,
+				416CF3081BEEE54900411BE9 /* Main.storyboard */,
+				416CF30B1BEEE54900411BE9 /* Assets.xcassets */,
+				416CF30D1BEEE54900411BE9 /* LaunchScreen.storyboard */,
+				416CF3101BEEE54900411BE9 /* Info.plist */,
+			);
+			path = "Avara-iOS";
+			sourceTree = "<group>";
+		};
+		416CF3141BEEE57500411BE9 /* OS X */ = {
+			isa = PBXGroup;
+			children = (
+				417CC39D1B645310006B21F3 /* ClientWindowController.swift */,
+				417CC4131B69B98C006B21F3 /* ServerWindowController.swift */,
+				417E12F21B74802F006256C7 /* Raw Mouse */,
+			);
+			name = "OS X";
+			sourceTree = "<group>";
+		};
+		416CF3151BEEE57D00411BE9 /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				416CF3161BEEE5C700411BE9 /* ClientViewController.swift */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
 		417CC37F1B645260006B21F3 = {
 			isa = PBXGroup;
 			children = (
 				417CC3E71B645676006B21F3 /* TODO.rtf */,
 				417CC38A1B645260006B21F3 /* Avara */,
+				416CF3031BEEE54900411BE9 /* Avara-iOS */,
 				417CC3891B645260006B21F3 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -180,6 +245,7 @@
 			isa = PBXGroup;
 			children = (
 				417CC3881B645260006B21F3 /* Avara.app */,
+				416CF3021BEEE54900411BE9 /* Avara-iOS.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -199,12 +265,12 @@
 				417CC3A11B645310006B21F3 /* Map.swift */,
 				417CC3A01B645310006B21F3 /* InputManager.swift */,
 				417CC39B1B645310006B21F3 /* FlyoverCamera.swift */,
-				417CC39D1B645310006B21F3 /* ClientWindowController.swift */,
-				417CC4131B69B98C006B21F3 /* ServerWindowController.swift */,
 				417CC39C1B645310006B21F3 /* RenderView.swift */,
 				417CC4101B68A9EA006B21F3 /* NetMessages */,
 				417CC3F21B688063006B21F3 /* MKDNet */,
-				417E12F21B74802F006256C7 /* Raw Mouse */,
+				416CF3141BEEE57500411BE9 /* OS X */,
+				416CF3151BEEE57D00411BE9 /* iOS */,
+				4169CC4B1BEC69D40035FF29 /* Extensions */,
 				417CC3B71B6453D2006B21F3 /* Utilities */,
 				417CC3F11B688059006B21F3 /* Other */,
 				417CC39F1B645310006B21F3 /* Images.xcassets */,
@@ -344,6 +410,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		416CF3011BEEE54900411BE9 /* Avara-iOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 416CF3131BEEE54900411BE9 /* Build configuration list for PBXNativeTarget "Avara-iOS" */;
+			buildPhases = (
+				416CF2FE1BEEE54900411BE9 /* Sources */,
+				416CF2FF1BEEE54900411BE9 /* Frameworks */,
+				416CF3001BEEE54900411BE9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Avara-iOS";
+			productName = "Avara-iOS";
+			productReference = 416CF3021BEEE54900411BE9 /* Avara-iOS.app */;
+			productType = "com.apple.product-type.application";
+		};
 		417CC3871B645260006B21F3 /* Avara */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 417CC3951B645260006B21F3 /* Build configuration list for PBXNativeTarget "Avara" */;
@@ -367,10 +450,13 @@
 		417CC3801B645260006B21F3 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0700;
+				LastSwiftUpdateCheck = 0710;
 				LastUpgradeCheck = 0700;
 				ORGANIZATIONNAME = "Morgan K Davis";
 				TargetAttributes = {
+					416CF3011BEEE54900411BE9 = {
+						CreatedOnToolsVersion = 7.1;
+					};
 					417CC3871B645260006B21F3 = {
 						CreatedOnToolsVersion = 7.0;
 					};
@@ -390,11 +476,22 @@
 			projectRoot = "";
 			targets = (
 				417CC3871B645260006B21F3 /* Avara */,
+				416CF3011BEEE54900411BE9 /* Avara-iOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		416CF3001BEEE54900411BE9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				416CF30F1BEEE54900411BE9 /* LaunchScreen.storyboard in Resources */,
+				416CF30C1BEEE54900411BE9 /* Assets.xcassets in Resources */,
+				416CF30A1BEEE54900411BE9 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		417CC3861B645260006B21F3 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -432,6 +529,15 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		416CF2FE1BEEE54900411BE9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				416CF3071BEEE54900411BE9 /* ViewController.swift in Sources */,
+				416CF3051BEEE54900411BE9 /* AppDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		417CC3841B645260006B21F3 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -453,11 +559,13 @@
 				417CC3AA1B645310006B21F3 /* FlyoverCamera.swift in Sources */,
 				417CC3B51B645310006B21F3 /* Utilities.swift in Sources */,
 				4165099A1B6C754C0048804B /* ServerUpdateNetMessage.swift in Sources */,
+				4169CC4D1BEC6C060035FF29 /* Array+RemoveObject.swift in Sources */,
 				416933221B75C5B800DB59BA /* packet.c in Sources */,
 				417E12EB1B74802A006256C7 /* linux_evdev.c in Sources */,
 				417CC3F01B68804B006B21F3 /* MKDNetServer.m in Sources */,
 				417CC40D1B68A305006B21F3 /* NetPlayer.swift in Sources */,
 				417CC4121B68AA2F006B21F3 /* ClientHelloNetMessage.swift in Sources */,
+				4169CC4A1BEC69CF0035FF29 /* SCNNode+RecursiveChildNodes.swift in Sources */,
 				417CC3AD1B645310006B21F3 /* Globals.swift in Sources */,
 				417CC3AB1B645310006B21F3 /* RenderView.swift in Sources */,
 				416933201B75C5B800DB59BA /* host.c in Sources */,
@@ -479,6 +587,22 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
+		416CF3081BEEE54900411BE9 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				416CF3091BEEE54900411BE9 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		416CF30D1BEEE54900411BE9 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				416CF30E1BEEE54900411BE9 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
 		417CC38F1B645260006B21F3 /* MainMenu.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -490,6 +614,37 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		416CF3111BEEE54900411BE9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				INFOPLIST_FILE = "Avara-iOS/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "net.goosesensor.Avara-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		416CF3121BEEE54900411BE9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				INFOPLIST_FILE = "Avara-iOS/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "net.goosesensor.Avara-iOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		417CC3931B645260006B21F3 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -602,6 +757,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		416CF3131BEEE54900411BE9 /* Build configuration list for PBXNativeTarget "Avara-iOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				416CF3111BEEE54900411BE9 /* Debug */,
+				416CF3121BEEE54900411BE9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		417CC3831B645260006B21F3 /* Build configuration list for PBXProject "Avara" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (

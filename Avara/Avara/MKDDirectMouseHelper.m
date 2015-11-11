@@ -71,10 +71,10 @@
         else if (event.type == MANYMOUSE_EVENT_BUTTON) {
             //NSLog(@"Mouse #%u button %u %s\n", event.device, event.item, event.value ? "down" : "up");
             if (event.value) { // down
-                [self.delegate directMouseHelper:self didGetButtonDown:event.item mouseID:event.device];
+                [self.delegate directMouseHelper:self didGetButtonDown:event.item+500 mouseID:event.device];
             }
             else { // up
-                [self.delegate directMouseHelper:self didGetButtonUp:event.item mouseID:event.device];
+                [self.delegate directMouseHelper:self didGetButtonUp:event.item+500 mouseID:event.device];
             }
         }
         else if (event.type == MANYMOUSE_EVENT_SCROLL) {
