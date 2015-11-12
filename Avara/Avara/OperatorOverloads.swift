@@ -10,7 +10,7 @@ import Foundation
 import SceneKit
 
 
-let VECTOR_COMPONENT_EQUALITY_TOLERANCE =        CGFloat(0.0001)
+let VECTOR_COMPONENT_EQUALITY_TOLERANCE =        MKDFloat(0.000001)
 
 
 public func ==(lhs: SCNVector3, rhs: SCNVector3) -> Bool {

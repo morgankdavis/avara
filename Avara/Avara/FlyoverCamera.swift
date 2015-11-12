@@ -39,9 +39,9 @@ public class FlyoverCamera {
             let cosYRot = transform.m33
             let sinXRot = transform.m32
             
-            let dx = CGFloat(positionDelta) * sinYRot
-            let dy = CGFloat(positionDelta) * sinXRot
-            let dz = CGFloat(positionDelta) * cosYRot
+            let dx = MKDFloat(positionDelta) * sinYRot
+            let dy = MKDFloat(positionDelta) * sinXRot
+            let dz = MKDFloat(positionDelta) * cosYRot
             
             node.position = SCNVector3(
                 x: node.position.x + dx,
@@ -53,9 +53,9 @@ public class FlyoverCamera {
             let cosYRot = transform.m33
             let sinXRot = transform.m32
             
-            let dx = CGFloat(positionDelta) * sinYRot
-            let dy = CGFloat(positionDelta) * sinXRot
-            let dz = CGFloat(positionDelta) * cosYRot
+            let dx = MKDFloat(positionDelta) * sinYRot
+            let dy = MKDFloat(positionDelta) * sinXRot
+            let dz = MKDFloat(positionDelta) * cosYRot
             
             node.position = SCNVector3(
                 x: node.position.x - dx,
@@ -67,8 +67,8 @@ public class FlyoverCamera {
             let sinYRot = transform.m13
             let cosYRot = transform.m33
             
-            let dx = CGFloat(positionDelta) * sinYRot
-            let dz = CGFloat(positionDelta) * cosYRot
+            let dx = MKDFloat(positionDelta) * sinYRot
+            let dz = MKDFloat(positionDelta) * cosYRot
             
             // take the cross product with a unit Y vector, should point out an orthogonal vector (right or left?)
             // scale the orthogonal vector to our distance and move!
@@ -81,16 +81,16 @@ public class FlyoverCamera {
             let scaledVector: GLKVector3 = GLKVector3MultiplyScalar(normCrossVector, Float(positionDelta))
             
             node.position = SCNVector3(
-                x: node.position.x - CGFloat(scaledVector.x),
+                x: node.position.x - MKDFloat(scaledVector.x),
                 y: node.position.y,
-                z: node.position.z + CGFloat(scaledVector.z))
+                z: node.position.z + MKDFloat(scaledVector.z))
         }
         if inputs.contains(.TurnRight) { // move right
             let sinYRot = transform.m13
             let cosYRot = transform.m33
             
-            let dx = CGFloat(positionDelta) * sinYRot
-            let dz = CGFloat(positionDelta) * cosYRot
+            let dx = MKDFloat(positionDelta) * sinYRot
+            let dz = MKDFloat(positionDelta) * cosYRot
             
             // take the cross product with a unit Y vector, should point out an orthogonal vector (right or left?)
             // scale the orthogonal vector to our distance and move!
@@ -103,9 +103,9 @@ public class FlyoverCamera {
             let scaledVector: GLKVector3 = GLKVector3MultiplyScalar(normCrossVector, Float(positionDelta))
             
             node.position = SCNVector3(
-                x: node.position.x - CGFloat(scaledVector.x),
+                x: node.position.x - MKDFloat(scaledVector.x),
                 y: node.position.y,
-                z: node.position.z + CGFloat(scaledVector.z))
+                z: node.position.z + MKDFloat(scaledVector.z))
         }
         
         if inputs.contains(.Jump) { // move up
@@ -113,9 +113,9 @@ public class FlyoverCamera {
             let cosYRot = transform.m33
             let sinXRot = transform.m32
             
-            let dx = CGFloat(positionDelta) * sinYRot
-            let dy = CGFloat(positionDelta) * sinXRot
-            let dz = CGFloat(positionDelta) * cosYRot
+            let dx = MKDFloat(positionDelta) * sinYRot
+            let dy = MKDFloat(positionDelta) * sinXRot
+            let dz = MKDFloat(positionDelta) * cosYRot
             
             // take the cross product with a unit x vector, should point out an orthogonal vector (up or down?)
             // scale the orthogonal vector to our distance and move!
@@ -128,23 +128,23 @@ public class FlyoverCamera {
             let scaledVector: GLKVector3 = GLKVector3MultiplyScalar(normCrossVector, Float(positionDelta))
             
             node.position = SCNVector3(
-                x: node.position.x - CGFloat(scaledVector.x),
-                y: node.position.y + CGFloat(abs(scaledVector.y)),
-                z: node.position.z + CGFloat(scaledVector.z))
+                x: node.position.x - MKDFloat(scaledVector.x),
+                y: node.position.y + MKDFloat(abs(scaledVector.y)),
+                z: node.position.z + MKDFloat(scaledVector.z))
         }
         
         // mouse
-        let viewDistanceFactor = 1.0/(MOUSE_SENSITIVITY*MOUSE_SENSITIVITY_MULTIPLIER)
+        let viewDistanceFactor = 1.0/(MOUSELOOK_SENSITIVITY*MOUSELOOK_SENSITIVITY_MULTIPLIER)
         
         let hAngle = acos(CGFloat(mouseDelta.x) / viewDistanceFactor) - CGFloat(M_PI_2)
         let vAngle = acos(CGFloat(mouseDelta.y) / viewDistanceFactor) - CGFloat(M_PI_2)
         
         var nAngles = SCNVector3(
-            x: node.eulerAngles.x + vAngle,
-            y: node.eulerAngles.y - hAngle,
+            x: node.eulerAngles.x + MKDFloat(vAngle),
+            y: node.eulerAngles.y - MKDFloat(hAngle),
             z: node.eulerAngles.z)
         
-        nAngles.x = max(-CGFloat(VERT_CLAMP), min(CGFloat(VERT_CLAMP), nAngles.x)) // clamp angle to PI/4 < a < PI/4
+        nAngles.x = max(-MKDFloat(VERT_CLAMP), min(MKDFloat(VERT_CLAMP), nAngles.x)) // clamp angle to PI/4 < a < PI/4
         
         node.eulerAngles = nAngles
     }

@@ -28,6 +28,7 @@ public class ServerWindowController: NSWindowController {
         NSLog("GameViewController.setup()")
         
         renderView = RenderView(frame: CGRect(origin: CGPointZero, size: SERVER_WINDOW_SIZE) as NSRect)
+        NSLog("scene: %@", scene)
         renderView?.scene = scene
         renderView?.allowsCameraControl = true
         renderView?.showsStatistics = true

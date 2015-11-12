@@ -248,17 +248,17 @@ public class NetMessage {
     
     internal func pullVector3FromData(inout data: NSMutableData) -> SCNVector3 {
         return SCNVector3(
-            x: CGFloat(pullFloat32FromData(&data)),
-            y: CGFloat(pullFloat32FromData(&data)),
-            z: CGFloat(pullFloat32FromData(&data)))
+            x: MKDFloat(pullFloat32FromData(&data)),
+            y: MKDFloat(pullFloat32FromData(&data)),
+            z: MKDFloat(pullFloat32FromData(&data)))
     }
     
     internal func pullVector4FromData(inout data: NSMutableData) -> SCNVector4 {
         return SCNVector4(
-            x: CGFloat(pullFloat32FromData(&data)),
-            y: CGFloat(pullFloat32FromData(&data)),
-            z: CGFloat(pullFloat32FromData(&data)),
-            w: CGFloat(pullFloat32FromData(&data)))
+            x: MKDFloat(pullFloat32FromData(&data)),
+            y: MKDFloat(pullFloat32FromData(&data)),
+            z: MKDFloat(pullFloat32FromData(&data)),
+            w: MKDFloat(pullFloat32FromData(&data)))
     }
     
     internal func pullStringFromData(inout data: NSMutableData) -> NSString? {

@@ -16,7 +16,14 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     // MARK:   Properties
     /*****************************************************************************************************/
     
-    private         var windowController:               ServerWindowController?
+    private         var renderer:                       SCNRenderer?
+    private         var renderTimer:                    NSTimer?
+    
+    #if os(OSX)
+    public          var windowController:               ServerWindowController?
+    #else
+    public          var viewController:                 ViewController?
+    #endif
     private(set)    var scene =                         SCNScene()
     private         var map:                            Map?
     private         var netPlayers =                    [UInt32:NetPlayer]()            // id:player
@@ -36,7 +43,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     public func start() {
         NSLog("ServerSimulationController.start()")
         
-        windowController?.showWindow(self)
+        //windowController?.showWindow(self)
         
         switchToCameraNode(cameraNode)
     }
@@ -107,6 +114,17 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
 //            server.pump()
 //        }
     }
+    
+    internal func renderTimer(timer: NSTimer) {
+        //NSLog("renderTimer()")
+        
+        scene.paused = false
+        
+        let time: CFTimeInterval = CACurrentMediaTime()
+        renderer?.renderAtTime(time)
+        renderer(renderer!, updateAtTime: time)
+        //scene.physicsWorld.updateCollisionPairs()
+    }
 
     /*****************************************************************************************************/
     // MARK:   Private
@@ -114,6 +132,16 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     
     private func setup() {
         NSLog("ServerSimulationController.setup()")
+        
+        if !SERVER_VIEW_ENABLED {
+            renderer?.scene = scene
+            renderTimer = NSTimer.scheduledTimerWithTimeInterval(
+                1.0/NSTimeInterval(60.0),
+                target: self,
+                selector: "renderTimer:",
+                userInfo: nil,
+                repeats: true)
+        }
         
         map = Map(scene: scene)
         
@@ -137,14 +165,14 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         cameraNode.camera = camera
         cameraNode.name = "Server camera node"
         cameraNode.position = SCNVector3(x: 0, y: 15, z: 0)
-        cameraNode.rotation = SCNVector4(x: 1, y: 0, z: 0, w: -CGFloat(M_PI)/2.0)
+        cameraNode.rotation = SCNVector4(x: 1, y: 0, z: 0, w: -MKDFloat(M_PI)/2.0)
         scene.rootNode.addChildNode(cameraNode)
         
         netServer = MKDNetServer(port: NET_SERVER_PORT, maxClients: NET_MAX_CLIENTS, maxChannels: NET_MAX_CHANNELS, delegate: self)
         startServerTickTimer()
     }
     
-    private func gameLoop(dT: Double) {
+    private func gameLoop(dT: MKDFloat) {
         //NSLog("gameLoop: %f", dT)
         
         // hack to keep loop running. see setup()
@@ -193,7 +221,11 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     func switchToCameraNode(cameraNode: SCNNode) {
         NSLog("ServerSimulationController.switchToCameraNode() %@", cameraNode.name!)
         
-        windowController?.renderView?.pointOfView = cameraNode
+        #if os(OSX)
+            windowController?.renderView?.pointOfView = cameraNode
+        #else
+            
+        #endif
     }
     
     private func startServerTickTimer() {
@@ -298,12 +330,12 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     /*****************************************************************************************************/
     
     public func renderer(aRenderer: SCNSceneRenderer, updateAtTime time: NSTimeInterval) {
-        //NSLog("renderer(%@, updateAtTime: %f)", renderer.description, time)
+        //NSLog("renderer(%@, updateAtTime: %f)", aRenderer.description, time)
         
         if let lastTime = lastRenderTime {
             lastRenderTime = time
             
-            let dT = time - lastTime
+            let dT = MKDFloat(time - lastTime)
             
             dispatch_async(dispatch_get_main_queue(),{
                 self.gameLoop(dT)
@@ -314,8 +346,8 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         }
     }
     
-    public func renderer(renderer: SCNSceneRenderer, didApplyAnimationsAtTime time: NSTimeInterval) {
-        //NSLog("renderer(%@, didApplyAnimationsAtTime: %f)", renderer.description, time)
+    public func renderer(aRenderer: SCNSceneRenderer, didApplyAnimationsAtTime time: NSTimeInterval) {
+        //NSLog("renderer(%@, didApplyAnimationsAtTime: %f)", aRenderer.description, time)
     }
     
     public func renderer(aRenderer: SCNSceneRenderer, didSimulatePhysicsAtTime time: NSTimeInterval) {
@@ -341,7 +373,9 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     /*****************************************************************************************************/
     
     public func physicsWorld(world: SCNPhysicsWorld, didUpdateContact contact: SCNPhysicsContact) {
-        //NSLog("physicsWorld(didUpdateContact: %@)", contact)
+        if !SERVER_VIEW_ENABLED {
+            NSLog("physicsWorld(didUpdateContact: %@)", contact)
+        }
         
         dispatch_async(dispatch_get_main_queue(),{
             self.physicsWorld(world, didBeginOrUpdateContact: contact)
@@ -349,7 +383,9 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     }
     
     public func physicsWorld(world: SCNPhysicsWorld, didBeginContact contact: SCNPhysicsContact) {
-        //NSLog("physicsWorld(didBeginContact: %@)", contact)
+        if !SERVER_VIEW_ENABLED {
+            NSLog("physicsWorld(didBeginContact: %@)", contact)
+        }
         
         dispatch_async(dispatch_get_main_queue(),{
             self.physicsWorld(world, didBeginOrUpdateContact: contact)
@@ -385,6 +421,13 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     override required public init() {
         super.init()
         setup()
-        self.windowController = ServerWindowController(serverSimulationController: self)
+        if SERVER_VIEW_ENABLED {
+            //self.windowController = ServerWindowController(serverSimulationController: self)
+        }
+        else {
+            #if os(OSX)
+                self.renderer = SCNRenderer(context: nil, options: nil)
+            #endif
+        }
     }
 }

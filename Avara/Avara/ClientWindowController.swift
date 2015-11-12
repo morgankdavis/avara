@@ -178,11 +178,11 @@ public class ClientWindowController: NSWindowController, NSWindowDelegate {
     }
     
     override public func keyDown(theEvent: NSEvent) {
-        inputManager.updateKeyCode(theEvent.keyCode, pressed: true)
+        inputManager.updateKeyCode(theEvent.keyCode, force: 1.0)
     }
     
     override public func keyUp(theEvent: NSEvent) {
-        inputManager.updateKeyCode(theEvent.keyCode, pressed: false)
+        inputManager.updateKeyCode(theEvent.keyCode, force: 0.0)
     }
     
     /*****************************************************************************************************/

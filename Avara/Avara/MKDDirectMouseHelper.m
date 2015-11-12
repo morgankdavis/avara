@@ -9,12 +9,14 @@
 #import "manymouse.h"
 
 
+#define BUTTONID_OFFSET     500
+
+
 @interface MKDDirectMouseHelper() {
     ManyMouseEvent event;
 }
 
 @property(atomic, strong) NSString              *driverName;
-//@property(atomic, strong) NSMutableDictionary   *nameMap;
 
 @end
 
@@ -34,6 +36,8 @@
 
 - (void)findMice
 {
+#if TARGET_OS_IPHONE
+#else
     const int available_mice = ManyMouse_Init();
     
     if (available_mice < 0) {
@@ -45,7 +49,6 @@
         [self.delegate directMouseHelper:self didFailWithError:available_mice];
     }
     else {
-        //self.nameMap = [NSMutableDictionary dictionaryWithCapacity:available_mice];
         int i;
         NSString *driverName = [NSString stringWithCString:ManyMouse_DriverName() encoding:NSASCIIStringEncoding];
         NSLog(@"ManyMouse driver: %@\n", driverName);
@@ -56,10 +59,13 @@
             [self.delegate directMouseHelper:self didFindMouseID:i name:deviceName driverName:driverName];
         }
     }
+#endif
 }
 
 - (void)pump
 {
+#if TARGET_OS_IPHONE
+#else
     while (ManyMouse_PollEvent(&event)) {
         if (event.type == MANYMOUSE_EVENT_ABSMOTION) {
             //NSLog(@"Mouse #%u absolute motion %s %d\n", event.device, event.item == 0 ? "X" : "Y", event.value);
@@ -71,10 +77,10 @@
         else if (event.type == MANYMOUSE_EVENT_BUTTON) {
             //NSLog(@"Mouse #%u button %u %s\n", event.device, event.item, event.value ? "down" : "up");
             if (event.value) { // down
-                [self.delegate directMouseHelper:self didGetButtonDown:event.item+500 mouseID:event.device];
+                [self.delegate directMouseHelper:self didGetButtonDown:event.item+BUTTONID_OFFSET mouseID:event.device];
             }
             else { // up
-                [self.delegate directMouseHelper:self didGetButtonUp:event.item+500 mouseID:event.device];
+                [self.delegate directMouseHelper:self didGetButtonUp:event.item+BUTTONID_OFFSET mouseID:event.device];
             }
         }
         else if (event.type == MANYMOUSE_EVENT_SCROLL) {
@@ -91,7 +97,7 @@
 //                wheel = "horizontal";
 //                direction = ((event.value > 0) ? "right" : "left");
                 [self.delegate directMouseHelper:self
-                            didGetHorizontalScroll:((event.value > 0) ? MKDDirectMouseHorizontalScrollDirectionRight : MKDDirectMouseHorizontalScrollDirectionLeft)
+                          didGetHorizontalScroll:((event.value > 0) ? MKDDirectMouseHorizontalScrollDirectionRight : MKDDirectMouseHorizontalScrollDirectionLeft)
                                          mouseID:event.device];
             }
             //NSLog(@"Mouse #%u wheel %s %s\n", event.device, wheel, direction);
@@ -103,11 +109,15 @@
             //NSLog(@"Mouse #%u unhandled event type %d\n", event.device, event.type);
         }
     }
+#endif
 }
 
 - (void)quit
 {
+#if TARGET_OS_IPHONE
+#else
     ManyMouse_Quit();
+#endif
 }
 
 @end

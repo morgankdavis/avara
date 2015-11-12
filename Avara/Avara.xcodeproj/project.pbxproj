@@ -24,10 +24,66 @@
 		4169CC4A1BEC69CF0035FF29 /* SCNNode+RecursiveChildNodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4169CC491BEC69CF0035FF29 /* SCNNode+RecursiveChildNodes.swift */; };
 		4169CC4D1BEC6C060035FF29 /* Array+RemoveObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4169CC4C1BEC6C060035FF29 /* Array+RemoveObject.swift */; };
 		416CF3051BEEE54900411BE9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 416CF3041BEEE54900411BE9 /* AppDelegate.swift */; };
-		416CF3071BEEE54900411BE9 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 416CF3061BEEE54900411BE9 /* ViewController.swift */; };
 		416CF30A1BEEE54900411BE9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 416CF3081BEEE54900411BE9 /* Main.storyboard */; };
 		416CF30C1BEEE54900411BE9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 416CF30B1BEEE54900411BE9 /* Assets.xcassets */; };
 		416CF30F1BEEE54900411BE9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 416CF30D1BEEE54900411BE9 /* LaunchScreen.storyboard */; };
+		416CF3511BF3266200411BE9 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39A1B645310006B21F3 /* Configuration.swift */; };
+		416CF3521BF3266300411BE9 /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39E1B645310006B21F3 /* Globals.swift */; };
+		416CF3531BF3266500411BE9 /* OperatorOverloads.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41195A1F1B731134006E53DC /* OperatorOverloads.swift */; };
+		416CF3541BF3266600411BE9 /* ServerSimulationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3A41B645310006B21F3 /* ServerSimulationController.swift */; };
+		416CF3551BF3266700411BE9 /* NetPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC40C1B68A305006B21F3 /* NetPlayer.swift */; };
+		416CF3561BF3266800411BE9 /* NetPlayerSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4151BEE91B71D62B0082F75E /* NetPlayerSnapshot.swift */; };
+		416CF3571BF3266900411BE9 /* ClientSimulationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3991B645310006B21F3 /* ClientSimulationController.swift */; };
+		416CF3581BF3266900411BE9 /* Character.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3981B645310006B21F3 /* Character.swift */; };
+		416CF3591BF3266B00411BE9 /* Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3A11B645310006B21F3 /* Map.swift */; };
+		416CF35A1BF3266C00411BE9 /* InputManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3A01B645310006B21F3 /* InputManager.swift */; };
+		416CF35B1BF3266C00411BE9 /* FlyoverCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39B1B645310006B21F3 /* FlyoverCamera.swift */; };
+		416CF35C1BF3266D00411BE9 /* RenderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39C1B645310006B21F3 /* RenderView.swift */; };
+		416CF35D1BF3266E00411BE9 /* NetMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC40E1B68A9E6006B21F3 /* NetMessage.swift */; };
+		416CF35E1BF3266F00411BE9 /* ClientHelloNetMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC4111B68AA2F006B21F3 /* ClientHelloNetMessage.swift */; };
+		416CF35F1BF3267000411BE9 /* ClientUpdateNetMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D9224F1B6B459600CCE9CA /* ClientUpdateNetMessage.swift */; };
+		416CF3601BF3267100411BE9 /* ServerUpdateNetMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 416509991B6C754C0048804B /* ServerUpdateNetMessage.swift */; };
+		416CF3611BF3267700411BE9 /* MKDNetServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3ED1B68804B006B21F3 /* MKDNetServer.m */; };
+		416CF3621BF3267900411BE9 /* MKDNetClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3EB1B68804B006B21F3 /* MKDNetClient.m */; };
+		416CF3631BF3267F00411BE9 /* callbacks.c in Sources */ = {isa = PBXBuildFile; fileRef = 4169330E1B75C5B800DB59BA /* callbacks.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		416CF3641BF3268100411BE9 /* compress.c in Sources */ = {isa = PBXBuildFile; fileRef = 416933101B75C5B800DB59BA /* compress.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		416CF3651BF3268200411BE9 /* host.c in Sources */ = {isa = PBXBuildFile; fileRef = 416933121B75C5B800DB59BA /* host.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		416CF3661BF3268300411BE9 /* list.c in Sources */ = {isa = PBXBuildFile; fileRef = 416933131B75C5B800DB59BA /* list.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		416CF3671BF3268400411BE9 /* packet.c in Sources */ = {isa = PBXBuildFile; fileRef = 416933151B75C5B800DB59BA /* packet.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		416CF3681BF3268500411BE9 /* peer.c in Sources */ = {isa = PBXBuildFile; fileRef = 416933161B75C5B800DB59BA /* peer.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		416CF3691BF3268600411BE9 /* unix.c in Sources */ = {isa = PBXBuildFile; fileRef = 4169331B1B75C5B800DB59BA /* unix.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		416CF36A1BF3268700411BE9 /* protocol.c in Sources */ = {isa = PBXBuildFile; fileRef = 416933171B75C5B800DB59BA /* protocol.c */; settings = {COMPILER_FLAGS = "-w"; }; };
+		416CF36B1BF326A100411BE9 /* Array+RemoveObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4169CC4C1BEC6C060035FF29 /* Array+RemoveObject.swift */; };
+		416CF36C1BF326A200411BE9 /* SCNNode+RecursiveChildNodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4169CC491BEC69CF0035FF29 /* SCNNode+RecursiveChildNodes.swift */; };
+		416CF36D1BF326A300411BE9 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3A61B645310006B21F3 /* Utilities.swift */; };
+		416CF36E1BF3294300411BE9 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 416CF3161BEEE5C700411BE9 /* ViewController.swift */; };
+		416CF36F1BF33C6100411BE9 /* MKDDirectMouseHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 417E12EA1B74802A006256C7 /* MKDDirectMouseHelper.m */; };
+		416CF3711BF340E100411BE9 /* Models.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3A21B645310006B21F3 /* Models.scnassets */; };
+		416CF3721BF340ED00411BE9 /* sky_interstellar_0.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C41B645507006B21F3 /* sky_interstellar_0.png */; };
+		416CF3731BF340EF00411BE9 /* sky_interstellar_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C51B645507006B21F3 /* sky_interstellar_1.png */; };
+		416CF3741BF340F000411BE9 /* sky_interstellar_2.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C61B645507006B21F3 /* sky_interstellar_2.png */; };
+		416CF3751BF340F200411BE9 /* sky_interstellar_3.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C71B645507006B21F3 /* sky_interstellar_3.png */; };
+		416CF3761BF340F400411BE9 /* sky_interstellar_4.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C81B645507006B21F3 /* sky_interstellar_4.png */; };
+		416CF3771BF340F600411BE9 /* sky_interstellar_5.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C91B645507006B21F3 /* sky_interstellar_5.png */; };
+		416CF3781BF340F700411BE9 /* needlepointSteel_diffuse.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C21B645507006B21F3 /* needlepointSteel_diffuse.png */; };
+		416CF3791BF340F800411BE9 /* needlepointSteel_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C31B645507006B21F3 /* needlepointSteel_normal.png */; };
+		416CF37A1BF340FA00411BE9 /* grid.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C11B645507006B21F3 /* grid.png */; };
+		416CF37B1BF340FB00411BE9 /* floorBump.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C01B645507006B21F3 /* floorBump.jpg */; };
+		416CF37C1BF340FD00411BE9 /* floor.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3BF1B645507006B21F3 /* floor.png */; };
+		416CF37D1BF340FE00411BE9 /* finder_blue.png in Resources */ = {isa = PBXBuildFile; fileRef = 4169CC411BE8A04D0035FF29 /* finder_blue.png */; };
+		416CF37E1BF3410000411BE9 /* crosshairR.png in Resources */ = {isa = PBXBuildFile; fileRef = 4169CC461BE9F7ED0035FF29 /* crosshairR.png */; };
+		416CF37F1BF3410100411BE9 /* crosshairL.png in Resources */ = {isa = PBXBuildFile; fileRef = 4169CC451BE9F7ED0035FF29 /* crosshairL.png */; };
+		416CF3801BF3410600411BE9 /* slateBump.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3D01B645507006B21F3 /* slateBump.png */; };
+		416CF3811BF3429E00411BE9 /* sky_miramar_0.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3CA1B645507006B21F3 /* sky_miramar_0.png */; };
+		416CF3821BF3429F00411BE9 /* sky_miramar_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3CB1B645507006B21F3 /* sky_miramar_1.png */; };
+		416CF3831BF342A100411BE9 /* sky_miramar_2.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3CC1B645507006B21F3 /* sky_miramar_2.png */; };
+		416CF3841BF342A300411BE9 /* sky_miramar_3.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3CD1B645507006B21F3 /* sky_miramar_3.png */; };
+		416CF3851BF342A500411BE9 /* sky_miramar_4.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3CE1B645507006B21F3 /* sky_miramar_4.png */; };
+		416CF3861BF342A600411BE9 /* sky_miramar_5.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3CF1B645507006B21F3 /* sky_miramar_5.png */; };
+		416CF3A91BF463B600411BE9 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 416CF3A81BF463B600411BE9 /* AppDelegate.swift */; };
+		416CF3AB1BF463B600411BE9 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 416CF3AA1BF463B600411BE9 /* ViewController.swift */; };
+		416CF3AE1BF463B600411BE9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 416CF3AC1BF463B600411BE9 /* Main.storyboard */; };
+		416CF3B01BF463B600411BE9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 416CF3AF1BF463B600411BE9 /* Assets.xcassets */; };
 		417CC38C1B645260006B21F3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC38B1B645260006B21F3 /* AppDelegate.swift */; };
 		417CC3911B645260006B21F3 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 417CC38F1B645260006B21F3 /* MainMenu.xib */; };
 		417CC3A71B645310006B21F3 /* Character.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3981B645310006B21F3 /* Character.swift */; };
@@ -107,12 +163,17 @@
 		4169CC4C1BEC6C060035FF29 /* Array+RemoveObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+RemoveObject.swift"; sourceTree = "<group>"; };
 		416CF3021BEEE54900411BE9 /* Avara-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Avara-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		416CF3041BEEE54900411BE9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		416CF3061BEEE54900411BE9 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		416CF3091BEEE54900411BE9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		416CF30B1BEEE54900411BE9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		416CF30E1BEEE54900411BE9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		416CF3101BEEE54900411BE9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		416CF3161BEEE5C700411BE9 /* ClientViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientViewController.swift; sourceTree = "<group>"; };
+		416CF3161BEEE5C700411BE9 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ViewController.swift; path = ../Avara/ViewController.swift; sourceTree = "<group>"; };
+		416CF3A61BF463B600411BE9 /* Avara-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Avara-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		416CF3A81BF463B600411BE9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		416CF3AA1BF463B600411BE9 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		416CF3AD1BF463B600411BE9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		416CF3AF1BF463B600411BE9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		416CF3B11BF463B600411BE9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		417CC3881B645260006B21F3 /* Avara.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Avara.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		417CC38B1B645260006B21F3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		417CC3901B645260006B21F3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
@@ -181,6 +242,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		416CF3A31BF463B600411BE9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		417CC3851B645260006B21F3 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -200,43 +268,50 @@
 			name = Extensions;
 			sourceTree = "<group>";
 		};
-		416CF3031BEEE54900411BE9 /* Avara-iOS */ = {
+		416CF3031BEEE54900411BE9 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
 				416CF3041BEEE54900411BE9 /* AppDelegate.swift */,
-				416CF3061BEEE54900411BE9 /* ViewController.swift */,
+				416CF3161BEEE5C700411BE9 /* ViewController.swift */,
 				416CF3081BEEE54900411BE9 /* Main.storyboard */,
-				416CF30B1BEEE54900411BE9 /* Assets.xcassets */,
 				416CF30D1BEEE54900411BE9 /* LaunchScreen.storyboard */,
+				416CF30B1BEEE54900411BE9 /* Assets.xcassets */,
 				416CF3101BEEE54900411BE9 /* Info.plist */,
 			);
+			name = iOS;
 			path = "Avara-iOS";
-			sourceTree = "<group>";
+			sourceTree = SOURCE_ROOT;
 		};
 		416CF3141BEEE57500411BE9 /* OS X */ = {
 			isa = PBXGroup;
 			children = (
+				417CC38B1B645260006B21F3 /* AppDelegate.swift */,
 				417CC39D1B645310006B21F3 /* ClientWindowController.swift */,
 				417CC4131B69B98C006B21F3 /* ServerWindowController.swift */,
 				417E12F21B74802F006256C7 /* Raw Mouse */,
+				417CC38F1B645260006B21F3 /* MainMenu.xib */,
+				417CC3921B645260006B21F3 /* Info.plist */,
 			);
 			name = "OS X";
 			sourceTree = "<group>";
 		};
-		416CF3151BEEE57D00411BE9 /* iOS */ = {
+		416CF3A71BF463B600411BE9 /* Avara-tvOS */ = {
 			isa = PBXGroup;
 			children = (
-				416CF3161BEEE5C700411BE9 /* ClientViewController.swift */,
+				416CF3A81BF463B600411BE9 /* AppDelegate.swift */,
+				416CF3AA1BF463B600411BE9 /* ViewController.swift */,
+				416CF3AC1BF463B600411BE9 /* Main.storyboard */,
+				416CF3AF1BF463B600411BE9 /* Assets.xcassets */,
+				416CF3B11BF463B600411BE9 /* Info.plist */,
 			);
-			name = iOS;
-			sourceTree = "<group>";
+			path = "Avara-tvOS";
+			sourceTree = SOURCE_ROOT;
 		};
 		417CC37F1B645260006B21F3 = {
 			isa = PBXGroup;
 			children = (
 				417CC3E71B645676006B21F3 /* TODO.rtf */,
 				417CC38A1B645260006B21F3 /* Avara */,
-				416CF3031BEEE54900411BE9 /* Avara-iOS */,
 				417CC3891B645260006B21F3 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -246,6 +321,7 @@
 			children = (
 				417CC3881B645260006B21F3 /* Avara.app */,
 				416CF3021BEEE54900411BE9 /* Avara-iOS.app */,
+				416CF3A61BF463B600411BE9 /* Avara-tvOS.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -256,7 +332,6 @@
 				417CC39A1B645310006B21F3 /* Configuration.swift */,
 				417CC39E1B645310006B21F3 /* Globals.swift */,
 				41195A1F1B731134006E53DC /* OperatorOverloads.swift */,
-				417CC38B1B645260006B21F3 /* AppDelegate.swift */,
 				417CC3A41B645310006B21F3 /* ServerSimulationController.swift */,
 				417CC40C1B68A305006B21F3 /* NetPlayer.swift */,
 				4151BEE91B71D62B0082F75E /* NetPlayerSnapshot.swift */,
@@ -267,9 +342,10 @@
 				417CC39B1B645310006B21F3 /* FlyoverCamera.swift */,
 				417CC39C1B645310006B21F3 /* RenderView.swift */,
 				417CC4101B68A9EA006B21F3 /* NetMessages */,
-				417CC3F21B688063006B21F3 /* MKDNet */,
 				416CF3141BEEE57500411BE9 /* OS X */,
-				416CF3151BEEE57D00411BE9 /* iOS */,
+				416CF3031BEEE54900411BE9 /* iOS */,
+				416CF3A71BF463B600411BE9 /* Avara-tvOS */,
+				417CC3F21B688063006B21F3 /* MKDNet */,
 				4169CC4B1BEC69D40035FF29 /* Extensions */,
 				417CC3B71B6453D2006B21F3 /* Utilities */,
 				417CC3F11B688059006B21F3 /* Other */,
@@ -277,8 +353,6 @@
 				417CC3A21B645310006B21F3 /* Models.scnassets */,
 				417CC3BE1B6454D1006B21F3 /* Textures */,
 				417CC3BD1B6454C8006B21F3 /* Shaders */,
-				417CC38F1B645260006B21F3 /* MainMenu.xib */,
-				417CC3921B645260006B21F3 /* Info.plist */,
 			);
 			path = Avara;
 			sourceTree = "<group>";
@@ -427,6 +501,23 @@
 			productReference = 416CF3021BEEE54900411BE9 /* Avara-iOS.app */;
 			productType = "com.apple.product-type.application";
 		};
+		416CF3A51BF463B600411BE9 /* Avara-tvOS */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 416CF3B21BF463B600411BE9 /* Build configuration list for PBXNativeTarget "Avara-tvOS" */;
+			buildPhases = (
+				416CF3A21BF463B600411BE9 /* Sources */,
+				416CF3A31BF463B600411BE9 /* Frameworks */,
+				416CF3A41BF463B600411BE9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Avara-tvOS";
+			productName = "Avara-tvOS";
+			productReference = 416CF3A61BF463B600411BE9 /* Avara-tvOS.app */;
+			productType = "com.apple.product-type.application";
+		};
 		417CC3871B645260006B21F3 /* Avara */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 417CC3951B645260006B21F3 /* Build configuration list for PBXNativeTarget "Avara" */;
@@ -457,6 +548,9 @@
 					416CF3011BEEE54900411BE9 = {
 						CreatedOnToolsVersion = 7.1;
 					};
+					416CF3A51BF463B600411BE9 = {
+						CreatedOnToolsVersion = 7.1;
+					};
 					417CC3871B645260006B21F3 = {
 						CreatedOnToolsVersion = 7.0;
 					};
@@ -477,6 +571,7 @@
 			targets = (
 				417CC3871B645260006B21F3 /* Avara */,
 				416CF3011BEEE54900411BE9 /* Avara-iOS */,
+				416CF3A51BF463B600411BE9 /* Avara-tvOS */,
 			);
 		};
 /* End PBXProject section */
@@ -487,8 +582,39 @@
 			buildActionMask = 2147483647;
 			files = (
 				416CF30F1BEEE54900411BE9 /* LaunchScreen.storyboard in Resources */,
+				416CF3721BF340ED00411BE9 /* sky_interstellar_0.png in Resources */,
+				416CF37B1BF340FB00411BE9 /* floorBump.jpg in Resources */,
+				416CF3751BF340F200411BE9 /* sky_interstellar_3.png in Resources */,
+				416CF37F1BF3410100411BE9 /* crosshairL.png in Resources */,
+				416CF3731BF340EF00411BE9 /* sky_interstellar_1.png in Resources */,
+				416CF3801BF3410600411BE9 /* slateBump.png in Resources */,
+				416CF37E1BF3410000411BE9 /* crosshairR.png in Resources */,
+				416CF3791BF340F800411BE9 /* needlepointSteel_normal.png in Resources */,
+				416CF37D1BF340FE00411BE9 /* finder_blue.png in Resources */,
+				416CF37C1BF340FD00411BE9 /* floor.png in Resources */,
+				416CF3811BF3429E00411BE9 /* sky_miramar_0.png in Resources */,
+				416CF37A1BF340FA00411BE9 /* grid.png in Resources */,
+				416CF3831BF342A100411BE9 /* sky_miramar_2.png in Resources */,
+				416CF3771BF340F600411BE9 /* sky_interstellar_5.png in Resources */,
+				416CF3861BF342A600411BE9 /* sky_miramar_5.png in Resources */,
+				416CF3841BF342A300411BE9 /* sky_miramar_3.png in Resources */,
+				416CF3821BF3429F00411BE9 /* sky_miramar_1.png in Resources */,
+				416CF3851BF342A500411BE9 /* sky_miramar_4.png in Resources */,
 				416CF30C1BEEE54900411BE9 /* Assets.xcassets in Resources */,
+				416CF3761BF340F400411BE9 /* sky_interstellar_4.png in Resources */,
+				416CF3781BF340F700411BE9 /* needlepointSteel_diffuse.png in Resources */,
+				416CF3741BF340F000411BE9 /* sky_interstellar_2.png in Resources */,
+				416CF3711BF340E100411BE9 /* Models.scnassets in Resources */,
 				416CF30A1BEEE54900411BE9 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		416CF3A41BF463B600411BE9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				416CF3B01BF463B600411BE9 /* Assets.xcassets in Resources */,
+				416CF3AE1BF463B600411BE9 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -533,8 +659,47 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				416CF3071BEEE54900411BE9 /* ViewController.swift in Sources */,
 				416CF3051BEEE54900411BE9 /* AppDelegate.swift in Sources */,
+				416CF3511BF3266200411BE9 /* Configuration.swift in Sources */,
+				416CF3541BF3266600411BE9 /* ServerSimulationController.swift in Sources */,
+				416CF3551BF3266700411BE9 /* NetPlayer.swift in Sources */,
+				416CF3561BF3266800411BE9 /* NetPlayerSnapshot.swift in Sources */,
+				416CF35A1BF3266C00411BE9 /* InputManager.swift in Sources */,
+				416CF35C1BF3266D00411BE9 /* RenderView.swift in Sources */,
+				416CF35B1BF3266C00411BE9 /* FlyoverCamera.swift in Sources */,
+				416CF35F1BF3267000411BE9 /* ClientUpdateNetMessage.swift in Sources */,
+				416CF3601BF3267100411BE9 /* ServerUpdateNetMessage.swift in Sources */,
+				416CF3611BF3267700411BE9 /* MKDNetServer.m in Sources */,
+				416CF35E1BF3266F00411BE9 /* ClientHelloNetMessage.swift in Sources */,
+				416CF3661BF3268300411BE9 /* list.c in Sources */,
+				416CF3631BF3267F00411BE9 /* callbacks.c in Sources */,
+				416CF3691BF3268600411BE9 /* unix.c in Sources */,
+				416CF36F1BF33C6100411BE9 /* MKDDirectMouseHelper.m in Sources */,
+				416CF3681BF3268500411BE9 /* peer.c in Sources */,
+				416CF36E1BF3294300411BE9 /* ViewController.swift in Sources */,
+				416CF36A1BF3268700411BE9 /* protocol.c in Sources */,
+				416CF3651BF3268200411BE9 /* host.c in Sources */,
+				416CF3671BF3268400411BE9 /* packet.c in Sources */,
+				416CF3641BF3268100411BE9 /* compress.c in Sources */,
+				416CF36B1BF326A100411BE9 /* Array+RemoveObject.swift in Sources */,
+				416CF3621BF3267900411BE9 /* MKDNetClient.m in Sources */,
+				416CF35D1BF3266E00411BE9 /* NetMessage.swift in Sources */,
+				416CF36D1BF326A300411BE9 /* Utilities.swift in Sources */,
+				416CF36C1BF326A200411BE9 /* SCNNode+RecursiveChildNodes.swift in Sources */,
+				416CF3581BF3266900411BE9 /* Character.swift in Sources */,
+				416CF3591BF3266B00411BE9 /* Map.swift in Sources */,
+				416CF3571BF3266900411BE9 /* ClientSimulationController.swift in Sources */,
+				416CF3531BF3266500411BE9 /* OperatorOverloads.swift in Sources */,
+				416CF3521BF3266300411BE9 /* Globals.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		416CF3A21BF463B600411BE9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				416CF3AB1BF463B600411BE9 /* ViewController.swift in Sources */,
+				416CF3A91BF463B600411BE9 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -603,6 +768,14 @@
 			name = LaunchScreen.storyboard;
 			sourceTree = "<group>";
 		};
+		416CF3AC1BF463B600411BE9 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				416CF3AD1BF463B600411BE9 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
 		417CC38F1B645260006B21F3 /* MainMenu.xib */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -625,6 +798,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "net.goosesensor.Avara-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "Avara/Avara-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -640,7 +814,39 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "net.goosesensor.Avara-iOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				SWIFT_OBJC_BRIDGING_HEADER = "Avara/Avara-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		416CF3B31BF463B600411BE9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				INFOPLIST_FILE = "Avara-tvOS/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "net.goosesensor.Avara-tvOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
+			};
+			name = Debug;
+		};
+		416CF3B41BF463B600411BE9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
+				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				INFOPLIST_FILE = "Avara-tvOS/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "net.goosesensor.Avara-tvOS";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = appletvos;
+				TARGETED_DEVICE_FAMILY = 3;
+				TVOS_DEPLOYMENT_TARGET = 9.0;
 				VALIDATE_PRODUCT = YES;
 			};
 			name = Release;
@@ -762,6 +968,15 @@
 			buildConfigurations = (
 				416CF3111BEEE54900411BE9 /* Debug */,
 				416CF3121BEEE54900411BE9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		416CF3B21BF463B600411BE9 /* Build configuration list for PBXNativeTarget "Avara-tvOS" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				416CF3B31BF463B600411BE9 /* Debug */,
+				416CF3B41BF463B600411BE9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 		};

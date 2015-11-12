@@ -32,24 +32,24 @@ public class Map : NSObject, SCNProgramDelegate {
         scene.fogStartDistance = 0.0
         scene.fogEndDistance = 200.0
         scene.fogDensityExponent = 2.0
-        scene.fogColor = NSColor.lightGrayColor()
+        scene.fogColor = MKDColor.lightGrayColor()
         
         // background
-        //scene.background.contents = NSColor(red:102.0/255.0, green:204.0/255.0, blue:255.0/255.0, alpha:1)
+        //scene.background.contents = MKDColor(red:102.0/255.0, green:204.0/255.0, blue:255.0/255.0, alpha:1)
 //        scene.background.contents = [
-//            NSImage(named: "sky_interstellar_0.png")!,
-//            NSImage(named: "sky_interstellar_1.png")!,
-//            NSImage(named: "sky_interstellar_2.png")!,
-//            NSImage(named: "sky_interstellar_3.png")!,
-//            NSImage(named: "sky_interstellar_4.png")!,
-//            NSImage(named: "sky_interstellar_5.png")!]
+//            MKDImage(named: "sky_interstellar_0.png")!,
+//            MKDImage(named: "sky_interstellar_1.png")!,
+//            MKDImage(named: "sky_interstellar_2.png")!,
+//            MKDImage(named: "sky_interstellar_3.png")!,
+//            MKDImage(named: "sky_interstellar_4.png")!,
+//            MKDImage(named: "sky_interstellar_5.png")!]
         scene.background.contents = [
-            NSImage(named: "sky_miramar_0.png")!,
-            NSImage(named: "sky_miramar_1.png")!,
-            NSImage(named: "sky_miramar_2.png")!,
-            NSImage(named: "sky_miramar_3.png")!,
-            NSImage(named: "sky_miramar_4.png")!,
-            NSImage(named: "sky_miramar_5.png")!]
+            MKDImage(named: "sky_miramar_0.png")!,
+            MKDImage(named: "sky_miramar_1.png")!,
+            MKDImage(named: "sky_miramar_2.png")!,
+            MKDImage(named: "sky_miramar_3.png")!,
+            MKDImage(named: "sky_miramar_4.png")!,
+            MKDImage(named: "sky_miramar_5.png")!]
         // WARNING: Temporary
         if (NSProcessInfo.processInfo().hostName == "goosebox.local") {
             scene.background.maxAnisotropy = 16.0
@@ -102,13 +102,13 @@ public class Map : NSObject, SCNProgramDelegate {
         let ambientLightNode = SCNNode()
         ambientLightNode.light = SCNLight()
         ambientLightNode.light!.type = SCNLightTypeAmbient
-        ambientLightNode.light!.color = NSColor(white: 0.5, alpha: 1.0)
+        ambientLightNode.light!.color = MKDColor(white: 0.5, alpha: 1.0)
         scene.rootNode.addChildNode(ambientLightNode)
         
         // omni light
         let omniLight = SCNLight()
         omniLight.type = SCNLightTypeOmni
-        omniLight.color = NSColor(white: 0.75, alpha: 1.0)
+        omniLight.color = MKDColor(white: 0.75, alpha: 1.0)
         let omniLightNode = SCNNode()
         omniLightNode.light = omniLight
         omniLightNode.position = SCNVector3Make(40, 25, 50)
@@ -117,7 +117,7 @@ public class Map : NSObject, SCNProgramDelegate {
         // spot light
 //        let spotLight = SCNLight()
 //        spotLight.type = SCNLightTypeSpot
-//        spotLight.color = NSColor(white: 0.75, alpha: 1.0)
+//        spotLight.color = MKDColor(white: 0.75, alpha: 1.0)
 //        let spotLightNode = SCNNode()
 //        spotLightNode.light = spotLight
 //        spotLightNode.position = SCNVector3Make(40, 25, 50)
@@ -139,10 +139,10 @@ public class Map : NSObject, SCNProgramDelegate {
         scene.rootNode.addChildNode(floorNode)
         
         let floorMaterial = SCNMaterial()
-        floorMaterial.diffuse.contents = NSColor.grayColor()
-        floorMaterial.ambient.contents = NSColor.blackColor()
-        floorMaterial.diffuse.contents = NSImage(named: "grid.png")
-        let floorDiffScale: CGFloat = 12.0
+        floorMaterial.diffuse.contents = MKDColor.grayColor()
+        floorMaterial.ambient.contents = MKDColor.blackColor()
+        floorMaterial.diffuse.contents = MKDImage(named: "grid.png")
+        let floorDiffScale: MKDFloat = 12.0
         floorMaterial.diffuse.contentsTransform = SCNMatrix4MakeScale(floorDiffScale, floorDiffScale, floorDiffScale)//SCNMatrix4MakeScale(10.0, 10.0, 10.0)
         floorMaterial.diffuse.intensity = 1.0
         floorMaterial.diffuse.mipFilter = .Linear
@@ -152,7 +152,7 @@ public class Map : NSObject, SCNProgramDelegate {
         } else {
             floorMaterial.diffuse.maxAnisotropy = 2.0
         }
-//        floorMaterial.normal.contents = NSImage(named: "floorBump.jpg")
+//        floorMaterial.normal.contents = MKDImage(named: "floorBump.jpg")
 //        floorMaterial.normal.contentsTransform = SCNMatrix4MakeScale(15.0, 15.0, 15.0)
 //        floorMaterial.normal.intensity = 0.15
 
@@ -177,27 +177,27 @@ public class Map : NSObject, SCNProgramDelegate {
         scene.rootNode.addChildNode(floorNode)
         
         let boxMaterial = SCNMaterial()
-        boxMaterial.diffuse.contents = NSColor.redColor()
-//        boxMaterial.normal.contents = NSImage(named: "needlepointSteel_normal.png")
+        boxMaterial.diffuse.contents = MKDColor.redColor()
+//        boxMaterial.normal.contents = MKDImage(named: "needlepointSteel_normal.png")
 //        boxMaterial.normal.intensity = 1.0
         
         
         // boxes
-        let BOX_SIZE: CGFloat = 2.0
-        let BOX_Y: CGFloat = BOX_SIZE / 2.0
+        let BOX_SIZE = 2.0
+        let BOX_Y = BOX_SIZE / 2.0
         
-        let boxGeometry = SCNBox(width: BOX_SIZE, height: BOX_SIZE, length: BOX_SIZE, chamferRadius: 0)
+        let boxGeometry = SCNBox(width: CGFloat(BOX_SIZE), height: CGFloat(BOX_SIZE), length: CGFloat(BOX_SIZE), chamferRadius: 0)
         boxGeometry.materials = [boxMaterial]
         
-        let box1Node = SCNNode(geometry: SCNBox(width: BOX_SIZE, height: BOX_SIZE, length: BOX_SIZE, chamferRadius: 0))
+        let box1Node = SCNNode(geometry: SCNBox(width: CGFloat(BOX_SIZE), height: CGFloat(BOX_SIZE), length: CGFloat(BOX_SIZE), chamferRadius: 0))
         box1Node.geometry?.materials = [boxMaterial]
-        box1Node.position = SCNVector3Make(-10, BOX_Y, 10)
+        box1Node.position = SCNVector3Make(-10, MKDFloat(BOX_Y), 10)
         box1Node.name = "Box node 1"
         scene.rootNode.addChildNode(box1Node)
         
-        let box2Node = SCNNode(geometry: SCNBox(width: BOX_SIZE, height: BOX_SIZE, length: BOX_SIZE, chamferRadius: 0))
+        let box2Node = SCNNode(geometry: SCNBox(width: CGFloat(BOX_SIZE), height: CGFloat(BOX_SIZE), length: CGFloat(BOX_SIZE), chamferRadius: 0))
         box2Node.geometry?.materials = [boxMaterial]
-        box2Node.position = SCNVector3Make(10, BOX_Y, 10)
+        box2Node.position = SCNVector3Make(10, MKDFloat(BOX_Y), 10)
         box2Node.name = "Box node 2"
         scene.rootNode.addChildNode(box2Node)
 
@@ -221,13 +221,13 @@ public class Map : NSObject, SCNProgramDelegate {
         // platform
         
         let platformMaterial = SCNMaterial()
-        platformMaterial.diffuse.contents = NSColor.yellowColor()
+        platformMaterial.diffuse.contents = MKDColor.yellowColor()
         platformMaterial.doubleSided = true
         
         let rRampGeometry = SCNPlane(width: 2, height: 4)
         let rRampNode = SCNNode(geometry: rRampGeometry)
         rRampNode.name = "R Ramp"
-        rRampNode.rotation = SCNVector4(x: 1, y: 0, z: 0, w: CGFloat(-M_PI/3.0))
+        rRampNode.rotation = SCNVector4(x: 1, y: 0, z: 0, w: MKDFloat(-M_PI/3.0))
         rRampNode.position = SCNVector3(x: 10, y: 1, z: -9.125)
         rRampGeometry.materials = [platformMaterial]
         scene.rootNode.addChildNode(rRampNode)
@@ -235,7 +235,7 @@ public class Map : NSObject, SCNProgramDelegate {
         let lRampGeometry = SCNPlane(width: 2, height: 4)
         let lRampNode = SCNNode(geometry: lRampGeometry)
         lRampNode.name = "L Ramp"
-        lRampNode.rotation = SCNVector4(x: 1, y: 0, z: 0, w: CGFloat(-M_PI/3.0))
+        lRampNode.rotation = SCNVector4(x: 1, y: 0, z: 0, w: MKDFloat(-M_PI/3.0))
         lRampNode.position = SCNVector3(x: -10, y: 1, z: -9.125)
         lRampGeometry.materials = [platformMaterial]
         scene.rootNode.addChildNode(lRampNode)
@@ -243,7 +243,7 @@ public class Map : NSObject, SCNProgramDelegate {
         let rPlatformGeometry = SCNPlane(width: 2, height: 5)
         let rPlatformNode = SCNNode(geometry: rPlatformGeometry)
         rPlatformNode.name = "R Platform"
-        rPlatformNode.rotation = SCNVector4(x: 1, y: 0, z: 0, w: CGFloat(-M_PI/2.0))
+        rPlatformNode.rotation = SCNVector4(x: 1, y: 0, z: 0, w: MKDFloat(-M_PI/2.0))
         rPlatformNode.position = SCNVector3(x: 10, y: 2.0, z: -10 - 3.36)
         rPlatformGeometry.materials = [platformMaterial]
         scene.rootNode.addChildNode(rPlatformNode)
@@ -251,7 +251,7 @@ public class Map : NSObject, SCNProgramDelegate {
         let lPlatformGeometry = SCNPlane(width: 2, height: 5)
         let lPlatformNode = SCNNode(geometry: lPlatformGeometry)
         lPlatformNode.name = "L Platform"
-        lPlatformNode.rotation = SCNVector4(x: 1, y: 0, z: 0, w: CGFloat(-M_PI/2.0))
+        lPlatformNode.rotation = SCNVector4(x: 1, y: 0, z: 0, w: MKDFloat(-M_PI/2.0))
         lPlatformNode.position = SCNVector3(x: -10, y: 2.0, z: -10 - 3.36)
         lPlatformGeometry.materials = [platformMaterial]
         scene.rootNode.addChildNode(lPlatformNode)
@@ -259,8 +259,8 @@ public class Map : NSObject, SCNProgramDelegate {
         let cPlatformGeometry = SCNPlane(width: 2, height: 18)
         let cPlatformNode = SCNNode(geometry: cPlatformGeometry)
         cPlatformNode.name = "C Platform"
-        let rotFlatMat = SCNMatrix4MakeRotation(CGFloat(-M_PI/2.0), 1, 0, 0)
-        let rotSideMat = SCNMatrix4MakeRotation(CGFloat(-M_PI/2.0), 0, 1, 0)
+        let rotFlatMat = SCNMatrix4MakeRotation(MKDFloat(-M_PI/2.0), 1, 0, 0)
+        let rotSideMat = SCNMatrix4MakeRotation(MKDFloat(-M_PI/2.0), 0, 1, 0)
         var cTransform = cPlatformNode.transform
         cTransform = SCNMatrix4Mult(cTransform, rotFlatMat)
         cTransform = SCNMatrix4Mult(cTransform, rotSideMat)
@@ -278,7 +278,7 @@ public class Map : NSObject, SCNProgramDelegate {
         
         // wall
         let wallMaterial = SCNMaterial()
-        wallMaterial.diffuse.contents = NSColor.yellowColor()
+        wallMaterial.diffuse.contents = MKDColor.yellowColor()
         wallMaterial.doubleSided = true
         
         
@@ -324,7 +324,7 @@ public class Map : NSObject, SCNProgramDelegate {
 //        let line = SCNGeometry(sources: [vertexSource], elements: [element])
 //        
 //        let material = SCNMaterial()
-//        material.diffuse.contents = NSColor.redColor()
+//        material.diffuse.contents = MKDColor.redColor()
 //        material.lightingModelName = SCNLightingModelConstant
 //        line.materials = [material]
 //
@@ -360,7 +360,7 @@ public class Map : NSObject, SCNProgramDelegate {
 //        let line = SCNGeometry(sources: [source], elements: [element])
 //        
 ////        let material = SCNMaterial()
-////        material.diffuse.contents = NSColor.redColor()
+////        material.diffuse.contents = MKDColor.redColor()
 ////        material.lightingModelName = SCNLightingModelConstant
 ////        line.materials = [material]
 //        

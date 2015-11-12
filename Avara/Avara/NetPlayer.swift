@@ -21,36 +21,28 @@ public class NetPlayer {
     private(set)    var     id:                             UInt32
     private(set)    var     character:                      Character
     public          var     lastSentNetPlayerSnapshot:      NetPlayerSnapshot?
-    private         var     accumButtonEntries =            [(buttons: [(button: ButtonInput, magnitude: CGFloat)], dT: CGFloat)]()
+    private         var     accumButtonEntries =            [(buttons: [(button: ButtonInput, force: MKDFloat)], dT: MKDFloat)]()
     public          var     lastReceivedHullEulerAngles =   SCNVector3Zero
   
     /*****************************************************************************************************/
     // MARK:   Public
     /*****************************************************************************************************/
     
-    public func addButtonEntries(entries: [(buttons: [(button: ButtonInput, magnitude: CGFloat)], dT: CGFloat)]) {
-//        for (input, duration) in buttonInputs {
-//            if let total = accumButtonInputs[input] {
-//                accumButtonInputs[input] = total + duration
-//            }
-//            else {
-//                accumButtonInputs[input] = duration
-//            }
-//        }
+    public func addButtonEntries(entries: [(buttons: [(button: ButtonInput, force: MKDFloat)], dT: MKDFloat)]) {
         accumButtonEntries.appendContentsOf(entries)
     }
     
-    public func readAndClearButtonEntries() -> (buttonEntries: [(buttons: [(button: ButtonInput, magnitude: CGFloat)], dT: CGFloat)], totalDuration: CGFloat) {
+    public func readAndClearButtonEntries() -> (buttonEntries: [(buttons: [(button: ButtonInput, force: MKDFloat)], dT: MKDFloat)], totalDuration: MKDFloat) {
         // convenience method returns accumButtonEntries, but also calculates total duration (for sanity/cheat checking) and resets accum
         
-        var totalDuration = CGFloat(0)
+        var totalDuration = MKDFloat(0)
         for (_, duration) in accumButtonEntries {
             totalDuration += duration
         }
         
         let retval  = (accumButtonEntries, totalDuration)
         
-        accumButtonEntries = [(buttons: [(button: ButtonInput, magnitude: CGFloat)], dT: CGFloat)]()
+        accumButtonEntries = [(buttons: [(button: ButtonInput, force: MKDFloat)], dT: MKDFloat)]()
         
         return retval
     }

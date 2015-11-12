@@ -16,7 +16,11 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     // MARK:   Properties
     /*****************************************************************************************************/
     
-    private         var windowController:                   ClientWindowController?
+    #if os(OSX)
+    public          var windowController:                   ClientWindowController?
+    #else
+    public          var viewController:                     ViewController?
+    #endif
     private(set)    var inputManager:                       InputManager
     private(set)    var scene =                             SCNScene()
     private         var map:                                Map?
@@ -29,7 +33,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     
     private         var netServerOverrideSnapshot:          NetPlayerSnapshot?
     
-    private         var clientAccumButtonEntries =          [(buttons: [(button: ButtonInput, magnitude: CGFloat)], dT: CGFloat)]()
+    private         var clientAccumButtonEntries =          [(buttons: [(button: ButtonInput, force: MKDFloat)], dT: MKDFloat)]()
     private         var clientLastSentHullEulerAngles =     SCNVector3Zero
     private         var clientTickTimer:                    NSTimer?
     private         var sentNoInputPacket =                 false
@@ -44,7 +48,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     public func play() {
         NSLog("play()")
         
-        windowController?.showWindow(self)
+        //windowController?.showWindow(self)
         switchToCameraNode(character!.cameraNode)
         
         netClient?.connect()
@@ -63,7 +67,12 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 NSLog("Button down: %@", button.description)
                 
                 switch button {
-                case .ToggleFocus:      windowController?.toggleIsCursorCaptured()
+                case .ToggleFocus:
+                    #if os(OSX)
+                        windowController?.toggleIsCursorCaptured()
+                    #else
+                        break
+                    #endif
                 case .ToggleFlyover:    toggleFlyoverMode()
                 case .HeadCamera:       switchToCameraNode(character!.cameraNode)
                 case .FlyoverCamera:    switchToCameraNode(flyoverCamera.node)
@@ -92,7 +101,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                     || (hullEulerAngles.y != clientLastSentHullEulerAngles.y)
                     || (hullEulerAngles.z != clientLastSentHullEulerAngles.z)
                 if newInput {
-                    NSLog("-- CLIENT SENDING HIGH --")
+                    //NSLog("-- CLIENT SENDING HIGH --")
                     
                     ++sequenceNumber
                     let updateMessage = ClientUpdateNetMessage(
@@ -104,7 +113,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                     client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue , flags: .Unsequenced)
                     
                     // reset accumulator/last sent hull angles
-                    clientAccumButtonEntries = [(buttons: [(button: ButtonInput, magnitude: CGFloat)], dT: CGFloat)]()
+                    clientAccumButtonEntries = [(buttons: [(button: ButtonInput, force: MKDFloat)], dT: MKDFloat)]()
                     clientLastSentHullEulerAngles = hullEulerAngles
                     
                     sentNoInputPacket = false
@@ -171,18 +180,20 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         netClient = MKDNetClient(destinationAddress: "127.0.0.1", port: NET_SERVER_PORT, maxChannels: NET_MAX_CHANNELS, delegate: self)
     }
     
-    private func gameLoop(dT: Double) {
+    private func gameLoop(dT: MKDFloat) {
         //NSLog("gameLoop: %f", dT)
         
         // hack to keep loop running. see setup()
         magicSphereOfPower!.physicsBody?.applyForce(SCNVector3(x: 0, y: 0, z: 0), impulse: true)
         
         // pump direct input handler
-        if windowController!.isCursorCaptured {
-            if let directMouseHelper = inputManager.directMouseHelper {
-                directMouseHelper.pump()
+        #if os(OSX)
+            if windowController!.isCursorCaptured {
+                if let directMouseHelper = inputManager.directMouseHelper {
+                    directMouseHelper.pump()
+                }
             }
-        }
+        #endif
         
 //        // handle flyover or player movement
 //        if isFlyoverMode {
@@ -191,7 +202,23 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
 //        }
 //        else {
             let pressedButtons = inputManager.pressedButtons
-            let mouseDelta = inputManager.readMouseDeltaAndClear()
+        #if os(OSX)
+            var lookDelta = inputManager.readMouseDeltaAndClear()
+        #else
+            var lookDelta = CGPointZero
+            if let fY = pressedButtons[.LookUp] {
+                lookDelta.y = -CGFloat(fY)
+            }
+            if let fY = pressedButtons[.LookDown] {
+                lookDelta.y = CGFloat(fY)
+            }
+            if let fX = pressedButtons[.LookLeft] {
+                lookDelta.x = CGFloat(fX)
+            }
+            if let fX = pressedButtons[.LookRight] {
+                lookDelta.x = -CGFloat(fX)
+            }
+        #endif
 
         if NET_CLIENT_RECONCILIATION_ENABLED {
             // check for server override before applying local input
@@ -204,24 +231,23 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         }
 
         // put the buttons into a format Character likes
-        var buttonEntries = [(buttons: [(button: ButtonInput, magnitude: CGFloat)], dT: CGFloat)]()
-        var buttons = [(button: ButtonInput, magnitude: CGFloat)]()
-        var somethingDown = false // this is a hack for apparent .count namespace error.. ?
-        for (button, magnitude) in pressedButtons {
-            buttons.append((button, magnitude))
-            somethingDown = true
+        var buttonEntries = [(buttons: [(button: ButtonInput, force: MKDFloat)], dT: MKDFloat)]()
+        var buttons = [(button: ButtonInput, force: MKDFloat)]()
+        var buttonDown = false
+        for (button, force) in pressedButtons {
+            buttons.append((button, force))
+            buttonDown = true
         }
-        buttonEntries.append((buttons, CGFloat(dT)))
+        buttonEntries.append((buttons, MKDFloat(dT)))
         
         // add to net client output accumulator
-        if somethingDown {
-            clientAccumButtonEntries.append((buttons, CGFloat(dT)))
+        if buttonDown {
+            clientAccumButtonEntries.append((buttons, MKDFloat(dT)))
         }
         
         // IMPORTANT! initialPosition has to be set BEFORE any translation in each loop invocation
         let initialPosition = character?.bodyNode.position
-            character?.updateForInputs(buttonEntries, mouseDelta: mouseDelta)
-            //character?.updateForInputs(activeButtonInput, mouseDelta: mouseDelta, dT: dT)
+            character?.updateForInputs(buttonEntries, mouseDelta: lookDelta)
             character?.updateForLoopDelta(dT, initialPosition: initialPosition!)
 //        }
     }
@@ -229,7 +255,12 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     func switchToCameraNode(cameraNode: SCNNode) {
         NSLog("switchToCameraNode() %@", cameraNode.name!)
         
-        windowController?.renderView?.pointOfView = cameraNode
+        #if os(OSX)
+            windowController?.renderView?.pointOfView = cameraNode
+        #else
+            viewController?.clientRenderView?.pointOfView = cameraNode
+        #endif
+        
         if cameraNode != flyoverCamera.node {
             isFlyoverMode = false
         }
@@ -327,7 +358,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         if let lastTime = self.lastRenderTime {
             lastRenderTime = time
             
-            let dT = time - lastTime
+            let dT = MKDFloat(time - lastTime)
             
             dispatch_async(dispatch_get_main_queue(),{
                 self.gameLoop(dT)
@@ -427,6 +458,6 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         self.inputManager = inputManager
         super.init()
         setup()
-        self.windowController = ClientWindowController(clientSimulationController: self)
+        //self.windowController = ClientWindowController(clientSimulationController: self)
     }
 }

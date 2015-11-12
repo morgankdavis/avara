@@ -7,7 +7,6 @@
 //
 
 import Cocoa
-import SceneKit
 
 
 @NSApplicationMain
@@ -28,9 +27,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(aNotification: NSNotification) {
         
         serverSimulationController = ServerSimulationController()
-        serverSimulationController?.start()
-        
         clientSimulationController = ClientSimulationController(inputManager: inputManager)
+        
+        if SERVER_VIEW_ENABLED {
+            let serverWindowController = ServerWindowController(serverSimulationController: serverSimulationController!)
+            serverSimulationController!.windowController = serverWindowController
+            serverWindowController.showWindow(self)
+        }
+        
+        let clientWindowController = ClientWindowController(clientSimulationController: clientSimulationController!)
+        clientSimulationController!.windowController = clientWindowController
+        clientWindowController.showWindow(self)
+        
+        serverSimulationController?.start()
         clientSimulationController?.play()
     }
 }

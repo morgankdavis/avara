@@ -27,15 +27,15 @@ public class Character {
         MARK:   Constants
      ******************************************************************************************************/
     
-    private         let WALK_VELOCITY =             CGFloat(5.0)                 // meters/sec
-    private         let TURN_ANG_VELOCITY =         CGFloat(M_PI*(2.0/3.0))      // radians/sec
-    private         let HULL_VERT_ANG_CLAMP =       CGFloat(M_PI/4.0)
-    private         let HULL_HORIZ_ANG_CLAMP =      CGFloat(M_PI*(2.0/3.0))
-    private         let MAX_JUMP_HEIGHT =           CGFloat(2.01)                // units -- arbitrary for now
-    private         let MAX_ALTITUDE_RISE =         CGFloat(0.2)                 // units -- the distance above character.y to ray test for altitude
-    private         let HULL_LOOK_ROLL_FACTOR =     CGFloat(M_PI/24.0)
-    private         let CROSSHAIR_HEIGHT =          CGFloat(0.25)
-    private         let CROSSHAIR_FAR =             CGFloat(15.0)                // units
+    private         let WALK_VELOCITY =             MKDFloat(5.0)                 // meters/sec
+    private         let TURN_ANG_VELOCITY =         MKDFloat(M_PI*(2.0/3.0))      // radians/sec
+    private         let HULL_VERT_ANG_CLAMP =       MKDFloat(M_PI/4.0)
+    private         let HULL_HORIZ_ANG_CLAMP =      MKDFloat(M_PI*(2.0/3.0))
+    private         let MAX_JUMP_HEIGHT =           MKDFloat(2.01)                // units -- arbitrary for now
+    private         let MAX_ALTITUDE_RISE =         MKDFloat(0.2)                 // units -- the distance above character.y to ray test for altitude
+    private         let HULL_LOOK_ROLL_FACTOR =     MKDFloat(M_PI/24.0)
+    private         let CROSSHAIR_HEIGHT =          MKDFloat(0.25)
+    private         let CROSSHAIR_FAR =             MKDFloat(15.0)                // units
     
     /*****************************************************************************************************/
     // MARK:   Properties
@@ -48,8 +48,8 @@ public class Character {
     private(set)    var hullInnerNode:              SCNNode? // contains geometry. roll
     private(set)    var legsNode:                   SCNNode?
     private         var scene:                      SCNScene
-    private         var accelerationY =             Double(0)
-    private         var largestWallPenetration =    Double(0)
+    private         var accelerationY =             MKDFloat(0)
+    private         var largestWallPenetration =    MKDFloat(0)
     private         var replacementPosition:        SCNVector3?
     
     private         var orientFinderTopNode:        SCNNode?
@@ -76,21 +76,21 @@ public class Character {
 //    }
     
     //public func updateForInputs(pushInputs: [ButtonInput: Double], mouseDelta: CGPoint?) {
-    public func updateForInputs(buttonEntries: [(buttons: [(button: ButtonInput, magnitude: CGFloat)], dT: CGFloat)], mouseDelta: CGPoint?) {
+    public func updateForInputs(buttonEntries: [(buttons: [(button: ButtonInput, force: MKDFloat)], dT: MKDFloat)], mouseDelta: CGPoint?) {
        
-        for (buttonMag, dT) in buttonEntries {
-            for (button, magnitude) in buttonMag {
+        for (buttonForce, dT) in buttonEntries {
+            for (button, force) in buttonForce {
                 // body
                 if button == .MoveForward {
                     //let dT = pushInputs[.MoveForward]!
-                    let positionDelta = WALK_VELOCITY * dT * magnitude
+                    let positionDelta = WALK_VELOCITY * dT * force
                     
                     let transform = bodyNode.transform
                     let sinYRot = transform.m13
                     let cosYRot = transform.m33
                     
-                    let dx = CGFloat(positionDelta) * sinYRot
-                    let dz = CGFloat(positionDelta) * cosYRot
+                    let dx = MKDFloat(positionDelta) * sinYRot
+                    let dz = MKDFloat(positionDelta) * cosYRot
                     
                     bodyNode.position = SCNVector3(
                         x: bodyNode.position.x + dx,
@@ -99,14 +99,14 @@ public class Character {
                 }
                 else if button == .MoveBackward {
                     //let dT = pushInputs[.MoveBackward]!
-                    let positionDelta = WALK_VELOCITY * dT * magnitude
+                    let positionDelta = WALK_VELOCITY * dT * force
                     
                     let transform = bodyNode.transform
                     let sinYRot = transform.m13
                     let cosYRot = transform.m33
                     
-                    let dx = CGFloat(positionDelta) * sinYRot
-                    let dz = CGFloat(positionDelta) * cosYRot
+                    let dx = MKDFloat(positionDelta) * sinYRot
+                    let dz = MKDFloat(positionDelta) * cosYRot
                     
                     bodyNode.position = SCNVector3(
                         x: bodyNode.position.x - dx,
@@ -115,21 +115,21 @@ public class Character {
                 }
                 else if button == .TurnLeft {
                     //let dT = pushInputs[.TurnLeft]!
-                    let rotationDelta = TURN_ANG_VELOCITY * dT * magnitude
+                    let rotationDelta = TURN_ANG_VELOCITY * dT * force
                     bodyNode.rotation = SCNVector4(
                         x: 0,
                         y: 1,
                         z: 0,
-                        w: bodyNode.rotation.w + CGFloat(rotationDelta))
+                        w: bodyNode.rotation.w + MKDFloat(rotationDelta))
                 }
                 else if button == .TurnRight {
                     //let dT = pushInputs[.TurnRight]!
-                    let rotationDelta = TURN_ANG_VELOCITY * dT * magnitude
+                    let rotationDelta = TURN_ANG_VELOCITY * dT * force
                     bodyNode.rotation = SCNVector4(
                         x: 0,
                         y: 1,
                         z: 0,
-                        w: bodyNode.rotation.w - CGFloat(rotationDelta))
+                        w: bodyNode.rotation.w - MKDFloat(rotationDelta))
                 }
             }
         }
@@ -137,18 +137,22 @@ public class Character {
         // hull
         
         if let dM = mouseDelta {
-            let viewDistanceFactor = 1.0/(MOUSE_SENSITIVITY*MOUSE_SENSITIVITY_MULTIPLIER)
+            #if os(OSX)
+                let viewDistanceFactor = 1.0/(MOUSELOOK_SENSITIVITY*MOUSELOOK_SENSITIVITY_MULTIPLIER)
+            #else
+                let viewDistanceFactor = 1.0/(THUMBLOOK_SENSITIVITY*THUMBLOOK_SENSITIVITY_MULTIPLIER)
+            #endif
             
             let dP = acos(CGFloat(dM.x) / viewDistanceFactor) - CGFloat(M_PI_2)
             let dY = acos(CGFloat(dM.y) / viewDistanceFactor) - CGFloat(M_PI_2)
             
             var nAngles = SCNVector3(
-                x: hullOuterNode!.eulerAngles.x + dY,
-                y: hullOuterNode!.eulerAngles.y - dP,
+                x: hullOuterNode!.eulerAngles.x + MKDFloat(dY),
+                y: hullOuterNode!.eulerAngles.y - MKDFloat(dP),
                 z: hullOuterNode!.eulerAngles.z)
             
-            nAngles.x = max(-CGFloat(HULL_VERT_ANG_CLAMP), min(CGFloat(HULL_VERT_ANG_CLAMP), nAngles.x)) // clamp vertical angle
-            nAngles.y = max(-CGFloat(HULL_HORIZ_ANG_CLAMP), min(CGFloat(HULL_HORIZ_ANG_CLAMP), nAngles.y)) // clamp horizontal angle
+            nAngles.x = max(-MKDFloat(HULL_VERT_ANG_CLAMP), min(MKDFloat(HULL_VERT_ANG_CLAMP), nAngles.x)) // clamp vertical angle
+            nAngles.y = max(-MKDFloat(HULL_HORIZ_ANG_CLAMP), min(MKDFloat(HULL_HORIZ_ANG_CLAMP), nAngles.y)) // clamp horizontal angle
             
             hullOuterNode?.eulerAngles = nAngles
             
@@ -159,19 +163,19 @@ public class Character {
         
     }
     
-    public func updateForLoopDelta(dT: Double, initialPosition: SCNVector3) {
+    public func updateForLoopDelta(dT: MKDFloat, initialPosition: SCNVector3) {
         // called every iteration of the simulation loop for things like physics
         // IMPORTANT! initialPosition is the position BEFORE ANY TRANSLATIONS THIS LOOP ITERATION
         
         // altitude
         
-        var groundY: CGFloat = 0
+        var groundY: MKDFloat = 0
         
         var position = bodyNode.position
         var rayOrigin = position
-        rayOrigin.y += CGFloat(MAX_ALTITUDE_RISE)
+        rayOrigin.y += MKDFloat(MAX_ALTITUDE_RISE)
         var rayEnd = position
-        rayEnd.y -= CGFloat(MAX_JUMP_HEIGHT)
+        rayEnd.y -= MKDFloat(MAX_JUMP_HEIGHT)
         
         let rayResults = scene.physicsWorld.rayTestWithSegmentFromPoint(
             rayOrigin,
@@ -184,8 +188,8 @@ public class Character {
             groundY = resultHit.worldCoordinates.y;
             bodyNode.position.y = groundY
             
-            let THRESHOLD: CGFloat = 1e-3 //1e-5 // 1e-5 == 0.00001
-            let GRAVITY_ACCEL = Double(scene.physicsWorld.gravity.y/10.0)
+            let THRESHOLD: MKDFloat = 1e-3 //1e-5 // 1e-5 == 0.00001
+            let GRAVITY_ACCEL = MKDFloat(scene.physicsWorld.gravity.y/10.0)
             if (groundY < position.y - THRESHOLD) {
                 accelerationY -= dT * GRAVITY_ACCEL // approximation of acceleration for a delta time.
             }
@@ -193,7 +197,7 @@ public class Character {
                 accelerationY = 0
             }
             
-            position.y -= CGFloat(accelerationY)
+            position.y -= MKDFloat(accelerationY)
             
             // reset acceleration if we touch the ground
             if groundY > position.y {
@@ -248,7 +252,7 @@ public class Character {
         
         //NSLog("contact.penetrationDistance: %.2f", contact.penetrationDistance)
     
-        let LEG_BOTTOM_THRESHOLD: CGFloat = 0.05
+        let LEG_BOTTOM_THRESHOLD: MKDFloat = 0.05
         if let legContactPoint = legsNode?.convertPosition(contact.contactPoint, fromNode: scene.rootNode) {
             guard bodyPartNode == hullInnerNode || (bodyPartNode == legsNode && legContactPoint.y > LEG_BOTTOM_THRESHOLD) else {
                 //NSLog("Contact at bottom of legs.")
@@ -266,7 +270,7 @@ public class Character {
             return
         }
         
-        guard contact.penetrationDistance > CGFloat(largestWallPenetration) else {
+        guard MKDFloat(contact.penetrationDistance) > MKDFloat(largestWallPenetration) else {
             //NSLog("Low penetration")
             return
         }
@@ -275,12 +279,12 @@ public class Character {
             //NSLog("*** WALL CONTACT ***")
         }
         
-        largestWallPenetration = Double(contact.penetrationDistance)
+        largestWallPenetration = MKDFloat(contact.penetrationDistance)
         
         let scaledNormal = SCNVector3(
-            x: contact.contactNormal.x * contact.penetrationDistance,
+            x: contact.contactNormal.x * MKDFloat(contact.penetrationDistance),
             y: 0,
-            z: contact.contactNormal.z * contact.penetrationDistance)
+            z: contact.contactNormal.z * MKDFloat(contact.penetrationDistance))
         
         replacementPosition = SCNVector3(
             x: bodyNode.position.x - scaledNormal.x,
@@ -351,7 +355,11 @@ public class Character {
         
         // camera
         let camera = SCNCamera()
-        ConfigureCamera(camera, screenSize: CLIENT_WINDOW_SIZE, fov: 80.0)
+        #if os(OSX)
+            ConfigureCamera(camera, screenSize: CLIENT_WINDOW_SIZE, fov: 80.0)
+        #else
+            ConfigureCamera(camera, screenSize: UIScreen.mainScreen().bounds.size, fov: 80.0)
+        #endif
         camera.zNear = 0.01
         camera.zFar = 1000.0
         cameraNode.camera = camera
@@ -362,7 +370,7 @@ public class Character {
         // "orientation finders"
         
         let finderMaterial = SCNMaterial()
-        let finderImage = NSImage(named: "finder_blue.png")
+        let finderImage = MKDImage(named: "finder_blue.png")
         finderMaterial.diffuse.contents = finderImage
         finderMaterial.emission.contents = finderImage
         finderMaterial.doubleSided = true
@@ -371,14 +379,14 @@ public class Character {
         orientFinderTopNode?.name = "Top orientation finder"
         orientFinderTopNode?.geometry?.materials = [finderMaterial]
         orientFinderTopNode?.position = SCNVector3(x: 0, y: 2.30, z: -1.15)
-        orientFinderTopNode?.rotation = SCNVector4(x: 1.0, y: 0, z: 0, w: -CGFloat(M_PI)/2.0*5.0)
+        orientFinderTopNode?.rotation = SCNVector4(x: 1.0, y: 0, z: 0, w: -MKDFloat(M_PI)/2.0*5.0)
         legsNode?.addChildNode(orientFinderTopNode!)
         
         orientFinderBottomNode = SCNNode(geometry: SCNPlane(width: 0.5, height: 0.5))
         orientFinderBottomNode?.name = "Bottom orientation finder"
         orientFinderBottomNode?.geometry?.materials = [finderMaterial]
         orientFinderBottomNode?.position = SCNVector3(x: 0, y: 1.25, z: -1.15)
-        orientFinderBottomNode?.rotation = SCNVector4(x: 1.0, y: 0, z: 0, w: -CGFloat(M_PI)/2.0)
+        orientFinderBottomNode?.rotation = SCNVector4(x: 1.0, y: 0, z: 0, w: -MKDFloat(M_PI)/2.0)
         legsNode?.addChildNode(orientFinderBottomNode!)
         
         orientFinderTopNode?.castsShadow = false
@@ -387,13 +395,13 @@ public class Character {
 //        // crosshairs
 //        
 //        let crosshairLMaterial = SCNMaterial()
-//        let crosshairLImage = NSImage(named: "crosshairL.png") // WARN: check this
+//        let crosshairLImage = MKDImage(named: "crosshairL.png") // WARN: check this
 //        crosshairLMaterial.diffuse.contents = crosshairLImage
 //        crosshairLMaterial.emission.contents = crosshairLImage
 //        crosshairLMaterial.doubleSided = true
 //        
 //        let crosshairRMaterial = SCNMaterial()
-//        let crosshairRImage = NSImage(named: "crosshairR.png") // WARN: check this
+//        let crosshairRImage = MKDImage(named: "crosshairR.png") // WARN: check this
 //        crosshairRMaterial.diffuse.contents = crosshairRImage
 //        crosshairRMaterial.emission.contents = crosshairRImage
 //        crosshairRMaterial.doubleSided = true
@@ -447,14 +455,14 @@ public class Character {
     
     private func updateHullRoll() {
         // add roll effect
-        let roll = CGFloat(HULL_LOOK_ROLL_FACTOR) * hullOuterNode!.eulerAngles.y
+        let roll = MKDFloat(HULL_LOOK_ROLL_FACTOR) * hullOuterNode!.eulerAngles.y
         hullInnerNode?.eulerAngles.z = roll
     }
     
     private func updateCrosshairs() {
         let crosshairPlane = crosshairRNode!.geometry as! SCNPlane
-        let crosshairWidth = crosshairPlane.width
-        let crosshairHight = crosshairPlane.height
+        let crosshairWidth = MKDFloat(crosshairPlane.width)
+        let crosshairHight = MKDFloat(crosshairPlane.height)
 
         let offsetPoints = [
             SCNVector3Make( -crosshairWidth/2.0,    -crosshairHight/2.0,    0),     // top left
@@ -472,7 +480,7 @@ public class Character {
             let worldSourcePoint = hullOuterNode!.convertPosition(offsetPoint, toNode:scene.rootNode)
             
             let worldDestinationPoint = hullOuterNode!.convertPosition(
-                SCNVector3Make(offsetPoint.x, offsetPoint.y, offsetPoint.z - CGFloat(CROSSHAIR_FAR)),
+                SCNVector3Make(offsetPoint.x, offsetPoint.y, offsetPoint.z - CROSSHAIR_FAR),
                 toNode:scene.rootNode)
             
             let rayResults = scene.physicsWorld.rayTestWithSegmentFromPoint(
@@ -487,18 +495,18 @@ public class Character {
                         result.worldCoordinates.x - worldSourcePoint.x,
                         result.worldCoordinates.y - worldSourcePoint.y,
                         result.worldCoordinates.z - worldSourcePoint.z)
-                    let magnitude = CGFloat(GLKVector3Length(SCNVector3ToGLKVector3(difference)))
+                    let force = CGFloat(GLKVector3Length(SCNVector3ToGLKVector3(difference)))
                     
-                    //NSLog("HIT WITH MAG: %f", magnitude)
+                    //NSLog("HIT WITH FORCE: %f", force)
                     
                     if !allBodyNodes.contains(result.node) { // don't project onto parts of the hector's own body...
                         if let (_, cD) = closestResult {
-                            if magnitude < cD {
-                                closestResult = (result, magnitude)
+                            if force < cD {
+                                closestResult = (result, force)
                             }
                         }
                         else {
-                            closestResult = (result, magnitude)
+                            closestResult = (result, force)
                         }
                     }
                 }
@@ -509,14 +517,14 @@ public class Character {
             crosshairRNode!.position = SCNVector3Make(
                 CROSSHAIR_HEIGHT/2.0 - crosshairWidth/2.0,
                 crosshairWidth/2.0 + crosshairWidth/2.0,
-                -(distance - 0.05))
+                -(MKDFloat(distance) - 0.05))
             //crosshairRNode!.position = SCNVector3Make(0, 0, -(distance - 0.05))
         }
         else { // so results. project out to CROSSHAIR_FAR
             crosshairRNode!.position = SCNVector3Make(
                 CROSSHAIR_HEIGHT/2.0 - crosshairWidth/2.0,
                 crosshairWidth/2.0 + crosshairWidth/2.0,
-                -CGFloat(CROSSHAIR_FAR))
+                -CROSSHAIR_FAR)
         }
         
     

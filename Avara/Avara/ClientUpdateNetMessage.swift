@@ -22,7 +22,7 @@ public class ClientUpdateNetMessage: NetMessage {
     
     override public var     opcode:             NetMessageOpcode { get { return .ClientUpdate } }
     public          var     sequenceNumber:     UInt32?
-    private(set)    var     buttonEntries:      [(buttons: [(button: ButtonInput, magnitude: CGFloat)], dT: CGFloat)]?
+    private(set)    var     buttonEntries:      [(buttons: [(button: ButtonInput, force: MKDFloat)], dT: MKDFloat)]?
     private(set)    var     hullEulerAngles =   SCNVector3Zero
     
     /*****************************************************************************************************/
@@ -39,9 +39,9 @@ public class ClientUpdateNetMessage: NetMessage {
             pushUInt8(buttonEntriesCount, toData: &encodedData)
             for (buttons, duration) in entries {
                 pushUInt8(UInt8(buttons.count), toData: &encodedData)
-                for (button, magnitude) in buttons {
+                for (button, force) in buttons {
                     pushUInt8(button.rawValue, toData: &encodedData)
-                    pushFloat32(Float32(magnitude), toData: &encodedData)
+                    pushFloat32(Float32(force), toData: &encodedData)
                 }
                 pushFloat32(Float32(duration), toData: &encodedData)
             }
@@ -62,35 +62,24 @@ public class ClientUpdateNetMessage: NetMessage {
         if var data = super.parsePayload() {
             sequenceNumber = pullUInt32FromData(&data)
             
-//            let buttonInputCount = pullUInt8FromData(&data)
-//            for _ in 0..<buttonInputCount {
-//                let inputRaw = pullUInt8FromData(&data)
-//                if let input = ButtonInput(rawValue: inputRaw) {
-//                    buttonInputs[input] = Double(pullFloat32FromData(&data))
-//                }
-//                else {
-//                    NSLog("Unknown UserInput raw value: %d", inputRaw) // this would likely only happen due to encoding/transport error...
-//                }
-//            }
-            
-            buttonEntries = [(buttons: [(button: ButtonInput, magnitude: CGFloat)], dT: CGFloat)]()
+            buttonEntries = [(buttons: [(button: ButtonInput, force: MKDFloat)], dT: MKDFloat)]()
             
             let buttonEntriesCount = pullUInt8FromData(&data)
             for _ in 0..<buttonEntriesCount {
-                var buttons = [(button: ButtonInput, magnitude: CGFloat)]()
+                var buttons = [(button: ButtonInput, force: MKDFloat)]()
                 let numPairs = pullUInt8FromData(&data)
                 for _ in 0..<numPairs {
                     let buttonRaw = pullUInt8FromData(&data)
                     if let button = ButtonInput(rawValue: buttonRaw) {
-                        let magnitude = CGFloat(pullFloat32FromData(&data))
-                        buttons.append((button, magnitude))
+                        let force = MKDFloat(pullFloat32FromData(&data))
+                        buttons.append((button, force))
                     }
                     else {
-                        pullFloat32FromData(&data) // pull the magnitude off.
+                        pullFloat32FromData(&data) // pull the force off.
                         NSLog("Unknown UserInput raw value: %d", buttonRaw) // this would likely only happen due to encoding/transport error...
                     }
                 }
-                let duration = CGFloat(pullFloat32FromData(&data))
+                let duration = MKDFloat(pullFloat32FromData(&data))
                 buttonEntries!.append((buttons, duration))
             }
 
@@ -103,12 +92,9 @@ public class ClientUpdateNetMessage: NetMessage {
     // MARK:   Object
     /*****************************************************************************************************/
     
-//    public required init(buttonInputs: [ButtonInput: Double], hullEulerAngles: SCNVector3, sequenceNumber: UInt32) {
-    public required init(buttonEntries: [(buttons: [(button: ButtonInput, magnitude: CGFloat)], dT: CGFloat)],
+    public required init(buttonEntries: [(buttons: [(button: ButtonInput, force: MKDFloat)], dT: MKDFloat)],
         hullEulerAngles: SCNVector3, sequenceNumber: UInt32) {
-//        self.buttonInputs = buttonInputs
         self.buttonEntries = buttonEntries
-        //self.mouseDelta = mouseDelta
         self.hullEulerAngles = hullEulerAngles
         self.sequenceNumber = sequenceNumber
         super.init()
