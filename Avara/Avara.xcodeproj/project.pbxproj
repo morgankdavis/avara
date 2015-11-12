@@ -84,6 +84,58 @@
 		416CF3AB1BF463B600411BE9 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 416CF3AA1BF463B600411BE9 /* ViewController.swift */; };
 		416CF3AE1BF463B600411BE9 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 416CF3AC1BF463B600411BE9 /* Main.storyboard */; };
 		416CF3B01BF463B600411BE9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 416CF3AF1BF463B600411BE9 /* Assets.xcassets */; };
+		416CF3B51BF47C4F00411BE9 /* Models.scnassets in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3A21B645310006B21F3 /* Models.scnassets */; };
+		416CF3B61BF47C5400411BE9 /* crosshairL.png in Resources */ = {isa = PBXBuildFile; fileRef = 4169CC451BE9F7ED0035FF29 /* crosshairL.png */; };
+		416CF3B71BF47C5600411BE9 /* crosshairR.png in Resources */ = {isa = PBXBuildFile; fileRef = 4169CC461BE9F7ED0035FF29 /* crosshairR.png */; };
+		416CF3B81BF47C5800411BE9 /* finder_blue.png in Resources */ = {isa = PBXBuildFile; fileRef = 4169CC411BE8A04D0035FF29 /* finder_blue.png */; };
+		416CF3B91BF47C5A00411BE9 /* floor.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3BF1B645507006B21F3 /* floor.png */; };
+		416CF3BA1BF47C5C00411BE9 /* floorBump.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C01B645507006B21F3 /* floorBump.jpg */; };
+		416CF3BB1BF47C5E00411BE9 /* grid.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C11B645507006B21F3 /* grid.png */; };
+		416CF3BC1BF47C6000411BE9 /* needlepointSteel_diffuse.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C21B645507006B21F3 /* needlepointSteel_diffuse.png */; };
+		416CF3BD1BF47C6100411BE9 /* needlepointSteel_normal.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C31B645507006B21F3 /* needlepointSteel_normal.png */; };
+		416CF3BE1BF47C6400411BE9 /* sky_interstellar_0.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C41B645507006B21F3 /* sky_interstellar_0.png */; };
+		416CF3BF1BF47C6600411BE9 /* sky_interstellar_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C51B645507006B21F3 /* sky_interstellar_1.png */; };
+		416CF3C01BF47C6800411BE9 /* sky_interstellar_2.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C61B645507006B21F3 /* sky_interstellar_2.png */; };
+		416CF3C11BF47C6900411BE9 /* sky_interstellar_3.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C71B645507006B21F3 /* sky_interstellar_3.png */; };
+		416CF3C21BF47C6B00411BE9 /* sky_interstellar_4.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C81B645507006B21F3 /* sky_interstellar_4.png */; };
+		416CF3C31BF47C6D00411BE9 /* sky_interstellar_5.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3C91B645507006B21F3 /* sky_interstellar_5.png */; };
+		416CF3C41BF47C6E00411BE9 /* sky_miramar_0.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3CA1B645507006B21F3 /* sky_miramar_0.png */; };
+		416CF3C51BF47C7000411BE9 /* sky_miramar_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3CB1B645507006B21F3 /* sky_miramar_1.png */; };
+		416CF3C61BF47C7200411BE9 /* sky_miramar_2.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3CC1B645507006B21F3 /* sky_miramar_2.png */; };
+		416CF3C71BF47C7400411BE9 /* sky_miramar_3.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3CD1B645507006B21F3 /* sky_miramar_3.png */; };
+		416CF3C81BF47C7500411BE9 /* sky_miramar_4.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3CE1B645507006B21F3 /* sky_miramar_4.png */; };
+		416CF3C91BF47C7700411BE9 /* sky_miramar_5.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3CF1B645507006B21F3 /* sky_miramar_5.png */; };
+		416CF3CA1BF47C7D00411BE9 /* slateBump.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3D01B645507006B21F3 /* slateBump.png */; };
+		416CF3CB1BF47C8F00411BE9 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39A1B645310006B21F3 /* Configuration.swift */; };
+		416CF3CC1BF47C9100411BE9 /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39E1B645310006B21F3 /* Globals.swift */; };
+		416CF3CD1BF47C9400411BE9 /* OperatorOverloads.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41195A1F1B731134006E53DC /* OperatorOverloads.swift */; };
+		416CF3CE1BF47C9600411BE9 /* ServerSimulationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3A41B645310006B21F3 /* ServerSimulationController.swift */; };
+		416CF3CF1BF47C9A00411BE9 /* NetPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC40C1B68A305006B21F3 /* NetPlayer.swift */; };
+		416CF3D01BF47C9D00411BE9 /* ClientSimulationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3991B645310006B21F3 /* ClientSimulationController.swift */; };
+		416CF3D11BF47C9F00411BE9 /* NetPlayerSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4151BEE91B71D62B0082F75E /* NetPlayerSnapshot.swift */; };
+		416CF3D21BF47CA100411BE9 /* Character.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3981B645310006B21F3 /* Character.swift */; };
+		416CF3D31BF47CA200411BE9 /* Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3A11B645310006B21F3 /* Map.swift */; };
+		416CF3D41BF47CA400411BE9 /* InputManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3A01B645310006B21F3 /* InputManager.swift */; };
+		416CF3D51BF47CA600411BE9 /* FlyoverCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39B1B645310006B21F3 /* FlyoverCamera.swift */; };
+		416CF3D61BF47CA800411BE9 /* RenderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39C1B645310006B21F3 /* RenderView.swift */; };
+		416CF3D71BF47CAA00411BE9 /* NetMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC40E1B68A9E6006B21F3 /* NetMessage.swift */; };
+		416CF3D81BF47CAB00411BE9 /* ClientHelloNetMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC4111B68AA2F006B21F3 /* ClientHelloNetMessage.swift */; };
+		416CF3D91BF47CAD00411BE9 /* ClientUpdateNetMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41D9224F1B6B459600CCE9CA /* ClientUpdateNetMessage.swift */; };
+		416CF3DA1BF47CAE00411BE9 /* ServerUpdateNetMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 416509991B6C754C0048804B /* ServerUpdateNetMessage.swift */; };
+		416CF3DB1BF47CB500411BE9 /* MKDDirectMouseHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 417E12EA1B74802A006256C7 /* MKDDirectMouseHelper.m */; };
+		417656B11BF47E52004E39A5 /* Utilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3A61B645310006B21F3 /* Utilities.swift */; };
+		417656B21BF47E56004E39A5 /* Array+RemoveObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4169CC4C1BEC6C060035FF29 /* Array+RemoveObject.swift */; };
+		417656B31BF47E57004E39A5 /* SCNNode+RecursiveChildNodes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4169CC491BEC69CF0035FF29 /* SCNNode+RecursiveChildNodes.swift */; };
+		417656B51BF47E63004E39A5 /* MKDNetServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3ED1B68804B006B21F3 /* MKDNetServer.m */; };
+		417656B61BF47E65004E39A5 /* MKDNetClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3EB1B68804B006B21F3 /* MKDNetClient.m */; };
+		417656B71BF47E69004E39A5 /* callbacks.c in Sources */ = {isa = PBXBuildFile; fileRef = 4169330E1B75C5B800DB59BA /* callbacks.c */; };
+		417656B81BF47E6B004E39A5 /* compress.c in Sources */ = {isa = PBXBuildFile; fileRef = 416933101B75C5B800DB59BA /* compress.c */; };
+		417656B91BF47E6C004E39A5 /* host.c in Sources */ = {isa = PBXBuildFile; fileRef = 416933121B75C5B800DB59BA /* host.c */; };
+		417656BA1BF47E6E004E39A5 /* list.c in Sources */ = {isa = PBXBuildFile; fileRef = 416933131B75C5B800DB59BA /* list.c */; };
+		417656BB1BF47E6F004E39A5 /* packet.c in Sources */ = {isa = PBXBuildFile; fileRef = 416933151B75C5B800DB59BA /* packet.c */; };
+		417656BC1BF47E71004E39A5 /* peer.c in Sources */ = {isa = PBXBuildFile; fileRef = 416933161B75C5B800DB59BA /* peer.c */; };
+		417656BD1BF47E72004E39A5 /* protocol.c in Sources */ = {isa = PBXBuildFile; fileRef = 416933171B75C5B800DB59BA /* protocol.c */; };
+		417656BE1BF47E74004E39A5 /* unix.c in Sources */ = {isa = PBXBuildFile; fileRef = 4169331B1B75C5B800DB59BA /* unix.c */; };
 		417CC38C1B645260006B21F3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC38B1B645260006B21F3 /* AppDelegate.swift */; };
 		417CC3911B645260006B21F3 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 417CC38F1B645260006B21F3 /* MainMenu.xib */; };
 		417CC3A71B645310006B21F3 /* Character.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3981B645310006B21F3 /* Character.swift */; };
@@ -174,7 +226,7 @@
 		416CF3AD1BF463B600411BE9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		416CF3AF1BF463B600411BE9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		416CF3B11BF463B600411BE9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		417CC3881B645260006B21F3 /* Avara.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Avara.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		417CC3881B645260006B21F3 /* Avara-OSX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Avara-OSX.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		417CC38B1B645260006B21F3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		417CC3901B645260006B21F3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		417CC3921B645260006B21F3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -319,7 +371,7 @@
 		417CC3891B645260006B21F3 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				417CC3881B645260006B21F3 /* Avara.app */,
+				417CC3881B645260006B21F3 /* Avara-OSX.app */,
 				416CF3021BEEE54900411BE9 /* Avara-iOS.app */,
 				416CF3A61BF463B600411BE9 /* Avara-tvOS.app */,
 			);
@@ -518,9 +570,9 @@
 			productReference = 416CF3A61BF463B600411BE9 /* Avara-tvOS.app */;
 			productType = "com.apple.product-type.application";
 		};
-		417CC3871B645260006B21F3 /* Avara */ = {
+		417CC3871B645260006B21F3 /* Avara-OSX */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 417CC3951B645260006B21F3 /* Build configuration list for PBXNativeTarget "Avara" */;
+			buildConfigurationList = 417CC3951B645260006B21F3 /* Build configuration list for PBXNativeTarget "Avara-OSX" */;
 			buildPhases = (
 				417CC3841B645260006B21F3 /* Sources */,
 				417CC3851B645260006B21F3 /* Frameworks */,
@@ -530,9 +582,9 @@
 			);
 			dependencies = (
 			);
-			name = Avara;
+			name = "Avara-OSX";
 			productName = Avara;
-			productReference = 417CC3881B645260006B21F3 /* Avara.app */;
+			productReference = 417CC3881B645260006B21F3 /* Avara-OSX.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -569,7 +621,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				417CC3871B645260006B21F3 /* Avara */,
+				417CC3871B645260006B21F3 /* Avara-OSX */,
 				416CF3011BEEE54900411BE9 /* Avara-iOS */,
 				416CF3A51BF463B600411BE9 /* Avara-tvOS */,
 			);
@@ -613,8 +665,30 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				416CF3B61BF47C5400411BE9 /* crosshairL.png in Resources */,
 				416CF3B01BF463B600411BE9 /* Assets.xcassets in Resources */,
+				416CF3B81BF47C5800411BE9 /* finder_blue.png in Resources */,
+				416CF3B71BF47C5600411BE9 /* crosshairR.png in Resources */,
 				416CF3AE1BF463B600411BE9 /* Main.storyboard in Resources */,
+				416CF3BB1BF47C5E00411BE9 /* grid.png in Resources */,
+				416CF3BD1BF47C6100411BE9 /* needlepointSteel_normal.png in Resources */,
+				416CF3BE1BF47C6400411BE9 /* sky_interstellar_0.png in Resources */,
+				416CF3C11BF47C6900411BE9 /* sky_interstellar_3.png in Resources */,
+				416CF3C01BF47C6800411BE9 /* sky_interstellar_2.png in Resources */,
+				416CF3BF1BF47C6600411BE9 /* sky_interstellar_1.png in Resources */,
+				416CF3C31BF47C6D00411BE9 /* sky_interstellar_5.png in Resources */,
+				416CF3BC1BF47C6000411BE9 /* needlepointSteel_diffuse.png in Resources */,
+				416CF3C61BF47C7200411BE9 /* sky_miramar_2.png in Resources */,
+				416CF3C41BF47C6E00411BE9 /* sky_miramar_0.png in Resources */,
+				416CF3C91BF47C7700411BE9 /* sky_miramar_5.png in Resources */,
+				416CF3CA1BF47C7D00411BE9 /* slateBump.png in Resources */,
+				416CF3C71BF47C7400411BE9 /* sky_miramar_3.png in Resources */,
+				416CF3C81BF47C7500411BE9 /* sky_miramar_4.png in Resources */,
+				416CF3C51BF47C7000411BE9 /* sky_miramar_1.png in Resources */,
+				416CF3C21BF47C6B00411BE9 /* sky_interstellar_4.png in Resources */,
+				416CF3BA1BF47C5C00411BE9 /* floorBump.jpg in Resources */,
+				416CF3B91BF47C5A00411BE9 /* floor.png in Resources */,
+				416CF3B51BF47C4F00411BE9 /* Models.scnassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -698,8 +772,38 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				416CF3CC1BF47C9100411BE9 /* Globals.swift in Sources */,
 				416CF3AB1BF463B600411BE9 /* ViewController.swift in Sources */,
 				416CF3A91BF463B600411BE9 /* AppDelegate.swift in Sources */,
+				416CF3CF1BF47C9A00411BE9 /* NetPlayer.swift in Sources */,
+				416CF3D31BF47CA200411BE9 /* Map.swift in Sources */,
+				416CF3D51BF47CA600411BE9 /* FlyoverCamera.swift in Sources */,
+				416CF3D01BF47C9D00411BE9 /* ClientSimulationController.swift in Sources */,
+				416CF3D41BF47CA400411BE9 /* InputManager.swift in Sources */,
+				416CF3D71BF47CAA00411BE9 /* NetMessage.swift in Sources */,
+				416CF3D61BF47CA800411BE9 /* RenderView.swift in Sources */,
+				416CF3DB1BF47CB500411BE9 /* MKDDirectMouseHelper.m in Sources */,
+				417656B71BF47E69004E39A5 /* callbacks.c in Sources */,
+				417656B51BF47E63004E39A5 /* MKDNetServer.m in Sources */,
+				417656B81BF47E6B004E39A5 /* compress.c in Sources */,
+				417656BA1BF47E6E004E39A5 /* list.c in Sources */,
+				417656BB1BF47E6F004E39A5 /* packet.c in Sources */,
+				417656B91BF47E6C004E39A5 /* host.c in Sources */,
+				417656B11BF47E52004E39A5 /* Utilities.swift in Sources */,
+				417656BE1BF47E74004E39A5 /* unix.c in Sources */,
+				417656BD1BF47E72004E39A5 /* protocol.c in Sources */,
+				417656BC1BF47E71004E39A5 /* peer.c in Sources */,
+				417656B31BF47E57004E39A5 /* SCNNode+RecursiveChildNodes.swift in Sources */,
+				416CF3D81BF47CAB00411BE9 /* ClientHelloNetMessage.swift in Sources */,
+				417656B21BF47E56004E39A5 /* Array+RemoveObject.swift in Sources */,
+				417656B61BF47E65004E39A5 /* MKDNetClient.m in Sources */,
+				416CF3DA1BF47CAE00411BE9 /* ServerUpdateNetMessage.swift in Sources */,
+				416CF3D91BF47CAD00411BE9 /* ClientUpdateNetMessage.swift in Sources */,
+				416CF3D21BF47CA100411BE9 /* Character.swift in Sources */,
+				416CF3D11BF47C9F00411BE9 /* NetPlayerSnapshot.swift in Sources */,
+				416CF3CE1BF47C9600411BE9 /* ServerSimulationController.swift in Sources */,
+				416CF3CD1BF47C9400411BE9 /* OperatorOverloads.swift in Sources */,
+				416CF3CB1BF47C8F00411BE9 /* Configuration.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -825,11 +929,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = "Avara-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "net.goosesensor.Avara-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = appletvos;
+				SWIFT_OBJC_BRIDGING_HEADER = "Avara/Avara-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
 			};
@@ -840,11 +947,14 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = "App Icon & Top Shelf Image";
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = "Avara-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "net.goosesensor.Avara-tvOS";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
 				SDKROOT = appletvos;
+				SWIFT_OBJC_BRIDGING_HEADER = "Avara/Avara-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = 3;
 				TVOS_DEPLOYMENT_TARGET = 9.0;
 				VALIDATE_PRODUCT = YES;
@@ -979,6 +1089,7 @@
 				416CF3B41BF463B600411BE9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		417CC3831B645260006B21F3 /* Build configuration list for PBXProject "Avara" */ = {
 			isa = XCConfigurationList;
@@ -989,7 +1100,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		417CC3951B645260006B21F3 /* Build configuration list for PBXNativeTarget "Avara" */ = {
+		417CC3951B645260006B21F3 /* Build configuration list for PBXNativeTarget "Avara-OSX" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				417CC3961B645260006B21F3 /* Debug */,

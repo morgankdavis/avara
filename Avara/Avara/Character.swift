@@ -225,14 +225,14 @@ public class Character {
     
     public func shootAFuckingBall() {
         NSLog("shootAFuckingBall")
-        let ballGeo = SCNSphere(radius: 0.25)
+        let ballGeo = SCNSphere(radius: 0.15)
         let ballNode = SCNNode(geometry: ballGeo)
         ballNode.physicsBody = SCNPhysicsBody.dynamicBody()
         ballNode.physicsBody?.restitution = 1.0
         scene.rootNode.addChildNode(ballNode)
         let posInFromOfHull = SCNVector3Make(0, 0, -75)
         let worldPosInFromOfHull = hullOuterNode!.convertPosition(posInFromOfHull, toNode: scene.rootNode)
-        ballNode.position = hullOuterNode!.convertPosition(SCNVector3Make(0, -0.15, 0), toNode: scene.rootNode)
+        ballNode.position = hullOuterNode!.convertPosition(SCNVector3Make(0, -0.30, 0), toNode: scene.rootNode)
         ballNode.physicsBody?.applyForce(worldPosInFromOfHull, impulse: true)
     }
     

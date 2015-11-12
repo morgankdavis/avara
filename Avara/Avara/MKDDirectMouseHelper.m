@@ -37,6 +37,7 @@
 - (void)findMice
 {
 #if TARGET_OS_IPHONE
+#elif TARGET_OS_TV
 #else
     const int available_mice = ManyMouse_Init();
     
@@ -65,6 +66,7 @@
 - (void)pump
 {
 #if TARGET_OS_IPHONE
+#elif TARGET_OS_TV
 #else
     while (ManyMouse_PollEvent(&event)) {
         if (event.type == MANYMOUSE_EVENT_ABSMOTION) {
@@ -115,6 +117,7 @@
 - (void)quit
 {
 #if TARGET_OS_IPHONE
+#elif TARGET_OS_TV
 #else
     ManyMouse_Quit();
 #endif

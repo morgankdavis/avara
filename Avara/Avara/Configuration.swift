@@ -27,7 +27,7 @@ let SCN_DEBUG_OPTIONS: SCNDebugOptions =    [.ShowPhysicsShapes, .ShowBoundingBo
 
 let SERVER_VIEW_ENABLED =                   true
 
-let PHYSICS_TIMESTEP =                      1.0/120.0
+let PHYSICS_TIMESTEP =                      1.0/240.0
 
 let NET_SERVER_TICK_RATE =                  CGFloat(30.0) // Hz
 let NET_CLIENT_TICK_RATE =                  CGFloat(30.0) // Hz
@@ -38,6 +38,7 @@ let MOUSELOOK_SENSITIVITY_MULTIPLIER =      CGFloat(0.0005)
 
 let THUMBLOOK_SENSITIVITY =                 CGFloat(3.0)
 let THUMBLOOK_SENSITIVITY_MULTIPLIER =      CGFloat(0.01)
+let THUMBLOOK_INVERTED_ENABLED =            false
 
 let NET_SERVER_PORT =                       UInt16(33777)
 let NET_MAX_CLIENTS =                       Int(12)

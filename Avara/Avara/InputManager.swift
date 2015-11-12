@@ -257,15 +257,16 @@ public class InputManager: NSObject, MKDDirectMouseHelperDelegate {
     }
     
     public func controllerDidConnectNotification(note: NSNotification) {
-        NSLog("controllerDidConnectNotification(%@)", note)
+        //NSLog("controllerDidConnectNotification(%@)", note)
         
-        gameController = note.object as? GCController
-        
-        setupGamepadHandlers()
+        if (note.object as! GCController).vendorName != "Remote" {
+            gameController = note.object as? GCController
+            setupGamepadHandlers()
+        }
     }
     
     public func controllerDidDisconnectNotification(note: NSNotification) {
-        NSLog("controllerDidDisconnectNotification(%@)", note)
+        //NSLog("controllerDidDisconnectNotification(%@)", note)
         
         gameController = nil
     }
@@ -275,7 +276,7 @@ public class InputManager: NSObject, MKDDirectMouseHelperDelegate {
     /*****************************************************************************************************/
     
     private func updateKey(key: Key, force: MKDFloat) {
-        NSLog("updateKey(%@, force: %f)", key.description, force)
+        //NSLog("updateKey(%@, force: %f)", key.description, force)
         
         if let button = ButtonInputForKey(key) {
             var prevInputs = pressedButtons // Swift dictionaries are Structs, so this *should* copy the old dict

@@ -207,10 +207,20 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         #else
             var lookDelta = CGPointZero
             if let fY = pressedButtons[.LookUp] {
-                lookDelta.y = -CGFloat(fY)
+                if THUMBLOOK_INVERTED_ENABLED {
+                    lookDelta.y = CGFloat(fY)
+                }
+                else {
+                    lookDelta.y = -CGFloat(fY)
+                }
             }
             if let fY = pressedButtons[.LookDown] {
-                lookDelta.y = CGFloat(fY)
+                if THUMBLOOK_INVERTED_ENABLED {
+                    lookDelta.y = -CGFloat(fY)
+                }
+                else {
+                    lookDelta.y = CGFloat(fY)
+                }
             }
             if let fX = pressedButtons[.LookLeft] {
                 lookDelta.x = CGFloat(fX)

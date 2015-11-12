@@ -90,22 +90,5 @@ public class ViewController: UIViewController {
         
         self.view = UIView(frame: CGRectZero)
     }
-    
-//    public convenience init(_ serverSimulationController: ServerSimulationController, _ clientSimulationController: ClientSimulationController) {
-//        self.init(nibName: nil, bundle: nil)
-//        self.serverSimulationController = serverSimulationController
-//        self.clientSimulationController = clientSimulationController
-//    }
-
-    
-//    internal required init() {
-//        
-//    }
-//    
-//    public convenience init(payloadData: NSData) {
-//        self.init()
-//        self.payloadData = payloadData.mutableCopy() as? NSMutableData
-//        parsePayload()
-//    }
 }
 
