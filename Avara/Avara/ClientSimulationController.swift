@@ -36,7 +36,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private         var clientAccumButtonEntries =          [(buttons: [(button: ButtonInput, force: MKDFloat)], dT: MKDFloat)]()
     private         var clientLastSentHullEulerAngles =     SCNVector3Zero
     private         var clientTickTimer:                    NSTimer?
-    private         var sentNoInputPacket =                 false
+    //private         var sentNoInputPacket =                 false
 
     private         var magicSphereOfPower:                 SCNNode?
     private         var lastRenderTime:                     Double?
@@ -116,28 +116,28 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                     clientAccumButtonEntries = [(buttons: [(button: ButtonInput, force: MKDFloat)], dT: MKDFloat)]()
                     clientLastSentHullEulerAngles = hullEulerAngles
                     
-                    sentNoInputPacket = false
+                    //sentNoInputPacket = false
                 }
                 else { // no input
-                    if !sentNoInputPacket {
-                        // send a single packet indicating there is no new input
-                        
-                        //NSLog("-- CLIENT SENDING LOW --")
-                        
-                        ++sequenceNumber
-                        let updateMessage = ClientUpdateNetMessage(
-                            buttonEntries: clientAccumButtonEntries,
-                            hullEulerAngles: hullEulerAngles,
-                            sequenceNumber: sequenceNumber)
-                        
-                        let packtData = updateMessage.encoded()
-                        client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue , flags: .Unsequenced, duplicate: NET_CLIENT_PACKET_DUP)
-                        
-                        sentNoInputPacket = true
-                    }
-                    else {
-                        //NSLog("-- CLIENT SKIPPING --")
-                    }
+//                    if !sentNoInputPacket {
+//                        // send a single packet indicating there is no new input
+//                        
+//                        //NSLog("-- CLIENT SENDING LOW --")
+//                        
+//                        ++sequenceNumber
+//                        let updateMessage = ClientUpdateNetMessage(
+//                            buttonEntries: clientAccumButtonEntries,
+//                            hullEulerAngles: hullEulerAngles,
+//                            sequenceNumber: sequenceNumber)
+//                        
+//                        let packtData = updateMessage.encoded()
+//                        client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue , flags: .Unsequenced, duplicate: NET_CLIENT_PACKET_DUP)
+//                        
+//                        sentNoInputPacket = true
+//                    }
+//                    else {
+//                        //NSLog("-- CLIENT SKIPPING --")
+//                    }
                 }
             }
             
@@ -326,8 +326,9 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 }
                 
                 if let s = mySnapshot {
-                    //NSLog("Server update message with sq: %d, prev sent sq: %d", u.sequenceNumber, sequenceNumber)s
-                    if (s.sequenceNumber > sequenceNumber) && sentNoInputPacket {
+                    NSLog("Server update message with sq: %d, prev sent sq: %d", s.sequenceNumber, sequenceNumber)
+                    //if (s.sequenceNumber > sequenceNumber) && sentNoInputPacket {
+                    if s.sequenceNumber > sequenceNumber+1 { // server incraments before return, so we look for one further
                         netServerOverrideSnapshot = s // game loop will see and correct player state
                     }
                     sequenceNumber = s.sequenceNumber

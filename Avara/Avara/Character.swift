@@ -230,8 +230,8 @@ public class Character {
         ballNode.physicsBody = SCNPhysicsBody.dynamicBody()
         ballNode.physicsBody?.restitution = 1.0
         scene.rootNode.addChildNode(ballNode)
-        let posInFromOfHull = SCNVector3Make(0, 0, -75)
-        let worldPosInFromOfHull = hullOuterNode!.convertPosition(posInFromOfHull, toNode: scene.rootNode)
+        let posInFrotOfHull = SCNVector3Make(0, 0, -75)
+        let worldPosInFromOfHull = hullOuterNode!.convertPosition(posInFrotOfHull, toNode: scene.rootNode)
         ballNode.position = hullOuterNode!.convertPosition(SCNVector3Make(0, -0.30, 0), toNode: scene.rootNode)
         ballNode.physicsBody?.applyForce(worldPosInFromOfHull, impulse: true)
     }

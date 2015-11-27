@@ -36,13 +36,7 @@ public class Map : NSObject, SCNProgramDelegate {
         
         // background
         //scene.background.contents = MKDColor(red:102.0/255.0, green:204.0/255.0, blue:255.0/255.0, alpha:1)
-//        scene.background.contents = [
-//            MKDImage(named: "sky_interstellar_0.png")!,
-//            MKDImage(named: "sky_interstellar_1.png")!,
-//            MKDImage(named: "sky_interstellar_2.png")!,
-//            MKDImage(named: "sky_interstellar_3.png")!,
-//            MKDImage(named: "sky_interstellar_4.png")!,
-//            MKDImage(named: "sky_interstellar_5.png")!]
+        
         scene.background.contents = [
             MKDImage(named: "sky_miramar_0.png")!,
             MKDImage(named: "sky_miramar_1.png")!,
@@ -50,6 +44,11 @@ public class Map : NSObject, SCNProgramDelegate {
             MKDImage(named: "sky_miramar_3.png")!,
             MKDImage(named: "sky_miramar_4.png")!,
             MKDImage(named: "sky_miramar_5.png")!]
+        
+//        if let skycube = MKDImage(named: "sky_fox_cube.png") {
+//            scene.background.contents = skycube
+//        }
+        
         // WARNING: Temporary
         if (NSProcessInfo.processInfo().hostName == "goosebox.local") {
             scene.background.maxAnisotropy = 16.0
@@ -102,50 +101,100 @@ public class Map : NSObject, SCNProgramDelegate {
         let ambientLightNode = SCNNode()
         ambientLightNode.light = SCNLight()
         ambientLightNode.light!.type = SCNLightTypeAmbient
-        ambientLightNode.light!.color = MKDColor(white: 0.5, alpha: 1.0)
+        ambientLightNode.light!.color = MKDColor(white: 0.4, alpha: 1.0)
         scene.rootNode.addChildNode(ambientLightNode)
         
-        // omni light
-        let omniLight = SCNLight()
-        omniLight.type = SCNLightTypeOmni
-        omniLight.color = MKDColor(white: 0.75, alpha: 1.0)
-        let omniLightNode = SCNNode()
-        omniLightNode.light = omniLight
-        omniLightNode.position = SCNVector3Make(40, 25, 50)
-        scene.rootNode.addChildNode(omniLightNode)
+//        // omni light
+//        let omniLight = SCNLight()
+//        omniLight.type = SCNLightTypeOmni
+//        omniLight.color = MKDColor(white: 0.75, alpha: 1.0)
+//        let omniLightNode = SCNNode()
+//        omniLightNode.light = omniLight
+//        omniLightNode.position = SCNVector3Make(40, 25, 50)
+//        scene.rootNode.addChildNode(omniLightNode)
         
-        // spot light
+//        // spot light
 //        let spotLight = SCNLight()
 //        spotLight.type = SCNLightTypeSpot
-//        spotLight.color = MKDColor(white: 0.75, alpha: 1.0)
+//        spotLight.color = MKDColor(white: 1.0, alpha: 1.0)
 //        let spotLightNode = SCNNode()
 //        spotLightNode.light = spotLight
-//        spotLightNode.position = SCNVector3Make(40, 25, 50)
-//        //spotLightNode.eulerAngles = SCNVector3(x: -30, y: -30, z: 0)
-//        spotLightNode.rotation = SCNVector4(x: 1, y: 0, z: 0, w: CGFloat(-M_PI/2.0))
-////        let centerCode = SCNNode()
-////        centerCode.position = SCNVector3Zero
-////        scene.rootNode.addChildNode(centerCode)
-////        spotLightNode.constraints = [SCNLookAtConstraint(target: centerCode)]
-//        scene.rootNode.addChildNode(spotLightNode)
+//        //let spotlightPosition = SCNVector3Make(130, 300, -150)
+//        let spotlightPosition = SCNVector3Make(30, 40, -30)
+//        spotLightNode.position = spotlightPosition
+//
 //        spotLight.castsShadow = true
-//        spotLight.shadowMode = .Modulated
+//        spotLight.shadowColor = MKDColor.blackColor()
+//        spotLight.spotOuterAngle = 35.0
+//        //spotLight.shadowRadius = 1.0
+//        spotLight.shadowMapSize = CGSizeMake(1024, 1024)
+//        spotLight.shadowSampleCount = 4
+//        spotLight.shadowMode = .Forward
+////        spotLight.shadowBias = 0.1
+//        spotLight.zFar = 1000
+//        spotLight.zNear = 0.1
+//        
+//        let centerCode = SCNNode()
+//        centerCode.position = SCNVector3Zero
+//        scene.rootNode.addChildNode(centerCode)
+//        
+//        spotLightNode.constraints = [SCNLookAtConstraint(target: centerCode)]
+//        scene.rootNode.addChildNode(spotLightNode)
+//        
+//        let sphereNode = SCNNode(geometry: SCNSphere(radius: 1.0))
+//        sphereNode.position = spotlightPosition
+//        
+//        let sphereMaterial = SCNMaterial()
+//        sphereMaterial.emission.contents = MKDColor.redColor()
+//        sphereNode.geometry?.materials = [sphereMaterial]
+//        
+//        scene.rootNode.addChildNode(sphereNode)
+        
+        
+        let directionalLight = SCNLight()
+        directionalLight.type = SCNLightTypeDirectional
+        directionalLight.color = MKDColor(white: 1.0, alpha: 1.0)
+        let directionalLightNode = SCNNode()
+        directionalLightNode.light = directionalLight
+        
+        directionalLightNode.eulerAngles = SCNVector3Make(
+            -MKDFloat(3*M_PI/4.0),
+            MKDFloat(1*M_PI/4.0),
+            -MKDFloat(1*M_PI/4.0))
+        
+        scene.rootNode.addChildNode(directionalLightNode)
+        
+        
 
+//        // floor node
+//        let floor = SCNFloor()
+//        floor.name = "Floor"
+//        floor.reflectivity = 0.25
+//        let floorNode = SCNNode(geometry: floor)
+//        scene.rootNode.addChildNode(floorNode)
+        
         // floor node
-        let floor = SCNFloor()
+        let floor = SCNPlane(width: 50, height: 50)
         floor.name = "Floor"
-        floor.reflectivity = 0.25
         let floorNode = SCNNode(geometry: floor)
+        floorNode.rotation = SCNVector4Make(1, 0, 0, -MKDFloat(M_PI)/2.0)
         scene.rootNode.addChildNode(floorNode)
         
         let floorMaterial = SCNMaterial()
         floorMaterial.diffuse.contents = MKDColor.grayColor()
         floorMaterial.ambient.contents = MKDColor.blackColor()
-        floorMaterial.diffuse.contents = MKDImage(named: "grid.png")
-        let floorDiffScale: MKDFloat = 12.0
-        floorMaterial.diffuse.contentsTransform = SCNMatrix4MakeScale(floorDiffScale, floorDiffScale, floorDiffScale)//SCNMatrix4MakeScale(10.0, 10.0, 10.0)
+        floorMaterial.diffuse.contents = MKDImage(named: "grid_diffuse.png")
+        floorMaterial.transparent.contents = MKDImage(named: "grid_transparent.png")
+        
+        let floorScale = MKDFloat(4.0)
+        floorMaterial.diffuse.contentsTransform = SCNMatrix4MakeScale(floorScale, floorScale, floorScale)
         floorMaterial.diffuse.intensity = 1.0
         floorMaterial.diffuse.mipFilter = .Linear
+        
+        floorMaterial.transparent.contentsTransform = SCNMatrix4MakeScale(floorScale, floorScale, floorScale)
+        floorMaterial.transparent.intensity = 1.0
+        floorMaterial.transparent.mipFilter = .Linear
+        
         // WARNING: Temporary
         if (NSProcessInfo.processInfo().hostName == "goosebox.local") {
             floorMaterial.diffuse.maxAnisotropy = 16.0
@@ -164,6 +213,8 @@ public class Map : NSObject, SCNProgramDelegate {
         floorMaterial.specular.wrapT = .Mirror
         floorMaterial.diffuse.wrapS  = .Repeat
         floorMaterial.diffuse.wrapT  = .Repeat
+        floorMaterial.transparent.wrapS  = .Repeat
+        floorMaterial.transparent.wrapT  = .Repeat
         
         floor.firstMaterial = floorMaterial
         
