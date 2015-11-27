@@ -75,14 +75,11 @@ public class Character {
 //        updateForInputs(inputs, mouseDelta: mouseDelta)
 //    }
     
-    //public func updateForInputs(pushInputs: [ButtonInput: Double], mouseDelta: CGPoint?) {
-    public func updateForInputs(buttonEntries: [(buttons: [(button: ButtonInput, force: MKDFloat)], dT: MKDFloat)], mouseDelta: CGPoint?) {
-       
+    public func updateForInputs(buttonEntries: [(buttons: [(button: ButtonInput, force: MKDFloat)], dT: MKDFloat)], lookDelta: CGPoint?) {
         for (buttonForce, dT) in buttonEntries {
             for (button, force) in buttonForce {
                 // body
                 if button == .MoveForward {
-                    //let dT = pushInputs[.MoveForward]!
                     let positionDelta = WALK_VELOCITY * dT * force
                     
                     let transform = bodyNode.transform
@@ -98,7 +95,6 @@ public class Character {
                         z: bodyNode.position.z - dz)
                 }
                 else if button == .MoveBackward {
-                    //let dT = pushInputs[.MoveBackward]!
                     let positionDelta = WALK_VELOCITY * dT * force
                     
                     let transform = bodyNode.transform
@@ -114,7 +110,6 @@ public class Character {
                         z: bodyNode.position.z + dz)
                 }
                 else if button == .TurnLeft {
-                    //let dT = pushInputs[.TurnLeft]!
                     let rotationDelta = TURN_ANG_VELOCITY * dT * force
                     bodyNode.rotation = SCNVector4(
                         x: 0,
@@ -123,7 +118,6 @@ public class Character {
                         w: bodyNode.rotation.w + MKDFloat(rotationDelta))
                 }
                 else if button == .TurnRight {
-                    //let dT = pushInputs[.TurnRight]!
                     let rotationDelta = TURN_ANG_VELOCITY * dT * force
                     bodyNode.rotation = SCNVector4(
                         x: 0,
@@ -136,15 +130,15 @@ public class Character {
         
         // hull
         
-        if let dM = mouseDelta {
+        if let dL = lookDelta {
             #if os(OSX)
                 let viewDistanceFactor = 1.0/(MOUSELOOK_SENSITIVITY*MOUSELOOK_SENSITIVITY_MULTIPLIER)
             #else
                 let viewDistanceFactor = 1.0/(THUMBLOOK_SENSITIVITY*THUMBLOOK_SENSITIVITY_MULTIPLIER)
             #endif
             
-            let dP = acos(CGFloat(dM.x) / viewDistanceFactor) - CGFloat(M_PI_2)
-            let dY = acos(CGFloat(dM.y) / viewDistanceFactor) - CGFloat(M_PI_2)
+            let dP = acos(CGFloat(dL.x) / viewDistanceFactor) - CGFloat(M_PI_2)
+            let dY = acos(CGFloat(dL.y) / viewDistanceFactor) - CGFloat(M_PI_2)
             
             var nAngles = SCNVector3(
                 x: hullOuterNode!.eulerAngles.x + MKDFloat(dY),

@@ -16,8 +16,8 @@ public class FlyoverCamera {
     // MARK:   Types
     /*****************************************************************************************************/
     
-    private         let MOVE_RATE =                 Double(10.0)                // units/sec
-    private         let VERT_CLAMP =                Double(M_PI/2.0)
+    private         let MOVE_RATE =                 MKDFloat(10.0)                // units/sec
+    private         let VERT_CLAMP =                MKDFloat(M_PI/2.0)
     
     /*****************************************************************************************************/
     // MARK:   Properties
@@ -29,12 +29,14 @@ public class FlyoverCamera {
     // MARK:   Public
     /*****************************************************************************************************/
     
-    public func gameLoopWithInputs(inputs: Set<ButtonInput>, mouseDelta: CGPoint, dT: Double) {
-        // keys
-        let positionDelta = MOVE_RATE * dT
+    public func updateForInputs(pressedButtons: [ButtonInput : MKDFloat], dT: MKDFloat, lookDelta: CGPoint) {
+        
         let transform = node.transform
         
-        if inputs.contains(.MoveForward) {
+        if pressedButtons.keys.contains(.MoveForward) {
+            let force = pressedButtons[.MoveForward]!
+            let positionDelta = MOVE_RATE * dT * force
+            
             let sinYRot = transform.m13
             let cosYRot = transform.m33
             let sinXRot = transform.m32
@@ -48,7 +50,10 @@ public class FlyoverCamera {
                 y: node.position.y - dy,
                 z: node.position.z - dz)
         }
-        if inputs.contains(.MoveBackward) {
+        if pressedButtons.keys.contains(.MoveBackward) {
+            let force = pressedButtons[.MoveBackward]!
+            let positionDelta = MOVE_RATE * dT * force
+            
             let sinYRot = transform.m13
             let cosYRot = transform.m33
             let sinXRot = transform.m32
@@ -62,8 +67,10 @@ public class FlyoverCamera {
                 y: node.position.y + dy,
                 z: node.position.z + dz)
         }
-        
-        if inputs.contains(.TurnLeft) { // move left
+        if pressedButtons.keys.contains(.TurnLeft) {
+            let force = pressedButtons[.TurnLeft]!
+            let positionDelta = MOVE_RATE * dT * force
+            
             let sinYRot = transform.m13
             let cosYRot = transform.m33
             
@@ -85,7 +92,10 @@ public class FlyoverCamera {
                 y: node.position.y,
                 z: node.position.z + MKDFloat(scaledVector.z))
         }
-        if inputs.contains(.TurnRight) { // move right
+        if pressedButtons.keys.contains(.TurnRight) {
+            let force = pressedButtons[.TurnRight]!
+            let positionDelta = MOVE_RATE * dT * force
+            
             let sinYRot = transform.m13
             let cosYRot = transform.m33
             
@@ -107,8 +117,10 @@ public class FlyoverCamera {
                 y: node.position.y,
                 z: node.position.z + MKDFloat(scaledVector.z))
         }
-        
-        if inputs.contains(.Jump) { // move up
+        if pressedButtons.keys.contains(.Jump) {
+            let force = pressedButtons[.Jump]!
+            let positionDelta = MOVE_RATE * dT * force
+            
             let sinYRot = transform.m13
             let cosYRot = transform.m33
             let sinXRot = transform.m32
@@ -133,18 +145,23 @@ public class FlyoverCamera {
                 z: node.position.z + MKDFloat(scaledVector.z))
         }
         
-        // mouse
-        let viewDistanceFactor = 1.0/(MOUSELOOK_SENSITIVITY*MOUSELOOK_SENSITIVITY_MULTIPLIER)
+        // look
         
-        let hAngle = acos(CGFloat(mouseDelta.x) / viewDistanceFactor) - CGFloat(M_PI_2)
-        let vAngle = acos(CGFloat(mouseDelta.y) / viewDistanceFactor) - CGFloat(M_PI_2)
+        #if os(OSX)
+            let viewDistanceFactor = 1.0/(MOUSELOOK_SENSITIVITY*MOUSELOOK_SENSITIVITY_MULTIPLIER)
+        #else
+            let viewDistanceFactor = 1.0/(THUMBLOOK_SENSITIVITY*THUMBLOOK_SENSITIVITY_MULTIPLIER)
+        #endif
+        
+        let dP = acos(CGFloat(lookDelta.x) / viewDistanceFactor) - CGFloat(M_PI_2)
+        let dY = acos(CGFloat(lookDelta.y) / viewDistanceFactor) - CGFloat(M_PI_2)
         
         var nAngles = SCNVector3(
-            x: node.eulerAngles.x + MKDFloat(vAngle),
-            y: node.eulerAngles.y - MKDFloat(hAngle),
+            x: node.eulerAngles.x + MKDFloat(dY),
+            y: node.eulerAngles.y - MKDFloat(dP),
             z: node.eulerAngles.z)
-        
-        nAngles.x = max(-MKDFloat(VERT_CLAMP), min(MKDFloat(VERT_CLAMP), nAngles.x)) // clamp angle to PI/4 < a < PI/4
+
+        nAngles.x = max(-MKDFloat(VERT_CLAMP), min(MKDFloat(VERT_CLAMP), nAngles.x)) // clamp vertical angle
         
         node.eulerAngles = nAngles
     }

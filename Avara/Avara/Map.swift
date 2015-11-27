@@ -175,7 +175,7 @@ public class Map : NSObject, SCNProgramDelegate {
 //        scene.rootNode.addChildNode(floorNode)
         
         // floor node
-        let floor = SCNPlane(width: 50, height: 50)
+        let floor = SCNPlane(width: 40, height: 40)
         floor.name = "Floor"
         let floorNode = SCNNode(geometry: floor)
         floorNode.rotation = SCNVector4Make(1, 0, 0, -MKDFloat(M_PI)/2.0)

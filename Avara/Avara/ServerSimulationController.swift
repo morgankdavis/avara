@@ -187,7 +187,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             
             // IMPORTANT! initialPosition has to be set BEFORE translation in each loop invocation
             let initialPosition = character.bodyNode.position
-            character.updateForInputs(buttonEntries, mouseDelta: nil)
+            character.updateForInputs(buttonEntries, lookDelta: nil)
 //            character.updateForInputs(inputs.buttonInputs, mouseDelta: nil)
             character.hullOuterNode?.eulerAngles = SCNVector3Make(hullEulerAngles.x, hullEulerAngles.y, 0)
             character.hullInnerNode?.eulerAngles = SCNVector3Make(0, 0, hullEulerAngles.z)

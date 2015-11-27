@@ -195,13 +195,18 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             }
         #endif
         
-//        // handle flyover or player movement
-//        if isFlyoverMode {
-//            flyoverCamera.gameLoopWithInputs(inputManager.pressedButtons, mouseDelta: inputManager.readMouseDeltaAndClear(), dT: dT)
-//            windowController?.renderView?.play(self) // why the fuck must we do this?? (force re-render)
-//        }
-//        else {
-            let pressedButtons = inputManager.pressedButtons
+        // put the buttons into a format Character/Flyovercamera like
+        let pressedButtons = inputManager.pressedButtons
+        var buttonEntries = [(buttons: [(button: ButtonInput, force: MKDFloat)], dT: MKDFloat)]()
+        var buttons = [(button: ButtonInput, force: MKDFloat)]()
+        var buttonDown = false
+        for (button, force) in pressedButtons {
+            buttons.append((button, force))
+            buttonDown = true
+        }
+        buttonEntries.append((buttons, MKDFloat(dT)))
+        
+        // get look delta
         #if os(OSX)
             let lookDelta = inputManager.readMouseDeltaAndClear()
         #else
@@ -229,37 +234,33 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 lookDelta.x = -CGFloat(fX)
             }
         #endif
-
-        if NET_CLIENT_RECONCILIATION_ENABLED {
-            // check for server override before applying local input
-            if let override = netServerOverrideSnapshot {
-                NSLog("* SERVER OVERRIDE *")
-                
-                character?.applyServerOverrideSnapshot(override)
-                netServerOverrideSnapshot = nil
+        
+        // handle flyover or player movement
+        if isFlyoverMode {
+            flyoverCamera.updateForInputs(pressedButtons, dT: dT, lookDelta: lookDelta)
+            windowController?.renderView?.play(self) // why the fuck must we do this?? (force re-render)
+        }
+        else {
+            if NET_CLIENT_RECONCILIATION_ENABLED {
+                // check for server override before applying local input
+                if let override = netServerOverrideSnapshot {
+                    NSLog("* SERVER OVERRIDE *")
+                    
+                    character?.applyServerOverrideSnapshot(override)
+                    netServerOverrideSnapshot = nil
+                }
             }
-        }
-
-        // put the buttons into a format Character likes
-        var buttonEntries = [(buttons: [(button: ButtonInput, force: MKDFloat)], dT: MKDFloat)]()
-        var buttons = [(button: ButtonInput, force: MKDFloat)]()
-        var buttonDown = false
-        for (button, force) in pressedButtons {
-            buttons.append((button, force))
-            buttonDown = true
-        }
-        buttonEntries.append((buttons, MKDFloat(dT)))
-        
-        // add to net client output accumulator
-        if buttonDown {
-            clientAccumButtonEntries.append((buttons, MKDFloat(dT)))
-        }
-        
-        // IMPORTANT! initialPosition has to be set BEFORE any translation in each loop invocation
-        let initialPosition = character?.bodyNode.position
-            character?.updateForInputs(buttonEntries, mouseDelta: lookDelta)
+            
+            // add to net client output accumulator
+            if buttonDown {
+                clientAccumButtonEntries.append((buttons, MKDFloat(dT)))
+            }
+            
+            // IMPORTANT! initialPosition has to be set BEFORE any translation in each loop invocation
+            let initialPosition = character?.bodyNode.position
+            character?.updateForInputs(buttonEntries, lookDelta: lookDelta)
             character?.updateForLoopDelta(dT, initialPosition: initialPosition!)
-//        }
+        }
     }
     
     func switchToCameraNode(cameraNode: SCNNode) {
