@@ -10,9 +10,6 @@ import Foundation
 import SceneKit
 
 
-let VECTOR_COMPONENT_EQUALITY_TOLERANCE =        MKDFloat(0.000001)
-
-
 public func ==(lhs: SCNVector3, rhs: SCNVector3) -> Bool {
     
     guard abs(lhs.x - rhs.x) < VECTOR_COMPONENT_EQUALITY_TOLERANCE else { return false }

@@ -1,74 +1,93 @@
-{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf130
-{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 Menlo-Regular;}
-{\colortbl;\red255\green255\blue255;}
+{\rtf1\ansi\ansicpg1252\cocoartf1404\cocoasubrtf340
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;\f1\fnil\fcharset0 HelveticaNeue;}
+{\colortbl;\red255\green255\blue255;\red0\green128\blue255;}
 \margl1440\margr1440\vieww10800\viewh8400\viewkind0
-\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
-
-\f0\b\fs24 \cf0 TODO
-\b0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
-\cf0 \
-clean MARK's\
+
+\f0\b\fs24 \cf2 MAJOR
+\b0 \cf0 \
 \
-Flying server lookat camera\
-\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 Interpolate client reconciliation\
+Investigate continuous client/server updates, latency & extra packets\
 \pard\tx481\pardeftab481\pardirnatural\partightenfactor0
-
-\f1\fs20 \cf0 \CocoaLigature0 ButtonInput -> Input Action\
-Key -> ButtonInput?
-\f0\fs24 \CocoaLigature1 \
-\
-Character init nodes - no more optional\
-\
-\
-add recursive subnode algo to physics check\
-\
-\
-Draw altitude and crosshair ray line segments for debugging\
-\
-No crosshair or orientation finder reflections\
-\
-Play with material lighting models\
-\
-\
+\cf0 Enable net packet duplication\
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
-\cf0 MKDNetServer -> MKDNetSocketServer\
+\cf0 Figure out physics/render loop properties\
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
-\cf0 LERP + extrapolate client reconciliation\
+\cf0 Sanity check client input time deltas...\
 Artificial lag\
-Multiple net channels\
-Sanity check client input time deltas...\
+\pard\tx481\pardeftab481\pardirnatural\partightenfactor0
+\cf0 Try server-client over real-world network\
 \
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 \cf0 Log library -- Swift option set -- bitmask for certain logs (trace, netwire, etc)\
 Config file\
 Console\
 \
-Detailed altitude detection
-\b \
+\pard\tx481\pardeftab481\pardirnatural\partightenfactor0
+\cf0 Draw altitude and crosshair ray line segments for debugging\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 Detailed altitude detection
+\f1 \CocoaLigature0 \
+\pard\tx481\pardeftab481\pardirnatural\partightenfactor0
+\cf0 \
+
+\b \cf2 MINOR\cf0 \
+
+\b0 \CocoaLigature1 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+\cf0 Flying server lookat camera\
+\pard\tx481\pardeftab481\pardirnatural\partightenfactor0
+\cf0 Character init nodes - no more optional\
+add recursive subnode algo to physics check\
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0 \cf0 Multiple net channels\
+Review fatal errors (character model loading, etc)
+\f1 \
+\pard\tx481\pardeftab481\pardirnatural\partightenfactor0
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\b \cf2 CLEAN\cf0 \
 \pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
 
 \b0 \cf0 \
-Review fatal errors (character model loading, etc)
-\b \
+
+\f1 clean MARK's\
+\pard\tx481\pardeftab481\pardirnatural\partightenfactor0
+\cf0 \CocoaLigature0 ButtonInput -> Input Action\
+Key -> ButtonInput?\
 \pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
 
+\f0 \cf0 \CocoaLigature1 MKDNetServer -> MKDNetSocketServer\
+\pard\tx481\pardeftab481\pardirnatural\partightenfactor0
+\cf0 \
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\b \cf2 HORIZON
 \b0 \cf0 \
-Sync game loop with physics steps\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
+Sound\
 Horizon shader\
-Lense flair\
 Stars\
-\
+Lense flair\
 \
 
-\b Ideas
-\b0 \
-\
-Classic/Newfangled/Snaggletooth game modes\
+\b \cf2 IDEAS
+\b0 \cf0 \
+\pard\tx481\pardeftab481\pardirnatural\partightenfactor0
+\cf0 \
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 Classic/Newfangled/Snaggletooth game modes\
 Capture the flag\
 Rain map -- each player has its own light that follows them, can't see other players until in their own light\
-\
-\
+\pard\tx481\pardeftab481\pardirnatural\partightenfactor0
+\cf0 Missingno easter egg\
+\pard\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\pardirnatural\partightenfactor0
+\cf0 \
 \
 Console commands:\
 \

@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		41120A4C1C07E268003EC42A /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41120A4B1C07E268003EC42A /* Constants.swift */; };
+		41120A4E1C07E273003EC42A /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41120A4D1C07E273003EC42A /* Types.swift */; };
+		41120A4F1C07E273003EC42A /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41120A4D1C07E273003EC42A /* Types.swift */; };
+		41120A501C07E273003EC42A /* Types.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41120A4D1C07E273003EC42A /* Types.swift */; };
+		41120A511C07E27F003EC42A /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41120A4B1C07E268003EC42A /* Constants.swift */; };
+		41120A521C07E282003EC42A /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41120A4B1C07E268003EC42A /* Constants.swift */; };
 		41195A201B731134006E53DC /* OperatorOverloads.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41195A1F1B731134006E53DC /* OperatorOverloads.swift */; };
 		4151BEEA1B71D62B0082F75E /* NetPlayerSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4151BEE91B71D62B0082F75E /* NetPlayerSnapshot.swift */; };
 		4165099A1B6C754C0048804B /* ServerUpdateNetMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 416509991B6C754C0048804B /* ServerUpdateNetMessage.swift */; };
@@ -28,7 +34,6 @@
 		416CF30C1BEEE54900411BE9 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 416CF30B1BEEE54900411BE9 /* Assets.xcassets */; };
 		416CF30F1BEEE54900411BE9 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 416CF30D1BEEE54900411BE9 /* LaunchScreen.storyboard */; };
 		416CF3511BF3266200411BE9 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39A1B645310006B21F3 /* Configuration.swift */; };
-		416CF3521BF3266300411BE9 /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39E1B645310006B21F3 /* Globals.swift */; };
 		416CF3531BF3266500411BE9 /* OperatorOverloads.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41195A1F1B731134006E53DC /* OperatorOverloads.swift */; };
 		416CF3541BF3266600411BE9 /* ServerSimulationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3A41B645310006B21F3 /* ServerSimulationController.swift */; };
 		416CF3551BF3266700411BE9 /* NetPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC40C1B68A305006B21F3 /* NetPlayer.swift */; };
@@ -107,7 +112,6 @@
 		416CF3C91BF47C7700411BE9 /* sky_miramar_5.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3CF1B645507006B21F3 /* sky_miramar_5.png */; };
 		416CF3CA1BF47C7D00411BE9 /* slateBump.png in Resources */ = {isa = PBXBuildFile; fileRef = 417CC3D01B645507006B21F3 /* slateBump.png */; };
 		416CF3CB1BF47C8F00411BE9 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39A1B645310006B21F3 /* Configuration.swift */; };
-		416CF3CC1BF47C9100411BE9 /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39E1B645310006B21F3 /* Globals.swift */; };
 		416CF3CD1BF47C9400411BE9 /* OperatorOverloads.swift in Sources */ = {isa = PBXBuildFile; fileRef = 41195A1F1B731134006E53DC /* OperatorOverloads.swift */; };
 		416CF3CE1BF47C9600411BE9 /* ServerSimulationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3A41B645310006B21F3 /* ServerSimulationController.swift */; };
 		416CF3CF1BF47C9A00411BE9 /* NetPlayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC40C1B68A305006B21F3 /* NetPlayer.swift */; };
@@ -144,7 +148,6 @@
 		417CC3AA1B645310006B21F3 /* FlyoverCamera.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39B1B645310006B21F3 /* FlyoverCamera.swift */; };
 		417CC3AB1B645310006B21F3 /* RenderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39C1B645310006B21F3 /* RenderView.swift */; };
 		417CC3AC1B645310006B21F3 /* ClientWindowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39D1B645310006B21F3 /* ClientWindowController.swift */; };
-		417CC3AD1B645310006B21F3 /* Globals.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC39E1B645310006B21F3 /* Globals.swift */; };
 		417CC3AE1B645310006B21F3 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 417CC39F1B645310006B21F3 /* Images.xcassets */; };
 		417CC3AF1B645310006B21F3 /* InputManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3A01B645310006B21F3 /* InputManager.swift */; };
 		417CC3B01B645310006B21F3 /* Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 417CC3A11B645310006B21F3 /* Map.swift */; };
@@ -189,6 +192,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		41120A4B1C07E268003EC42A /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		41120A4D1C07E273003EC42A /* Types.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Types.swift; sourceTree = "<group>"; };
 		41195A1F1B731134006E53DC /* OperatorOverloads.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OperatorOverloads.swift; sourceTree = "<group>"; };
 		4151BEE91B71D62B0082F75E /* NetPlayerSnapshot.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NetPlayerSnapshot.swift; sourceTree = "<group>"; };
 		416509991B6C754C0048804B /* ServerUpdateNetMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ServerUpdateNetMessage.swift; sourceTree = "<group>"; };
@@ -213,20 +218,20 @@
 		4169CC461BE9F7ED0035FF29 /* crosshairR.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = crosshairR.png; path = Textures/crosshairR.png; sourceTree = "<group>"; };
 		4169CC491BEC69CF0035FF29 /* SCNNode+RecursiveChildNodes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SCNNode+RecursiveChildNodes.swift"; sourceTree = "<group>"; };
 		4169CC4C1BEC6C060035FF29 /* Array+RemoveObject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Array+RemoveObject.swift"; sourceTree = "<group>"; };
-		416CF3021BEEE54900411BE9 /* Avara-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Avara-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		416CF3021BEEE54900411BE9 /* Avara.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Avara.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		416CF3041BEEE54900411BE9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		416CF3091BEEE54900411BE9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		416CF30B1BEEE54900411BE9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		416CF30E1BEEE54900411BE9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		416CF3101BEEE54900411BE9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		416CF3161BEEE5C700411BE9 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ViewController.swift; path = ../Avara/ViewController.swift; sourceTree = "<group>"; };
-		416CF3A61BF463B600411BE9 /* Avara-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Avara-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		416CF3A61BF463B600411BE9 /* Avara.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Avara.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		416CF3A81BF463B600411BE9 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		416CF3AA1BF463B600411BE9 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		416CF3AD1BF463B600411BE9 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		416CF3AF1BF463B600411BE9 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		416CF3B11BF463B600411BE9 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		417CC3881B645260006B21F3 /* Avara-OSX.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Avara-OSX.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		417CC3881B645260006B21F3 /* Avara.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Avara.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		417CC38B1B645260006B21F3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		417CC3901B645260006B21F3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		417CC3921B645260006B21F3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -236,7 +241,6 @@
 		417CC39B1B645310006B21F3 /* FlyoverCamera.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlyoverCamera.swift; sourceTree = "<group>"; };
 		417CC39C1B645310006B21F3 /* RenderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RenderView.swift; sourceTree = "<group>"; };
 		417CC39D1B645310006B21F3 /* ClientWindowController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ClientWindowController.swift; sourceTree = "<group>"; };
-		417CC39E1B645310006B21F3 /* Globals.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Globals.swift; sourceTree = "<group>"; };
 		417CC39F1B645310006B21F3 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		417CC3A01B645310006B21F3 /* InputManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = InputManager.swift; sourceTree = "<group>"; };
 		417CC3A11B645310006B21F3 /* Map.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Map.swift; sourceTree = "<group>"; };
@@ -347,7 +351,7 @@
 			name = "OS X";
 			sourceTree = "<group>";
 		};
-		416CF3A71BF463B600411BE9 /* Avara-tvOS */ = {
+		416CF3A71BF463B600411BE9 /* tvOS */ = {
 			isa = PBXGroup;
 			children = (
 				416CF3A81BF463B600411BE9 /* AppDelegate.swift */,
@@ -356,6 +360,7 @@
 				416CF3AF1BF463B600411BE9 /* Assets.xcassets */,
 				416CF3B11BF463B600411BE9 /* Info.plist */,
 			);
+			name = tvOS;
 			path = "Avara-tvOS";
 			sourceTree = SOURCE_ROOT;
 		};
@@ -371,9 +376,9 @@
 		417CC3891B645260006B21F3 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				417CC3881B645260006B21F3 /* Avara-OSX.app */,
-				416CF3021BEEE54900411BE9 /* Avara-iOS.app */,
-				416CF3A61BF463B600411BE9 /* Avara-tvOS.app */,
+				417CC3881B645260006B21F3 /* Avara.app */,
+				416CF3021BEEE54900411BE9 /* Avara.app */,
+				416CF3A61BF463B600411BE9 /* Avara.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -382,7 +387,8 @@
 			isa = PBXGroup;
 			children = (
 				417CC39A1B645310006B21F3 /* Configuration.swift */,
-				417CC39E1B645310006B21F3 /* Globals.swift */,
+				41120A4D1C07E273003EC42A /* Types.swift */,
+				41120A4B1C07E268003EC42A /* Constants.swift */,
 				41195A1F1B731134006E53DC /* OperatorOverloads.swift */,
 				417CC3A41B645310006B21F3 /* ServerSimulationController.swift */,
 				417CC40C1B68A305006B21F3 /* NetPlayer.swift */,
@@ -396,7 +402,7 @@
 				417CC4101B68A9EA006B21F3 /* NetMessages */,
 				416CF3141BEEE57500411BE9 /* OS X */,
 				416CF3031BEEE54900411BE9 /* iOS */,
-				416CF3A71BF463B600411BE9 /* Avara-tvOS */,
+				416CF3A71BF463B600411BE9 /* tvOS */,
 				417CC3F21B688063006B21F3 /* MKDNet */,
 				4169CC4B1BEC69D40035FF29 /* Extensions */,
 				417CC3B71B6453D2006B21F3 /* Utilities */,
@@ -550,7 +556,7 @@
 			);
 			name = "Avara-iOS";
 			productName = "Avara-iOS";
-			productReference = 416CF3021BEEE54900411BE9 /* Avara-iOS.app */;
+			productReference = 416CF3021BEEE54900411BE9 /* Avara.app */;
 			productType = "com.apple.product-type.application";
 		};
 		416CF3A51BF463B600411BE9 /* Avara-tvOS */ = {
@@ -567,7 +573,7 @@
 			);
 			name = "Avara-tvOS";
 			productName = "Avara-tvOS";
-			productReference = 416CF3A61BF463B600411BE9 /* Avara-tvOS.app */;
+			productReference = 416CF3A61BF463B600411BE9 /* Avara.app */;
 			productType = "com.apple.product-type.application";
 		};
 		417CC3871B645260006B21F3 /* Avara-OSX */ = {
@@ -584,7 +590,7 @@
 			);
 			name = "Avara-OSX";
 			productName = Avara;
-			productReference = 417CC3881B645260006B21F3 /* Avara-OSX.app */;
+			productReference = 417CC3881B645260006B21F3 /* Avara.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -736,12 +742,14 @@
 				416CF3051BEEE54900411BE9 /* AppDelegate.swift in Sources */,
 				416CF3511BF3266200411BE9 /* Configuration.swift in Sources */,
 				416CF3541BF3266600411BE9 /* ServerSimulationController.swift in Sources */,
+				41120A511C07E27F003EC42A /* Constants.swift in Sources */,
 				416CF3551BF3266700411BE9 /* NetPlayer.swift in Sources */,
 				416CF3561BF3266800411BE9 /* NetPlayerSnapshot.swift in Sources */,
 				416CF35A1BF3266C00411BE9 /* InputManager.swift in Sources */,
 				416CF35C1BF3266D00411BE9 /* RenderView.swift in Sources */,
 				416CF35B1BF3266C00411BE9 /* FlyoverCamera.swift in Sources */,
 				416CF35F1BF3267000411BE9 /* ClientUpdateNetMessage.swift in Sources */,
+				41120A4F1C07E273003EC42A /* Types.swift in Sources */,
 				416CF3601BF3267100411BE9 /* ServerUpdateNetMessage.swift in Sources */,
 				416CF3611BF3267700411BE9 /* MKDNetServer.m in Sources */,
 				416CF35E1BF3266F00411BE9 /* ClientHelloNetMessage.swift in Sources */,
@@ -764,7 +772,6 @@
 				416CF3591BF3266B00411BE9 /* Map.swift in Sources */,
 				416CF3571BF3266900411BE9 /* ClientSimulationController.swift in Sources */,
 				416CF3531BF3266500411BE9 /* OperatorOverloads.swift in Sources */,
-				416CF3521BF3266300411BE9 /* Globals.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -772,15 +779,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				416CF3CC1BF47C9100411BE9 /* Globals.swift in Sources */,
 				416CF3AB1BF463B600411BE9 /* ViewController.swift in Sources */,
 				416CF3A91BF463B600411BE9 /* AppDelegate.swift in Sources */,
 				416CF3CF1BF47C9A00411BE9 /* NetPlayer.swift in Sources */,
 				416CF3D31BF47CA200411BE9 /* Map.swift in Sources */,
 				416CF3D51BF47CA600411BE9 /* FlyoverCamera.swift in Sources */,
+				41120A521C07E282003EC42A /* Constants.swift in Sources */,
 				416CF3D01BF47C9D00411BE9 /* ClientSimulationController.swift in Sources */,
 				416CF3D41BF47CA400411BE9 /* InputManager.swift in Sources */,
 				416CF3D71BF47CAA00411BE9 /* NetMessage.swift in Sources */,
+				41120A501C07E273003EC42A /* Types.swift in Sources */,
 				416CF3D61BF47CA800411BE9 /* RenderView.swift in Sources */,
 				416CF3DB1BF47CB500411BE9 /* MKDDirectMouseHelper.m in Sources */,
 				417656B71BF47E69004E39A5 /* callbacks.c in Sources */,
@@ -813,7 +821,9 @@
 			files = (
 				417CC3B01B645310006B21F3 /* Map.swift in Sources */,
 				417CC4141B69B98C006B21F3 /* ServerWindowController.swift in Sources */,
+				41120A4C1C07E268003EC42A /* Constants.swift in Sources */,
 				4151BEEA1B71D62B0082F75E /* NetPlayerSnapshot.swift in Sources */,
+				41120A4E1C07E273003EC42A /* Types.swift in Sources */,
 				417E12EF1B74802A006256C7 /* windows_wminput.c in Sources */,
 				417CC3A81B645310006B21F3 /* ClientSimulationController.swift in Sources */,
 				417CC3B31B645310006B21F3 /* ServerSimulationController.swift in Sources */,
@@ -835,7 +845,6 @@
 				417CC40D1B68A305006B21F3 /* NetPlayer.swift in Sources */,
 				417CC4121B68AA2F006B21F3 /* ClientHelloNetMessage.swift in Sources */,
 				4169CC4A1BEC69CF0035FF29 /* SCNNode+RecursiveChildNodes.swift in Sources */,
-				417CC3AD1B645310006B21F3 /* Globals.swift in Sources */,
 				417CC3AB1B645310006B21F3 /* RenderView.swift in Sources */,
 				416933201B75C5B800DB59BA /* host.c in Sources */,
 				417CC3AF1B645310006B21F3 /* InputManager.swift in Sources */,
@@ -900,7 +909,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "net.goosesensor.Avara-iOS";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Avara;
 				SDKROOT = iphoneos;
 				SWIFT_OBJC_BRIDGING_HEADER = "Avara/Avara-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -916,7 +925,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "net.goosesensor.Avara-iOS";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Avara;
 				SDKROOT = iphoneos;
 				SWIFT_OBJC_BRIDGING_HEADER = "Avara/Avara-Bridging-Header.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -933,7 +942,7 @@
 				INFOPLIST_FILE = "Avara-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "net.goosesensor.Avara-tvOS";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Avara;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = appletvos;
 				SWIFT_OBJC_BRIDGING_HEADER = "Avara/Avara-Bridging-Header.h";
@@ -951,7 +960,7 @@
 				INFOPLIST_FILE = "Avara-tvOS/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "net.goosesensor.Avara-tvOS";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Avara;
 				PROVISIONING_PROFILE = "";
 				SDKROOT = appletvos;
 				SWIFT_OBJC_BRIDGING_HEADER = "Avara/Avara-Bridging-Header.h";
@@ -1050,7 +1059,7 @@
 				INFOPLIST_FILE = Avara/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = net.goosesensor.Avara;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Avara;
 				SWIFT_OBJC_BRIDGING_HEADER = "Avara/Avara-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
@@ -1065,7 +1074,7 @@
 				INFOPLIST_FILE = Avara/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = net.goosesensor.Avara;
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = Avara;
 				SWIFT_OBJC_BRIDGING_HEADER = "Avara/Avara-Bridging-Header.h";
 			};
 			name = Release;

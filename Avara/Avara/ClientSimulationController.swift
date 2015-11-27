@@ -207,7 +207,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         #else
             var lookDelta = CGPointZero
             if let fY = pressedButtons[.LookUp] {
-                if THUMBLOOK_INVERTED_ENABLED {
+                if THUMBLOOK_INVERSION_ENABLED {
                     lookDelta.y = CGFloat(fY)
                 }
                 else {
@@ -215,7 +215,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 }
             }
             if let fY = pressedButtons[.LookDown] {
-                if THUMBLOOK_INVERTED_ENABLED {
+                if THUMBLOOK_INVERSION_ENABLED {
                     lookDelta.y = -CGFloat(fY)
                 }
                 else {
@@ -457,7 +457,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     }
     
     public func client(client: MKDNetClient!, didUpdateUploadRate bytesUpPerSec: UInt, downloadRate bytesDownPerSec: UInt) {
-        //NSLog("NET RATE: %.2fKB/sec up, %.2fKB/sec down", Double(bytesUpPerSec)/1024.0, Double(bytesDownPerSec)/1024.0)
+        NSLog("NET RATE: %.2fKB/sec up, %.2fKB/sec down", Double(bytesUpPerSec)/1024.0, Double(bytesDownPerSec)/1024.0)
     }
     
     /*****************************************************************************************************/
