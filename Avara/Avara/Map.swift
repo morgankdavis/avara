@@ -113,56 +113,57 @@ public class Map : NSObject, SCNProgramDelegate {
 //        omniLightNode.position = SCNVector3Make(40, 25, 50)
 //        scene.rootNode.addChildNode(omniLightNode)
         
-//        // spot light
-//        let spotLight = SCNLight()
-//        spotLight.type = SCNLightTypeSpot
-//        spotLight.color = MKDColor(white: 1.0, alpha: 1.0)
-//        let spotLightNode = SCNNode()
-//        spotLightNode.light = spotLight
-//        //let spotlightPosition = SCNVector3Make(130, 300, -150)
-//        let spotlightPosition = SCNVector3Make(30, 40, -30)
-//        spotLightNode.position = spotlightPosition
-//
-//        spotLight.castsShadow = true
-//        spotLight.shadowColor = MKDColor.blackColor()
-//        spotLight.spotOuterAngle = 35.0
-//        //spotLight.shadowRadius = 1.0
-//        spotLight.shadowMapSize = CGSizeMake(1024, 1024)
-//        spotLight.shadowSampleCount = 4
-//        spotLight.shadowMode = .Forward
-////        spotLight.shadowBias = 0.1
-//        spotLight.zFar = 1000
-//        spotLight.zNear = 0.1
-//        
-//        let centerCode = SCNNode()
-//        centerCode.position = SCNVector3Zero
-//        scene.rootNode.addChildNode(centerCode)
-//        
-//        spotLightNode.constraints = [SCNLookAtConstraint(target: centerCode)]
-//        scene.rootNode.addChildNode(spotLightNode)
-//        
-//        let sphereNode = SCNNode(geometry: SCNSphere(radius: 1.0))
-//        sphereNode.position = spotlightPosition
-//        
-//        let sphereMaterial = SCNMaterial()
-//        sphereMaterial.emission.contents = MKDColor.redColor()
-//        sphereNode.geometry?.materials = [sphereMaterial]
-//        
-//        scene.rootNode.addChildNode(sphereNode)
+        // spot light
+        let spotLight = SCNLight()
+        spotLight.type = SCNLightTypeSpot
+        spotLight.color = MKDColor(white: 1.0, alpha: 1.0)
+        let spotLightNode = SCNNode()
+        spotLightNode.light = spotLight
+        let spotlightPosition = SCNVector3Make(130, 300, -150)
+        //let spotlightPosition = SCNVector3Make(30, 40, -30)
+        spotLightNode.position = spotlightPosition
+
+        spotLight.castsShadow = true
+        spotLightNode.castsShadow = true
+        spotLight.shadowColor = MKDColor.blackColor()
+        spotLight.spotOuterAngle = 35.0
+        //spotLight.shadowRadius = 1.0
+        spotLight.shadowMapSize = CGSizeMake(1*1024, 1*1024)
+        spotLight.shadowSampleCount = 4
+        spotLight.shadowMode = .Forward
+//        spotLight.shadowBias = 0.1
+        spotLight.zFar = 1000
+        spotLight.zNear = 0.1
+        
+        let centerCode = SCNNode()
+        centerCode.position = SCNVector3Zero
+        scene.rootNode.addChildNode(centerCode)
+        
+        spotLightNode.constraints = [SCNLookAtConstraint(target: centerCode)]
+        scene.rootNode.addChildNode(spotLightNode)
+        
+        let sphereNode = SCNNode(geometry: SCNSphere(radius: 1.0))
+        sphereNode.position = spotlightPosition
+        
+        let sphereMaterial = SCNMaterial()
+        sphereMaterial.emission.contents = MKDColor.redColor()
+        sphereNode.geometry?.materials = [sphereMaterial]
+        
+        scene.rootNode.addChildNode(sphereNode)
         
         
-        let directionalLight = SCNLight()
-        directionalLight.type = SCNLightTypeDirectional
-        directionalLight.color = MKDColor(white: 1.0, alpha: 1.0)
-        let directionalLightNode = SCNNode()
-        directionalLightNode.light = directionalLight
-        
-        directionalLightNode.eulerAngles = SCNVector3Make(
-            -MKDFloat(3*M_PI/4.0),
-            MKDFloat(1*M_PI/4.0),
-            -MKDFloat(1*M_PI/4.0))
-        
-        scene.rootNode.addChildNode(directionalLightNode)
+//        let directionalLight = SCNLight()
+//        directionalLight.type = SCNLightTypeDirectional
+//        directionalLight.color = MKDColor(white: 1.0, alpha: 1.0)
+//        let directionalLightNode = SCNNode()
+//        directionalLightNode.light = directionalLight
+//        
+//        directionalLightNode.eulerAngles = SCNVector3Make(
+//            -MKDFloat(3*M_PI/4.0),
+//            MKDFloat(1*M_PI/4.0),
+//            -MKDFloat(1*M_PI/4.0))
+//        
+//        scene.rootNode.addChildNode(directionalLightNode)
         
         
 
