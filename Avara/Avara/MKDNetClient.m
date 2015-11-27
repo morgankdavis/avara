@@ -84,7 +84,7 @@
 
 	u_int32_t peerID = arc4random_uniform(SHRT_MAX);
     self.peerID = peerID;
-	NSLog(@"peerID: %d", peerID);
+	//NSLog(@"peerID: %d", peerID);
 	
 	self.peer = enet_host_connect(self.host,
 								  &address,
@@ -102,19 +102,26 @@
 	
 }
 
-- (void)sendPacket:(NSData *)packetData channel:(uint8_t)channel flags:(MKDNetPacketFlag)flags
+- (void)sendPacket:(NSData *)packetData channel:(uint8_t)channel flags:(MKDNetPacketFlag)flags duplicate:(uint8_t)duplicate
 {
-	if (self.isConnected) {
-		ENetPacket *packet = enet_packet_create([packetData bytes],
-												[packetData length],
-												flags);
-		enet_peer_send(self.peer,
-					   channel,
-					   packet);
-		
-		//enet_host_flush(self.host); // this was causing a crash. it was modifying enet internal structures at the same time as the event loop
+    if (self.isConnected) {
+        uint8 dup = duplicate;
+        if (flags & MKDNetPacketFlagReliable) { // no need to duplicate for reliable packets
+            dup = 1;
+        }
         
-        self.bytesSentSinceLastAverage += [packetData length];
+        for (int i=0; i<dup; i++) {
+            ENetPacket *packet = enet_packet_create([packetData bytes],
+                                                    [packetData length],
+                                                    flags);
+            enet_peer_send(self.peer,
+                           channel,
+                           packet);
+            
+            //enet_host_flush(self.host); // this was causing a crash. it was modifying enet internal structures at the same time as the event loop
+            
+            self.bytesSentSinceLastAverage += [packetData length];
+        }
 	}
 	else {
 		NSLog(@"Not connected!");

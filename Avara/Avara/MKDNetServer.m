@@ -66,17 +66,24 @@
 	return server;
 }
 
-- (void)broadcastPacket:(NSData *)packetData channel:(uint8_t)channel flags:(MKDNetPacketFlag)flags
+- (void)broadcastPacket:(NSData *)packetData channel:(uint8_t)channel flags:(MKDNetPacketFlag)flags duplicate:(uint8_t)duplicate
 {
-	ENetPacket *packet = enet_packet_create([packetData bytes],
-											[packetData length],
-											flags);
+    uint8 dup = duplicate;
+    if (flags & MKDNetPacketFlagReliable) { // no need to duplicate for reliable packets
+        dup = 1;
+    }
     
-	enet_host_broadcast(self.host,
-						channel,
-						packet);
-    
-    //enet_packet_destroy(packet); // do we need to call this at some point? it causes random crashes here.
+    for (int i=0; i<dup; i++) {
+        ENetPacket *packet = enet_packet_create([packetData bytes],
+                                                [packetData length],
+                                                flags);
+        
+        enet_host_broadcast(self.host,
+                            channel,
+                            packet);
+        
+        //enet_packet_destroy(packet); // do we need to call this at some point? it causes random crashes here.
+    }
 }
 
 #pragma mark - Private

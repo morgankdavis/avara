@@ -31,3 +31,5 @@ let NET_SERVER_PORT =                       UInt16(33777)
 let NET_MAX_CLIENTS =                       Int(12)
 let NET_MAX_CHANNELS =                      UInt8(4)
 let NET_CLIENT_RECONCILIATION_ENABLED =     true
+let NET_CLIENT_PACKET_DUP =                 UInt8(3)
+let NET_SERVER_PACKET_DUP =                 UInt8(1)

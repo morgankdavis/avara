@@ -484,10 +484,10 @@
 		417CC3F31B688232006B21F3 /* ENet */ = {
 			isa = PBXGroup;
 			children = (
+				416933111B75C5B800DB59BA /* enet.h */,
 				4169330E1B75C5B800DB59BA /* callbacks.c */,
 				4169330F1B75C5B800DB59BA /* callbacks.h */,
 				416933101B75C5B800DB59BA /* compress.c */,
-				416933111B75C5B800DB59BA /* enet.h */,
 				416933121B75C5B800DB59BA /* host.c */,
 				416933131B75C5B800DB59BA /* list.c */,
 				416933141B75C5B800DB59BA /* list.h */,

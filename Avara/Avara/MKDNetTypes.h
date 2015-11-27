@@ -9,8 +9,8 @@
 #define MKDNetTypes_h
 
 typedef NS_ENUM(NSUInteger, MKDNetPacketFlag) {
-	MKDNetPacketFlagReliable,
-	MKDNetPacketFlagUnsequenced
+	MKDNetPacketFlagReliable =      (1 << 0),
+	MKDNetPacketFlagUnsequenced =   (1 << 1)
 };
 
 #endif

@@ -105,7 +105,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 let updateMessage = ServerUpdateNetMessage(playerSnapshots: snapshotsToSend)
                 let packtData = updateMessage.encoded()
                 if let server = netServer {
-                    server.broadcastPacket(packtData, channel: NetChannel.Signaling.rawValue, flags: .Unsequenced)
+                    server.broadcastPacket(packtData, channel: NetChannel.Signaling.rawValue, flags: .Unsequenced, duplicate: NET_SERVER_PACKET_DUP)
                 }
             }
         }
@@ -180,7 +180,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         for (_, player) in netPlayers {
             let character = player.character
-            let (buttonEntries, totalDuration) = player.readAndClearButtonEntries() // ([([(ButtonInput, CGFloat)], CGFloat)], CGFloat)
+            let (buttonEntries, _) = player.readAndClearButtonEntries() // ([([(ButtonInput, CGFloat)], CGFloat)], CGFloat)
             let hullEulerAngles = player.lastReceivedHullEulerAngles
             
             // WARN: SANITY CHECK CLIENT INPUT TIME DELTAS
@@ -293,21 +293,21 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 
                 if let player = netPlayers[clientID] {
                     let updateMessage = message as! ClientUpdateNetMessage
-                    let buttonEntries = updateMessage.buttonEntries!
-                    let hullEulerAngles = updateMessage.hullEulerAngles
                     let sequenceNumber = updateMessage.sequenceNumber!
                     
-                    //                    NSLog("Client update message. inputs: %@, mouse delta: (%.2f, %.2f), sq: %d",
-                    //                        userInputs.description, mouseDelta.x, mouseDelta.y, sequenceNumber)
+                    //NSLog("Client update message. sq: %d", sequenceNumber)
                     
                     if sequenceNumber > player.lastReceivedSequenceNumber {
                         player.lastReceivedSequenceNumber = sequenceNumber
+                        
+                        let buttonEntries = updateMessage.buttonEntries!
+                        let hullEulerAngles = updateMessage.hullEulerAngles
                         
                         player.addButtonEntries(buttonEntries)
                         player.lastReceivedHullEulerAngles = hullEulerAngles
                     }
                     else {
-                        NSLog("*** SQ \(sequenceNumber) not greater than \(player.lastReceivedSequenceNumber)! ***")
+                        //NSLog("*** SQ \(sequenceNumber) not greater than \(player.lastReceivedSequenceNumber)! ***")
                     }
                 }
                 else {

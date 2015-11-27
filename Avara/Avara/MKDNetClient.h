@@ -17,7 +17,7 @@
 + (MKDNetClient *)clientWithDestinationAddress:(NSString *)address port:(uint16_t)port maxChannels:(uint8_t)maxChannels delegate:(id<MKDNetClientDelegate>)delegate;
 - (void)connect;
 - (void)disconnect;
-- (void)sendPacket:(NSData *)packetData channel:(uint8_t)channel flags:(MKDNetPacketFlag)flags;
+- (void)sendPacket:(NSData *)packetData channel:(uint8_t)channel flags:(MKDNetPacketFlag)flags duplicate:(uint8_t)duplicate;
 
 @property(atomic, strong, readonly) NSString                    *address;
 @property(atomic, readonly)			uint16_t                    port;

@@ -110,7 +110,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                         sequenceNumber: sequenceNumber)
    
                     let packtData = updateMessage.encoded()
-                    client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue , flags: .Unsequenced)
+                    client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue , flags: .Unsequenced, duplicate: NET_CLIENT_PACKET_DUP)
                     
                     // reset accumulator/last sent hull angles
                     clientAccumButtonEntries = [(buttons: [(button: ButtonInput, force: MKDFloat)], dT: MKDFloat)]()
@@ -131,7 +131,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                             sequenceNumber: sequenceNumber)
                         
                         let packtData = updateMessage.encoded()
-                        client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue , flags: .Unsequenced)
+                        client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue , flags: .Unsequenced, duplicate: NET_CLIENT_PACKET_DUP)
                         
                         sentNoInputPacket = true
                     }
@@ -203,7 +203,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
 //        else {
             let pressedButtons = inputManager.pressedButtons
         #if os(OSX)
-            var lookDelta = inputManager.readMouseDeltaAndClear()
+            let lookDelta = inputManager.readMouseDeltaAndClear()
         #else
             var lookDelta = CGPointZero
             if let fY = pressedButtons[.LookUp] {
@@ -436,7 +436,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         let helloMessage = ClientHelloNetMessage(name: "gatsby")
         let packtData = helloMessage.encoded()
-        client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue , flags: .Reliable)
+        client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue, flags: .Reliable, duplicate: 0)
         
         // WARN: Wait for game start message in future (or whatever)
         //startClientTickTimer()
@@ -457,7 +457,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     }
     
     public func client(client: MKDNetClient!, didUpdateUploadRate bytesUpPerSec: UInt, downloadRate bytesDownPerSec: UInt) {
-        NSLog("NET RATE: %.2fKB/sec up, %.2fKB/sec down", Double(bytesUpPerSec)/1024.0, Double(bytesDownPerSec)/1024.0)
+        //NSLog("NET RATE: %.2fKB/sec up, %.2fKB/sec down", Double(bytesUpPerSec)/1024.0, Double(bytesDownPerSec)/1024.0)
     }
     
     /*****************************************************************************************************/
