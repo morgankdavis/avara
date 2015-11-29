@@ -105,6 +105,7 @@ public class ClientWindowController: NSWindowController, NSWindowDelegate {
         
         renderView = RenderView(frame: CGRect(origin: CGPointZero, size: CLIENT_WINDOW_SIZE) as NSRect)
         renderView?.scene = scene
+        //renderView?.autoenablesDefaultLighting = false
         renderView?.allowsCameraControl = false
         renderView?.showsStatistics = true
         renderView?.debugOptions = SCN_DEBUG_OPTIONS

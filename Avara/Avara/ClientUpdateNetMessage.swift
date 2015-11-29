@@ -20,10 +20,12 @@ public class ClientUpdateNetMessage: NetMessage {
     // MARK:   Properties
     /*****************************************************************************************************/
     
-    override public var     opcode:             NetMessageOpcode { get { return .ClientUpdate } }
-    public          var     sequenceNumber:     UInt32?
-    private(set)    var     buttonEntries:      [(buttons: [(button: ButtonInput, force: MKDFloat)], dT: MKDFloat)]?
-    private(set)    var     hullEulerAngles =   SCNVector3Zero
+    override public var     opcode:                     NetMessageOpcode { get { return .ClientUpdate } }
+    public          var     sequenceNumber:             UInt32?
+    private(set)    var     hullEulerAngles =           SCNVector3Zero
+    
+    //private(set)    var     buttonEntriesLockQueue =    dispatch_queue_create("com.morgankdavis.buttonEntriesLockQueue", nil)
+    private(set)    var     buttonEntries:              [(buttons: [(button: ButtonInput, force: MKDFloat)], dT: MKDFloat)]?
     
     /*****************************************************************************************************/
     // MARK:   Public, NetMessage
@@ -80,7 +82,9 @@ public class ClientUpdateNetMessage: NetMessage {
                     }
                 }
                 let duration = MKDFloat(pullFloat32FromData(&data))
-                buttonEntries!.append((buttons, duration))
+                //dispatch_sync(buttonEntriesLockQueue) {
+                    buttonEntries!.append((buttons, duration))
+                //}
             }
 
             hullEulerAngles = pullVector3FromData(&data)

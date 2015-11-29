@@ -9,6 +9,8 @@
 import Foundation
 import SceneKit
 
+import AVFoundation
+
 
 public class Map : NSObject, SCNProgramDelegate {
     
@@ -16,7 +18,13 @@ public class Map : NSObject, SCNProgramDelegate {
     // MARK:   Properties
     /*****************************************************************************************************/
     
-    private     var scene:          SCNScene
+    private     var scene:                  SCNScene
+    
+    
+    
+    private     let VIDEO_TEX_ENABLED =     true
+    private     var previewLayer:           AVCaptureVideoPreviewLayer?
+    
     
     /*****************************************************************************************************/
     // MARK:   Private
@@ -243,28 +251,46 @@ public class Map : NSObject, SCNProgramDelegate {
         setupCollisionNode(cPlatformNode)
         
         // wall
-        let wallMaterial = SCNMaterial()
-        wallMaterial.diffuse.contents = MKDColor.yellowColor()
-        wallMaterial.doubleSided = true
-        
-        
-        // wall -- plane
         let wallGeometry = SCNPlane(width: 5, height: 5)
         wallGeometry.materials = [platformMaterial]
         let wallNode = SCNNode(geometry: wallGeometry)
         wallNode.name = "Wall node"
         wallNode.position = SCNVector3(x: 0, y: 2.5, z: 5)
         scene.rootNode.addChildNode(wallNode)
-
+        
         setupCollisionNode(wallNode)
         
         
-        
-        
-        
-        
-        
-        
+        if VIDEO_TEX_ENABLED {
+            let captureSession = AVCaptureSession()
+            if let videoDevice = AVCaptureDevice.defaultDeviceWithMediaType(AVMediaTypeVideo) {
+                do {
+                    let videoIn = try AVCaptureDeviceInput(device: videoDevice)
+                    if (captureSession.canAddInput(videoIn as AVCaptureInput)){
+                        captureSession.addInput(videoIn as AVCaptureDeviceInput)
+                    }
+                }
+                catch {
+                    NSLog("Exception")
+                }
+            }
+            
+            previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
+            previewLayer?.frame = CGRectMake(0, 0, 320, 320);
+            previewLayer?.videoGravity = AVLayerVideoGravityResize
+            previewLayer?.contentsGravity = kCAGravityResizeAspectFill
+            
+            let videoMaterial = SCNMaterial()
+            videoMaterial.doubleSided = true
+            videoMaterial.diffuse.contents = previewLayer!
+            
+            wallGeometry.materials = [videoMaterial]
+            
+            box1Node.geometry?.materials = [videoMaterial]
+            box2Node.geometry?.materials = [videoMaterial]
+            
+            captureSession.startRunning()
+        }
         
         
         // LINE

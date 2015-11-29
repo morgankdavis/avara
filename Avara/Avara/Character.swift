@@ -218,14 +218,18 @@ public class Character {
     
     public func shootAFuckingBall() {
         NSLog("shootAFuckingBall")
+        
         let ballGeo = SCNSphere(radius: 0.15)
+        let ballMaterial = SCNMaterial()
+        ballMaterial.diffuse.contents = MKDColor.cyanColor()
+        ballGeo.materials = [ballMaterial]
         let ballNode = SCNNode(geometry: ballGeo)
         ballNode.physicsBody = SCNPhysicsBody.dynamicBody()
         ballNode.physicsBody?.restitution = 1.0
         scene.rootNode.addChildNode(ballNode)
-        let posInFrotOfHull = SCNVector3Make(0, 0, -25)
-        let worldPosInFromOfHull = hullOuterNode!.convertPosition(posInFrotOfHull, toNode: scene.rootNode)
-        ballNode.position = hullOuterNode!.convertPosition(SCNVector3Make(0, 0, -1.25), toNode: scene.rootNode)
+        let posInFrotOfHull = SCNVector3Make(0, 0, -100)
+        let worldPosInFromOfHull = hullInnerNode!.convertPosition(posInFrotOfHull, toNode: scene.rootNode)
+        ballNode.position = hullInnerNode!.convertPosition(SCNVector3Make(0, 0, -1.25), toNode: scene.rootNode)
         ballNode.physicsBody?.applyForce(worldPosInFromOfHull, impulse: true)
     }
     
@@ -391,12 +395,14 @@ public class Character {
         let crosshairLImage = MKDImage(named: "crosshairL.png") // WARN: check this
         crosshairLMaterial.diffuse.contents = crosshairLImage
         crosshairLMaterial.emission.contents = crosshairLImage
+//        crosshairLMaterial.selfIllumination.contents = crosshairLImage
         crosshairLMaterial.doubleSided = true
         
         let crosshairRMaterial = SCNMaterial()
         let crosshairRImage = MKDImage(named: "crosshairR.png") // WARN: check this
         crosshairRMaterial.diffuse.contents = crosshairRImage
         crosshairRMaterial.emission.contents = crosshairRImage
+//        crosshairRMaterial.selfIllumination.contents = crosshairsRImage
         crosshairRMaterial.doubleSided = true
         
         let crosshairCenterSphereMaterial = SCNMaterial()
