@@ -34,67 +34,33 @@ public class Map : NSObject, SCNProgramDelegate {
         scene.fogDensityExponent = 2.0
         scene.fogColor = MKDColor.lightGrayColor()
         
-        // background
-        //scene.background.contents = MKDColor(red:102.0/255.0, green:204.0/255.0, blue:255.0/255.0, alpha:1)
+        // sky
+//        scene.background.contents = [
+//            MKDImage(named: "sky_miramar_0.png")!,
+//            MKDImage(named: "sky_miramar_1.png")!,
+//            MKDImage(named: "sky_miramar_2.png")!,
+//            MKDImage(named: "sky_miramar_3.png")!,
+//            MKDImage(named: "sky_miramar_4.png")!,
+//            MKDImage(named: "sky_miramar_5.png")!]
         
-        scene.background.contents = [
-            MKDImage(named: "sky_miramar_0.png")!,
-            MKDImage(named: "sky_miramar_1.png")!,
-            MKDImage(named: "sky_miramar_2.png")!,
-            MKDImage(named: "sky_miramar_3.png")!,
-            MKDImage(named: "sky_miramar_4.png")!,
-            MKDImage(named: "sky_miramar_5.png")!]
-        
-//        if let skycube = MKDImage(named: "sky_fox_cube.png") {
-//            scene.background.contents = skycube
-//        }
+        let sky = MDLSkyCubeTexture(name: nil,
+            channelEncoding: MDLTextureChannelEncoding.UInt8,
+            textureDimensions: [Int32(320), Int32(320)],
+            turbidity: 0.25,
+            sunElevation: 0.85,
+            upperAtmosphereScattering: 0.55,
+            groundAlbedo: 0.85)
+        scene.background.contents = sky.imageFromTexture()?.takeUnretainedValue()
+
         
         // WARNING: Temporary
         if (NSProcessInfo.processInfo().hostName == "goosebox.local") {
             scene.background.maxAnisotropy = 16.0
-        } else {
+        }
+        else {
             scene.background.maxAnisotropy = 2.0
         }
         scene.background.mipFilter = .Linear
-		
-        
-        
-//		let skyBoxGeo = SCNBox(width: 50, height: 50, length: 50, chamferRadius: 0)
-//        let skyBoxNode = SCNNode(geometry: skyBoxGeo)
-//        scene.rootNode.addChildNode(skyBoxNode)
-//        
-//        
-//		let skyProgram = SCNProgram()
-//        
-//        if let vshPath = NSBundle.mainBundle().pathForResource("sky", ofType: "vsh") {
-//            do {
-//                let vshString = try NSString(contentsOfFile: vshPath, encoding: NSUTF8StringEncoding)
-//                skyProgram.vertexShader = vshString as String
-//            }
-//            catch {
-//                NSLog("Exception loading vsh file.")
-//            }
-//        }
-//        
-//        if let fshPath = NSBundle.mainBundle().pathForResource("sky", ofType: "fsh") {
-//            do {
-//                let fshString = try NSString(contentsOfFile: fshPath, encoding: NSUTF8StringEncoding)
-//                skyProgram.fragmentShader = fshString as String
-//            }
-//            catch {
-//                NSLog("Exception loading fsh file.")
-//            }
-//        }
-//        
-//        skyProgram.setSemantic(SCNGeometrySourceSemanticVertex, forSymbol: "vtx_position", options: nil)
-//        skyProgram.setSemantic(SCNModelViewProjectionTransform, forSymbol: "l_vector", options: nil)
-//        
-//        skyProgram.delegate = self
-//        
-//        skyBoxGeo.program = skyProgram
-		
-
-        
 		
         
         // ambient light
@@ -141,81 +107,39 @@ public class Map : NSObject, SCNProgramDelegate {
         
         spotLightNode.constraints = [SCNLookAtConstraint(target: centerCode)]
         scene.rootNode.addChildNode(spotLightNode)
-        
-        let sphereNode = SCNNode(geometry: SCNSphere(radius: 1.0))
-        sphereNode.position = spotlightPosition
-        
-        let sphereMaterial = SCNMaterial()
-        sphereMaterial.emission.contents = MKDColor.redColor()
-        sphereNode.geometry?.materials = [sphereMaterial]
-        
-        scene.rootNode.addChildNode(sphereNode)
-        
-        
-//        let directionalLight = SCNLight()
-//        directionalLight.type = SCNLightTypeDirectional
-//        directionalLight.color = MKDColor(white: 1.0, alpha: 1.0)
-//        let directionalLightNode = SCNNode()
-//        directionalLightNode.light = directionalLight
-//        
-//        directionalLightNode.eulerAngles = SCNVector3Make(
-//            -MKDFloat(3*M_PI/4.0),
-//            MKDFloat(1*M_PI/4.0),
-//            -MKDFloat(1*M_PI/4.0))
-//        
-//        scene.rootNode.addChildNode(directionalLightNode)
-        
-        
 
-//        // floor node
-//        let floor = SCNFloor()
-//        floor.name = "Floor"
-//        floor.reflectivity = 0.25
-//        let floorNode = SCNNode(geometry: floor)
-//        scene.rootNode.addChildNode(floorNode)
-        
         // floor node
         let floor = SCNPlane(width: 40, height: 40)
         floor.name = "Floor"
         let floorNode = SCNNode(geometry: floor)
         floorNode.rotation = SCNVector4Make(1, 0, 0, -MKDFloat(M_PI)/2.0)
         scene.rootNode.addChildNode(floorNode)
-        
+
         let floorMaterial = SCNMaterial()
-        floorMaterial.diffuse.contents = MKDColor.grayColor()
+        //floorMaterial.diffuse.contents = MKDColor.grayColor()
         floorMaterial.ambient.contents = MKDColor.blackColor()
+        floorMaterial.specular.contents = MKDColor(white: 0.15, alpha: 1.0)
         floorMaterial.diffuse.contents = MKDImage(named: "grid_diffuse.png")
-        floorMaterial.transparent.contents = MKDImage(named: "grid_transparent.png")
         
-        let floorScale = MKDFloat(4.0)
+        let unitBoxSize = MKDFloat(2)
+        let unitBox = SCNNode(geometry: SCNBox(width: unitBoxSize, height: unitBoxSize, length: unitBoxSize, chamferRadius: 0))
+        unitBox.position.x += unitBoxSize/2.0
+        unitBox.position.z -= unitBoxSize/2.0
+        let unitBoxMaterial = SCNMaterial()
+        unitBoxMaterial.diffuse.contents = MKDColor.cyanColor()
+        unitBox.geometry?.materials = [unitBoxMaterial]
+        scene.rootNode.addChildNode(unitBox)
+        //floorMaterial.diffuse.contents = checkerboard.imageFromTexture()?.takeUnretainedValue()
+        
+        let floorScale = floor.width/1.0
         floorMaterial.diffuse.contentsTransform = SCNMatrix4MakeScale(floorScale, floorScale, floorScale)
         floorMaterial.diffuse.intensity = 1.0
         floorMaterial.diffuse.mipFilter = .Linear
-        
-        floorMaterial.transparent.contentsTransform = SCNMatrix4MakeScale(floorScale, floorScale, floorScale)
-        floorMaterial.transparent.intensity = 1.0
-        floorMaterial.transparent.mipFilter = .Linear
-        
-        // WARNING: Temporary
-        if (NSProcessInfo.processInfo().hostName == "goosebox.local") {
-            floorMaterial.diffuse.maxAnisotropy = 16.0
-        } else {
-            floorMaterial.diffuse.maxAnisotropy = 2.0
-        }
-//        floorMaterial.normal.contents = MKDImage(named: "floorBump.jpg")
-//        floorMaterial.normal.contentsTransform = SCNMatrix4MakeScale(15.0, 15.0, 15.0)
-//        floorMaterial.normal.intensity = 0.15
-
-        floorMaterial.locksAmbientWithDiffuse = true
-
-        floorMaterial.normal.wrapS = .Mirror
-        floorMaterial.normal.wrapT = .Mirror
-        floorMaterial.specular.wrapS = .Mirror
-        floorMaterial.specular.wrapT = .Mirror
+        floorMaterial.diffuse.maxAnisotropy = 16.0
         floorMaterial.diffuse.wrapS  = .Repeat
         floorMaterial.diffuse.wrapT  = .Repeat
-        floorMaterial.transparent.wrapS  = .Repeat
-        floorMaterial.transparent.wrapT  = .Repeat
+        
+        floorMaterial.locksAmbientWithDiffuse = true
         
         floor.firstMaterial = floorMaterial
         
@@ -341,15 +265,7 @@ public class Map : NSObject, SCNProgramDelegate {
         wallNode.name = "Wall node"
         wallNode.position = SCNVector3(x: 0, y: 2.5, z: 5)
         scene.rootNode.addChildNode(wallNode)
-        
-        // wall -- box
-//        let wallGeometry = SCNBox(width: 5, height: 5, length: 1, chamferRadius: 0)
-//        wallGeometry.materials = [wallMaterial]
-//        let wallNode = SCNNode(geometry: wallGeometry)
-//        wallNode.name = "Wall node"
-//        wallNode.position = SCNVector3(x: 0, y: 2.5, z: 5)
-//        scene.rootNode.addChildNode(wallNode)
-        
+
         setupCollisionNode(wallNode)
         
         

@@ -10,6 +10,13 @@ import Foundation
 import SceneKit
 
 
+func sync_obj(lock: AnyObject, closure: () -> Void) {
+    objc_sync_enter(lock)
+    closure()
+    objc_sync_exit(lock)
+}
+
+
 public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCNPhysicsContactDelegate, MKDNetClientDelegate {
     
     /*****************************************************************************************************/
@@ -34,6 +41,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private         var netServerOverrideSnapshot:          NetPlayerSnapshot?
     
     private         var clientAccumButtonEntries =          [(buttons: [(button: ButtonInput, force: MKDFloat)], dT: MKDFloat)]()
+    private         let clientAccumButtonEntriesLockQueue = dispatch_queue_create("com.morgankdavis.clientAccumButtonEntriesLockQueue", nil)
     private         var clientLastSentHullEulerAngles =     SCNVector3Zero
     private         var clientTickTimer:                    NSTimer?
     //private         var sentNoInputPacket =                 false
@@ -77,8 +85,6 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 case .HeadCamera:       switchToCameraNode(character!.cameraNode)
                 case .FlyoverCamera:    switchToCameraNode(flyoverCamera.node)
                 case .Fire:             character?.shootAFuckingBall()
-                case .MoveForward, .MoveBackward, .TurnLeft, .TurnRight:
-                    break // game loop will process
                 default: break
                 }
             }
@@ -96,25 +102,26 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                     character!.hullOuterNode!.eulerAngles.y,
                     character!.hullInnerNode!.eulerAngles.z)
                 
-                let newInput = (clientAccumButtonEntries.count > 0)
-                    || (hullEulerAngles.x != clientLastSentHullEulerAngles.x)
-                    || (hullEulerAngles.y != clientLastSentHullEulerAngles.y)
-                    || (hullEulerAngles.z != clientLastSentHullEulerAngles.z)
+                dispatch_sync(clientAccumButtonEntriesLockQueue) {
+                let newInput = (self.clientAccumButtonEntries.count > 0)
+                    || (hullEulerAngles.x != self.clientLastSentHullEulerAngles.x)
+                    || (hullEulerAngles.y != self.clientLastSentHullEulerAngles.y)
+                    || (hullEulerAngles.z != self.clientLastSentHullEulerAngles.z)
                 if newInput {
                     //NSLog("-- CLIENT SENDING HIGH --")
                     
-                    ++sequenceNumber
+                    ++self.sequenceNumber
                     let updateMessage = ClientUpdateNetMessage(
-                        buttonEntries: clientAccumButtonEntries,
+                        buttonEntries: self.clientAccumButtonEntries,
                         hullEulerAngles: hullEulerAngles,
-                        sequenceNumber: sequenceNumber)
+                        sequenceNumber: self.sequenceNumber)
    
                     let packtData = updateMessage.encoded()
                     client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue , flags: .Unsequenced, duplicate: NET_CLIENT_PACKET_DUP)
                     
                     // reset accumulator/last sent hull angles
-                    clientAccumButtonEntries = [(buttons: [(button: ButtonInput, force: MKDFloat)], dT: MKDFloat)]()
-                    clientLastSentHullEulerAngles = hullEulerAngles
+                    self.clientAccumButtonEntries = [(buttons: [(button: ButtonInput, force: MKDFloat)], dT: MKDFloat)]()
+                    self.clientLastSentHullEulerAngles = hullEulerAngles
                     
                     //sentNoInputPacket = false
                 }
@@ -139,6 +146,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
 //                        //NSLog("-- CLIENT SKIPPING --")
 //                    }
                 }
+                } // lock
             }
             
             //client.pump()
@@ -190,7 +198,9 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         #if os(OSX)
             if windowController!.isCursorCaptured {
                 if let directMouseHelper = inputManager.directMouseHelper {
-                    directMouseHelper.pump()
+                    dispatch_async(dispatch_get_main_queue(),{
+                        directMouseHelper.pump()
+                    })
                 }
             }
         #endif
@@ -253,7 +263,9 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             
             // add to net client output accumulator
             if buttonDown {
-                clientAccumButtonEntries.append((buttons, MKDFloat(dT)))
+                dispatch_sync(clientAccumButtonEntriesLockQueue) {
+                    self.clientAccumButtonEntries.append((buttons, MKDFloat(dT)))
+                }
             }
             
             // IMPORTANT! initialPosition has to be set BEFORE any translation in each loop invocation
@@ -261,6 +273,11 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             character?.updateForInputs(buttonEntries, lookDelta: lookDelta)
             character?.updateForLoopDelta(dT, initialPosition: initialPosition!)
         }
+        
+        
+//        if inputManager.pressedButtons.keys.contains(.Fire) {
+//            character?.shootAFuckingBall()
+//        }
     }
     
     func switchToCameraNode(cameraNode: SCNNode) {
@@ -327,7 +344,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 }
                 
                 if let s = mySnapshot {
-                    NSLog("Server update message with sq: %d, prev sent sq: %d", s.sequenceNumber, sequenceNumber)
+                    //NSLog("Server update message with sq: %d, prev sent sq: %d", s.sequenceNumber, sequenceNumber)
                     //if (s.sequenceNumber > sequenceNumber) && sentNoInputPacket {
                     if s.sequenceNumber > sequenceNumber+1 { // server incraments before return, so we look for one further
                         netServerOverrideSnapshot = s // game loop will see and correct player state
@@ -372,9 +389,9 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             
             let dT = MKDFloat(time - lastTime)
             
-            dispatch_async(dispatch_get_main_queue(),{
+            //dispatch_async(dispatch_get_main_queue(),{
                 self.gameLoop(dT)
-            })
+            //})
         }
         else {
             lastRenderTime = time
@@ -388,11 +405,24 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     public func renderer(renderer: SCNSceneRenderer, didSimulatePhysicsAtTime time: NSTimeInterval) {
         //NSLog("renderer(%@, didSimulatePhysicsAtTime: %f)", renderer.description, time)
         
-        dispatch_async(dispatch_get_main_queue(),{
+//        if let lastTime = self.lastRenderTime {
+//            lastRenderTime = time
+//            
+//            let dT = MKDFloat(time - lastTime)
+//            
+//            //dispatch_async(dispatch_get_main_queue(),{
+//                self.gameLoop(dT)
+//            //})
+//        }
+//        else {
+//            lastRenderTime = time
+//        }
+        
+        //dispatch_async(dispatch_get_main_queue(),{
             if let character = self.character {
                 character.didSimulatePhysicsAtTime(time)
             }
-        })
+        //})
     }
     
     public func renderer(renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: NSTimeInterval) {
@@ -412,17 +442,17 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     public func physicsWorld(world: SCNPhysicsWorld, didUpdateContact contact: SCNPhysicsContact) {
         //NSLog("physicsWorld(%@, didUpdateContact: %@)", world, contact)
         
-        dispatch_async(dispatch_get_main_queue(),{
+        //dispatch_async(dispatch_get_main_queue(),{
             self.physicsWorld(world, didBeginOrUpdateContact: contact)
-        })
+        //})
     }
     
     public func physicsWorld(world: SCNPhysicsWorld, didBeginContact contact: SCNPhysicsContact) {
         //NSLog("physicsWorld(%@, didBeginContact: %@)", world, contact)
         
-        dispatch_async(dispatch_get_main_queue(),{
+        //dispatch_async(dispatch_get_main_queue(),{
             self.physicsWorld(world, didBeginOrUpdateContact: contact)
-        })
+        //})
     }
     
     public func physicsWorld(world: SCNPhysicsWorld, didEndContact contact: SCNPhysicsContact) {

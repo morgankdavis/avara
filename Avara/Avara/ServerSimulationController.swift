@@ -337,9 +337,9 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             
             let dT = MKDFloat(time - lastTime)
             
-            dispatch_async(dispatch_get_main_queue(),{
+            //dispatch_async(dispatch_get_main_queue(),{
                 self.gameLoop(dT)
-            })
+            //})
         }
         else {
             lastRenderTime = time
@@ -352,12 +352,25 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     
     public func renderer(aRenderer: SCNSceneRenderer, didSimulatePhysicsAtTime time: NSTimeInterval) {
         //NSLog("renderer(didSimulatePhysicsAtTime:)")
+        
+//        if let lastTime = lastRenderTime {
+//            lastRenderTime = time
+//            
+//            let dT = MKDFloat(time - lastTime)
+//            
+//            //dispatch_async(dispatch_get_main_queue(),{
+//                self.gameLoop(dT)
+//            //})
+//        }
+//        else {
+//            lastRenderTime = time
+//        }
 
-        dispatch_async(dispatch_get_main_queue(),{
+        //dispatch_async(dispatch_get_main_queue(),{
             for (_,player) in self.netPlayers {
                 player.character.didSimulatePhysicsAtTime(time)
             }
-        })
+        //})
     }
     
     public func renderer(renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: NSTimeInterval) {
@@ -377,9 +390,9 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             NSLog("physicsWorld(didUpdateContact: %@)", contact)
         }
         
-        dispatch_async(dispatch_get_main_queue(),{
+        //dispatch_async(dispatch_get_main_queue(),{
             self.physicsWorld(world, didBeginOrUpdateContact: contact)
-        })
+        //})
     }
     
     public func physicsWorld(world: SCNPhysicsWorld, didBeginContact contact: SCNPhysicsContact) {
@@ -387,9 +400,9 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             NSLog("physicsWorld(didBeginContact: %@)", contact)
         }
         
-        dispatch_async(dispatch_get_main_queue(),{
+        //dispatch_async(dispatch_get_main_queue(),{
             self.physicsWorld(world, didBeginOrUpdateContact: contact)
-        })
+        //})
     }
     
     public func physicsWorld(world: SCNPhysicsWorld, didEndContact contact: SCNPhysicsContact) {
