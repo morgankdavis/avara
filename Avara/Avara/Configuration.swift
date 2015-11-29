@@ -12,7 +12,7 @@ import SceneKit
 
 let CLIENT_WINDOW_SIZE =                    CGSize(width: 800, height: 600)
 let SERVER_WINDOW_SIZE =                    CGSize(width: 320, height: 240)
-let SCN_DEBUG_OPTIONS: SCNDebugOptions =    [.ShowPhysicsShapes, .ShowBoundingBoxes, .ShowWireframe]
+let SCN_DEBUG_OPTIONS: SCNDebugOptions =    []//[.ShowPhysicsShapes, .ShowBoundingBoxes, .ShowWireframe]
 
 let PHYSICS_TIMESTEP =                      1.0/60.0
 
@@ -25,7 +25,7 @@ let THUMBLOOK_INVERSION_ENABLED =           false
 
 let SERVER_VIEW_ENABLED =                   true
 
-let NET_SERVER_TICK_RATE =                  CGFloat(60.0) // Hz
+let NET_SERVER_TICK_RATE =                  CGFloat(30.0) // Hz
 let NET_CLIENT_TICK_RATE =                  CGFloat(60.0) // Hz
 let NET_SERVER_PORT =                       UInt16(33777)
 let NET_MAX_CLIENTS =                       Int(12)

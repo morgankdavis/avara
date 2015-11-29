@@ -57,7 +57,6 @@ public class Character {
     
     private         var crosshairRNode:             SCNNode?
     private         var crosshairLNode:             SCNNode?
-    private         var crosshairCenterSphereNode:  SCNNode?
     
     private         var allBodyNodes =             [SCNNode]()
 
@@ -409,23 +408,18 @@ public class Character {
         
         crosshairRNode = SCNNode(geometry: SCNPlane(width: crosshairWidth, height: CROSSHAIR_HEIGHT))
         crosshairLNode = SCNNode(geometry: SCNPlane(width: crosshairWidth, height: CROSSHAIR_HEIGHT))
-        crosshairCenterSphereNode = SCNNode(geometry: SCNSphere(radius: 0.05))
         
         crosshairRNode?.castsShadow = false
         crosshairLNode?.castsShadow = false
-        crosshairCenterSphereNode?.castsShadow = false
         
         crosshairRNode?.name = "Right crosshair node"
         crosshairLNode?.name = "Left crosshair node"
-        crosshairCenterSphereNode?.name = "Center crosshair sphere node"
         
         crosshairRNode!.geometry!.materials = [crosshairRMaterial]
         crosshairLNode!.geometry!.materials = [crosshairLMaterial]
-        crosshairCenterSphereNode!.geometry?.materials = [crosshairCenterSphereMaterial]
         
         hullInnerNode!.addChildNode(crosshairRNode!)
         hullInnerNode!.addChildNode(crosshairLNode!)
-        hullInnerNode!.addChildNode(crosshairCenterSphereNode!)
         
         // update allBodyNodes
         
@@ -446,63 +440,6 @@ public class Character {
     }
     
     private func updateCrosshairs() {
-        
-        // SPHERE
-        
-//        do {
-//            let sphere = crosshairCenterSphereNode!.geometry as! SCNSphere
-//            //let sphereDiameter = sphere.radius * 2.0
-//            
-//            let worldSourcePoint = hullInnerNode!.convertPosition(SCNVector3Zero, toNode:scene.rootNode)
-//            
-//            let worldDestinationPoint = hullInnerNode!.convertPosition(
-//                SCNVector3Make(0, 0, 0 - CROSSHAIR_FAR),
-//                toNode:scene.rootNode)
-//            
-//            let rayResults = scene.physicsWorld.rayTestWithSegmentFromPoint(
-//                worldSourcePoint,
-//                toPoint: worldDestinationPoint,
-//                options: [SCNPhysicsTestSearchModeKey : SCNPhysicsTestSearchModeAll])
-//            
-//            var closestHitResult: (result: SCNHitTestResult, distance: CGFloat)?
-//            
-//            if rayResults.count > 0 {
-//                for result in rayResults {
-//                    // find how long this ray is
-//                    let difference = SCNVector3Make(
-//                        result.worldCoordinates.x - worldSourcePoint.x,
-//                        result.worldCoordinates.y - worldSourcePoint.y,
-//                        result.worldCoordinates.z - worldSourcePoint.z)
-//                    let distance = CGFloat(GLKVector3Length(SCNVector3ToGLKVector3(difference)))
-//                    
-//                    //NSLog("HIT WITH DISTANCE: %f", distance)
-//                    
-//                    if !allBodyNodes.contains(result.node) { // don't project onto parts of the hector's own body...
-//                        if let (_, cD) = closestHitResult {
-//                            if distance < cD {
-//                                closestHitResult = (result, distance)
-//                            }
-//                        }
-//                        else {
-//                            closestHitResult = (result, distance)
-//                        }
-//                    }
-//                }
-//            }
-//            
-//            if let (_, distance) = closestHitResult {
-//                crosshairCenterSphereNode!.position = SCNVector3Make(
-//                    0,
-//                    0,
-//                    -(MKDFloat(distance) - 0.005))
-//            }
-//            else { // so results. project out to CROSSHAIR_FAR
-//                crosshairCenterSphereNode!.position = SCNVector3Make(
-//                    0,
-//                    0,
-//                    -CROSSHAIR_FAR)
-//            }
-//        }
         
         let CROSSHAIR_SEPARATION_FACTOR = MKDFloat(1.5)
 
