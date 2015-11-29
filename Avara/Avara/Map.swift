@@ -67,7 +67,7 @@ public class Map : NSObject, SCNProgramDelegate {
         let ambientLightNode = SCNNode()
         ambientLightNode.light = SCNLight()
         ambientLightNode.light!.type = SCNLightTypeAmbient
-        ambientLightNode.light!.color = MKDColor(white: 0.4, alpha: 1.0)
+        ambientLightNode.light!.color = MKDColor(white: 0.25, alpha: 1.0)
         scene.rootNode.addChildNode(ambientLightNode)
         
 //        // omni light
@@ -120,16 +120,6 @@ public class Map : NSObject, SCNProgramDelegate {
         floorMaterial.ambient.contents = MKDColor.blackColor()
         floorMaterial.specular.contents = MKDColor(white: 0.15, alpha: 1.0)
         floorMaterial.diffuse.contents = MKDImage(named: "grid_diffuse.png")
-        
-        let unitBoxSize = MKDFloat(2)
-        let unitBox = SCNNode(geometry: SCNBox(width: unitBoxSize, height: unitBoxSize, length: unitBoxSize, chamferRadius: 0))
-        unitBox.position.x += unitBoxSize/2.0
-        unitBox.position.z -= unitBoxSize/2.0
-        let unitBoxMaterial = SCNMaterial()
-        unitBoxMaterial.diffuse.contents = MKDColor.cyanColor()
-        unitBox.geometry?.materials = [unitBoxMaterial]
-        scene.rootNode.addChildNode(unitBox)
-        //floorMaterial.diffuse.contents = checkerboard.imageFromTexture()?.takeUnretainedValue()
         
         let floorScale = floor.width/1.0
         floorMaterial.diffuse.contentsTransform = SCNMatrix4MakeScale(floorScale, floorScale, floorScale)

@@ -27,6 +27,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
     private(set)    var scene =                         SCNScene()
     private         var map:                            Map?
     private         var netPlayers =                    [UInt32:NetPlayer]()            // id:player
+    private         let netPlayersLockQueue =           dispatch_queue_create("com.morgankdavis.netPlayersLockQueue", nil)
     private         var netServer:                      MKDNetServer?
     private         var cameraNode =                    SCNNode()
     
@@ -58,54 +59,56 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         // broadcast state to all clients
         
         var snapshotsToSend = [NetPlayerSnapshot]()
-        for (id, player) in netPlayers {
-            //NSLog("-- PLAYER ID %d --", id)
-            
-            // make a snapshot for each player
-            // if that snapshot is different from player.lastSentPlayerSnapshot, add it to the list to send
-            
-            // pack up inner&outer hull angles
-            let hullAngles = SCNVector3Make(
-                player.character.hullOuterNode!.eulerAngles.x,
-                player.character.hullOuterNode!.eulerAngles.y,
-                player.character.hullInnerNode!.eulerAngles.z)
-            let snapshot = NetPlayerSnapshot(
-                sequenceNumber: player.lastReceivedSequenceNumber+1,
-                id: id,
-                position: player.character.bodyNode.position,
-                bodyRotation: player.character.bodyNode.rotation,
-                hullEulerAngles: hullAngles) // WARN: change to "hull" + add roll
-            
-            if snapshot != player.lastSentNetPlayerSnapshot {
-                //NSLog("-- SERVER SENDING --")
-                snapshotsToSend.append(snapshot)
-                player.lastSentNetPlayerSnapshot = snapshot
-                player.lastReceivedSequenceNumber++
+        dispatch_sync(netPlayersLockQueue) {
+            for (id, player) in self.netPlayers {
+                //NSLog("-- PLAYER ID %d --", id)
                 
-                serverSentNoChangePacket[id] = false
-            }
-            else {
-                if serverSentNoChangePacket[id] == nil || serverSentNoChangePacket[id] == false {
-                    // send a single packet indicating there is no new input
-                    
-                    //NSLog("-- SERVER SENDING DUPLICATE --")
-                    
+                // make a snapshot for each player
+                // if that snapshot is different from player.lastSentPlayerSnapshot, add it to the list to send
+                
+                // pack up inner&outer hull angles
+                let hullAngles = SCNVector3Make(
+                    player.character.hullOuterNode!.eulerAngles.x,
+                    player.character.hullOuterNode!.eulerAngles.y,
+                    player.character.hullInnerNode!.eulerAngles.z)
+                let snapshot = NetPlayerSnapshot(
+                    sequenceNumber: player.lastReceivedSequenceNumber+1,
+                    id: id,
+                    position: player.character.bodyNode.position,
+                    bodyRotation: player.character.bodyNode.rotation,
+                    hullEulerAngles: hullAngles) // WARN: change to "hull" + add roll
+                
+                if snapshot != player.lastSentNetPlayerSnapshot {
+                    //NSLog("-- SERVER SENDING --")
                     snapshotsToSend.append(snapshot)
                     player.lastSentNetPlayerSnapshot = snapshot
                     player.lastReceivedSequenceNumber++
                     
-                    serverSentNoChangePacket[id] = true
+                    self.serverSentNoChangePacket[id] = false
                 }
                 else {
-                    //NSLog("-- SERVER SKIPPING --")
+                    if self.serverSentNoChangePacket[id] == nil || self.serverSentNoChangePacket[id] == false {
+                        // send a single packet indicating there is no new input
+                        
+                        //NSLog("-- SERVER SENDING DUPLICATE --")
+                        
+                        snapshotsToSend.append(snapshot)
+                        player.lastSentNetPlayerSnapshot = snapshot
+                        player.lastReceivedSequenceNumber++
+                        
+                        self.serverSentNoChangePacket[id] = true
+                    }
+                    else {
+                        //NSLog("-- SERVER SKIPPING --")
+                    }
                 }
-            }
-            
-            if snapshotsToSend.count > 0 {
-                let updateMessage = ServerUpdateNetMessage(playerSnapshots: snapshotsToSend)
-                let packtData = updateMessage.encoded()
-                if let server = netServer {
-                    server.broadcastPacket(packtData, channel: NetChannel.Signaling.rawValue, flags: .Unsequenced, duplicate: NET_SERVER_PACKET_DUP)
+                
+                if snapshotsToSend.count > 0 {
+                    let updateMessage = ServerUpdateNetMessage(playerSnapshots: snapshotsToSend)
+                    let packtData = updateMessage.encoded()
+                    if let server = self.netServer {
+                        server.broadcastPacket(packtData, channel: NetChannel.Signaling.rawValue, flags: .Unsequenced, duplicate: NET_SERVER_PACKET_DUP)
+                    }
                 }
             }
         }
@@ -178,7 +181,8 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         // hack to keep loop running. see setup()
         magicSphereOfPower!.physicsBody?.applyForce(SCNVector3(x: 0, y: 0, z: 0), impulse: true)
         
-        for (_, player) in netPlayers {
+        dispatch_sync(netPlayersLockQueue) {
+        for (_, player) in self.netPlayers {
             let character = player.character
             let (buttonEntries, _) = player.readAndClearButtonEntries() // ([([(ButtonInput, CGFloat)], CGFloat)], CGFloat)
             let hullEulerAngles = player.lastReceivedHullEulerAngles
@@ -195,7 +199,8 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             
             
             // make camera follow player
-            cameraNode.position = SCNVector3(x: character.bodyNode.position.x, y: cameraNode.position.y, z: character.bodyNode.position.z)
+            self.cameraNode.position = SCNVector3(x: character.bodyNode.position.x, y: self.cameraNode.position.y, z: character.bodyNode.position.z)
+        }
         }
         
         
@@ -251,7 +256,8 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
             
             // match node to a client character and update accordingly
             
-            for (_,player) in netPlayers {
+            dispatch_sync(netPlayersLockQueue) {
+            for (_,player) in self.netPlayers {
                 let character = player.character
                 //let childNodes = player.character.bodyNode.childNodes
                 // would be nice to do this recursively from bodyNode down
@@ -266,6 +272,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 else if bodyNodes.contains(contact.nodeB) { // nodeB belongs to 'player'
                     character.bodyPart(contact.nodeB, mayHaveHitWall:contact.nodeA, withContact:contact)
                 }
+            }
             }
         }
     }
@@ -367,8 +374,10 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
 //        }
 
         //dispatch_async(dispatch_get_main_queue(),{
+        dispatch_sync(netPlayersLockQueue) {
             for (_,player) in self.netPlayers {
                 player.character.didSimulatePhysicsAtTime(time)
+            }
             }
         //})
     }
