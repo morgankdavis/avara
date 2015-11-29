@@ -158,7 +158,7 @@ public class ServerSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         magicSphereOfPower?.physicsBody?.velocityFactor = SCNVector3Zero
         magicSphereOfPower?.physicsBody?.affectedByGravity = false
         
-        scene.physicsWorld.timeStep = PHYSICS_TIMESTEP
+        scene.physicsWorld.timeStep = NSTimeInterval(MKDFloat(1.0)/PHYSICS_TIMESTEP)
         scene.physicsWorld.contactDelegate = self
         
         let camera = SCNCamera()

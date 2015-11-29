@@ -216,18 +216,20 @@ public class Character {
         updateCrosshairs()
     }
     
-    public func shootAFuckingBall() {
-        NSLog("shootAFuckingBall")
+    public func shoot() {
+        NSLog("shoot()")
         
         let ballGeo = SCNSphere(radius: 0.15)
         let ballMaterial = SCNMaterial()
         ballMaterial.diffuse.contents = MKDColor.cyanColor()
         ballGeo.materials = [ballMaterial]
         let ballNode = SCNNode(geometry: ballGeo)
+        ballNode.categoryBitMask = NodeCategory.Projectile.rawValue
         ballNode.physicsBody = SCNPhysicsBody.dynamicBody()
+        ballNode.physicsBody?.mass = 0.25
         ballNode.physicsBody?.restitution = 1.0
         scene.rootNode.addChildNode(ballNode)
-        let posInFrotOfHull = SCNVector3Make(0, 0, -100)
+        let posInFrotOfHull = SCNVector3Make(0, 0, -35)
         let worldPosInFromOfHull = hullInnerNode!.convertPosition(posInFrotOfHull, toNode: scene.rootNode)
         ballNode.position = hullInnerNode!.convertPosition(SCNVector3Make(0, 0, -1.25), toNode: scene.rootNode)
         ballNode.physicsBody?.applyForce(worldPosInFromOfHull, impulse: true)
@@ -490,13 +492,15 @@ public class Character {
                         let distance = CGFloat(GLKVector3Length(SCNVector3ToGLKVector3(difference)))
                         
                         if !allBodyNodes.contains(result.node) { // don't project onto parts of the hector's own body...
-                            if let (_, cD) = closestHitResult {
-                                if distance < cD {
+                            if (result.node.categoryBitMask & NodeCategory.Projectile.rawValue) == 0 { // ignore projectiles...
+                                if let (_, cD) = closestHitResult {
+                                    if distance < cD {
+                                        closestHitResult = (result, distance)
+                                    }
+                                }
+                                else {
                                     closestHitResult = (result, distance)
                                 }
-                            }
-                            else {
-                                closestHitResult = (result, distance)
                             }
                         }
                     }
@@ -558,13 +562,15 @@ public class Character {
                         let distance = CGFloat(GLKVector3Length(SCNVector3ToGLKVector3(difference)))
                         
                         if !allBodyNodes.contains(result.node) { // don't project onto parts of the hector's own body...
-                            if let (_, cD) = closestHitResult {
-                                if distance < cD {
+                            if (result.node.categoryBitMask & NodeCategory.Projectile.rawValue) == 0 { // ignore projectiles...
+                                if let (_, cD) = closestHitResult {
+                                    if distance < cD {
+                                        closestHitResult = (result, distance)
+                                    }
+                                }
+                                else {
                                     closestHitResult = (result, distance)
                                 }
-                            }
-                            else {
-                                closestHitResult = (result, distance)
                             }
                         }
                     }

@@ -84,7 +84,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                 case .ToggleFlyover:    toggleFlyoverMode()
                 case .HeadCamera:       switchToCameraNode(character!.cameraNode)
                 case .FlyoverCamera:    switchToCameraNode(flyoverCamera.node)
-                case .Fire:             character?.shootAFuckingBall()
+                case .Fire:             character?.shoot()
                 default: break
                 }
             }
@@ -174,7 +174,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         character = Character(scene: scene)
         
-        scene.physicsWorld.timeStep = PHYSICS_TIMESTEP
+        scene.physicsWorld.timeStep = NSTimeInterval(MKDFloat(1.0)/PHYSICS_TIMESTEP)
         scene.physicsWorld.contactDelegate = self
         
         flyoverCamera.node.position = SCNVector3(x: 0, y: 0.5, z: 10)
@@ -276,7 +276,7 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         
         
 //        if inputManager.pressedButtons.keys.contains(.Fire) {
-//            character?.shootAFuckingBall()
+//            character?.shoot()
 //        }
     }
     

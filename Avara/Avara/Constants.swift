@@ -21,6 +21,10 @@ enum CollisionCategory: Int {
     case Movable =      0b00001000
 }
 
+enum NodeCategory: Int {
+    case Projectile =   0b10000000
+}
+
 let VECTOR_COMPONENT_EQUALITY_TOLERANCE =   MKDFloat(0.000001)
 
 let MOUSELOOK_SENSITIVITY_MULTIPLIER =      CGFloat(0.0005)

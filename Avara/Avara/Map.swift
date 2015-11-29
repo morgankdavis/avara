@@ -22,7 +22,7 @@ public class Map : NSObject, SCNProgramDelegate {
     
     
     
-    private     let VIDEO_TEX_ENABLED =     true
+    private     let VIDEO_TEX_ENABLED =     false
     private     var previewLayer:           AVCaptureVideoPreviewLayer?
     
     
@@ -177,6 +177,7 @@ public class Map : NSObject, SCNProgramDelegate {
 
         // box physics
         box1Node.physicsBody = SCNPhysicsBody.dynamicBody()
+        box1Node.physicsBody?.mass = 10.0
         box1Node.physicsBody?.friction = 0.25 // default is .5
         box1Node.physicsBody?.rollingFriction = 0.25
         //box1Node.physicsBody?.angularVelocityFactor = SCNVector3(x: 0, y: 0, z: 0)
@@ -185,6 +186,7 @@ public class Map : NSObject, SCNProgramDelegate {
         //box1Node.physicsBody?.contactTestBitMask = CollisionCategory.Character.rawValue
 
         box2Node.physicsBody = SCNPhysicsBody.dynamicBody()
+        box2Node.physicsBody?.mass = 10.0
         box2Node.physicsBody?.friction = 0.25 // default is .5
         box2Node.physicsBody?.rollingFriction = 0.25
         //box1Node.physicsBody?.angularVelocityFactor = SCNVector3(x: 0, y: 0, z: 0)
