@@ -20,11 +20,8 @@ public class Map : NSObject, SCNProgramDelegate {
     
     private     var scene:                  SCNScene
     
-    
-    
     private     let VIDEO_TEX_ENABLED =     false
     private     var previewLayer:           AVCaptureVideoPreviewLayer?
-    
     
     /*****************************************************************************************************/
     // MARK:   Private
@@ -37,10 +34,10 @@ public class Map : NSObject, SCNProgramDelegate {
         scene.physicsWorld.gravity = SCNVector3(x: 0, y: -9.8, z: 0)
         
         // atmosphere
-        scene.fogStartDistance = 0.0
-        scene.fogEndDistance = 200.0
+        scene.fogStartDistance = 25.0
+        scene.fogEndDistance = 100.0
         scene.fogDensityExponent = 2.0
-        scene.fogColor = MKDColor.lightGrayColor()
+        scene.fogColor = MKDColor.grayColor()
         
         // sky
 //        scene.background.contents = [
@@ -53,7 +50,7 @@ public class Map : NSObject, SCNProgramDelegate {
         
         let sky = MDLSkyCubeTexture(name: nil,
             channelEncoding: MDLTextureChannelEncoding.UInt8,
-            textureDimensions: [Int32(320), Int32(320)],
+            textureDimensions: [Int32(256), Int32(256)],
             turbidity: 0.25,
             sunElevation: 0.85,
             upperAtmosphereScattering: 0.55,

@@ -103,49 +103,49 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
                     character!.hullInnerNode!.eulerAngles.z)
                 
                 dispatch_sync(clientAccumButtonEntriesLockQueue) {
-                let newInput = (self.clientAccumButtonEntries.count > 0)
-                    || (hullEulerAngles.x != self.clientLastSentHullEulerAngles.x)
-                    || (hullEulerAngles.y != self.clientLastSentHullEulerAngles.y)
-                    || (hullEulerAngles.z != self.clientLastSentHullEulerAngles.z)
-                if newInput {
-                    //NSLog("-- CLIENT SENDING HIGH --")
-                    
-                    ++self.sequenceNumber
-                    let updateMessage = ClientUpdateNetMessage(
-                        buttonEntries: self.clientAccumButtonEntries,
-                        hullEulerAngles: hullEulerAngles,
-                        sequenceNumber: self.sequenceNumber)
-   
-                    let packtData = updateMessage.encoded()
-                    client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue , flags: .Unsequenced, duplicate: NET_CLIENT_PACKET_DUP)
-                    
-                    // reset accumulator/last sent hull angles
-                    self.clientAccumButtonEntries = [(buttons: [(button: ButtonInput, force: MKDFloat)], dT: MKDFloat)]()
-                    self.clientLastSentHullEulerAngles = hullEulerAngles
-                    
-                    //sentNoInputPacket = false
-                }
-                else { // no input
-//                    if !sentNoInputPacket {
-//                        // send a single packet indicating there is no new input
-//                        
-//                        //NSLog("-- CLIENT SENDING LOW --")
-//                        
-//                        ++sequenceNumber
-//                        let updateMessage = ClientUpdateNetMessage(
-//                            buttonEntries: clientAccumButtonEntries,
-//                            hullEulerAngles: hullEulerAngles,
-//                            sequenceNumber: sequenceNumber)
-//                        
-//                        let packtData = updateMessage.encoded()
-//                        client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue , flags: .Unsequenced, duplicate: NET_CLIENT_PACKET_DUP)
-//                        
-//                        sentNoInputPacket = true
-//                    }
-//                    else {
-//                        //NSLog("-- CLIENT SKIPPING --")
-//                    }
-                }
+                    let newInput = (self.clientAccumButtonEntries.count > 0)
+                        || (hullEulerAngles.x != self.clientLastSentHullEulerAngles.x)
+                        || (hullEulerAngles.y != self.clientLastSentHullEulerAngles.y)
+                        || (hullEulerAngles.z != self.clientLastSentHullEulerAngles.z)
+                    if newInput {
+                        //NSLog("-- CLIENT SENDING HIGH --")
+                        
+                        ++self.sequenceNumber
+                        let updateMessage = ClientUpdateNetMessage(
+                            buttonEntries: self.clientAccumButtonEntries,
+                            hullEulerAngles: hullEulerAngles,
+                            sequenceNumber: self.sequenceNumber)
+                        
+                        let packtData = updateMessage.encoded()
+                        client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue , flags: .Unsequenced, duplicate: NET_CLIENT_PACKET_DUP)
+                        
+                        // reset accumulator/last sent hull angles
+                        self.clientAccumButtonEntries = [(buttons: [(button: ButtonInput, force: MKDFloat)], dT: MKDFloat)]()
+                        self.clientLastSentHullEulerAngles = hullEulerAngles
+                        
+                        //sentNoInputPacket = false
+                    }
+                    else { // no input
+//                        if !sentNoInputPacket {
+//                            // send a single packet indicating there is no new input
+//                            
+//                            //NSLog("-- CLIENT SENDING LOW --")
+//                            
+//                            ++sequenceNumber
+//                            let updateMessage = ClientUpdateNetMessage(
+//                                buttonEntries: clientAccumButtonEntries,
+//                                hullEulerAngles: hullEulerAngles,
+//                                sequenceNumber: sequenceNumber)
+//                            
+//                            let packtData = updateMessage.encoded()
+//                            client.sendPacket(packtData, channel: NetChannel.Signaling.rawValue , flags: .Unsequenced, duplicate: NET_CLIENT_PACKET_DUP)
+//                            
+//                            sentNoInputPacket = true
+//                        }
+//                        else {
+//                            //NSLog("-- CLIENT SKIPPING --")
+//                        }
+                    }
                 } // lock
             }
             
@@ -217,33 +217,32 @@ public class ClientSimulationController: NSObject, SCNSceneRendererDelegate, SCN
         buttonEntries.append((buttons, MKDFloat(dT)))
         
         // get look delta
+        var lookDelta = CGPointZero
         #if os(OSX)
-            let lookDelta = inputManager.readMouseDeltaAndClear()
-        #else
-            var lookDelta = CGPointZero
-            if let fY = pressedButtons[.LookUp] {
-                if THUMBLOOK_INVERSION_ENABLED {
-                    lookDelta.y = CGFloat(fY)
-                }
-                else {
-                    lookDelta.y = -CGFloat(fY)
-                }
-            }
-            if let fY = pressedButtons[.LookDown] {
-                if THUMBLOOK_INVERSION_ENABLED {
-                    lookDelta.y = -CGFloat(fY)
-                }
-                else {
-                    lookDelta.y = CGFloat(fY)
-                }
-            }
-            if let fX = pressedButtons[.LookLeft] {
-                lookDelta.x = CGFloat(fX)
-            }
-            if let fX = pressedButtons[.LookRight] {
-                lookDelta.x = -CGFloat(fX)
-            }
+            lookDelta = inputManager.readMouseDeltaAndClear()
         #endif
+        if let fY = pressedButtons[.LookUp] {
+            if THUMBLOOK_INVERSION_ENABLED {
+                lookDelta.y = CGFloat(fY)
+            }
+            else {
+                lookDelta.y = -CGFloat(fY)
+            }
+        }
+        if let fY = pressedButtons[.LookDown] {
+            if THUMBLOOK_INVERSION_ENABLED {
+                lookDelta.y = -CGFloat(fY)
+            }
+            else {
+                lookDelta.y = CGFloat(fY)
+            }
+        }
+        if let fX = pressedButtons[.LookLeft] {
+            lookDelta.x = CGFloat(fX)
+        }
+        if let fX = pressedButtons[.LookRight] {
+            lookDelta.x = -CGFloat(fX)
+        }
         
         // handle flyover or player movement
         if isFlyoverMode {

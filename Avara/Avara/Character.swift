@@ -147,7 +147,17 @@ public class Character {
             
             nAngles.x = max(-MKDFloat(HULL_VERT_ANG_CLAMP), min(MKDFloat(HULL_VERT_ANG_CLAMP), nAngles.x)) // clamp vertical angle
             nAngles.y = max(-MKDFloat(HULL_HORIZ_ANG_CLAMP), min(MKDFloat(HULL_HORIZ_ANG_CLAMP), nAngles.y)) // clamp horizontal angle
+            
             nAngles.z = MKDFloat(HULL_LOOK_ROLL_FACTOR) * nAngles.y // roll
+            
+//            if nAngles.y > MKDFloat(M_PI/2.0) && nAngles.y < MKDFloat(M_PI) {
+//                NSLog("-")
+//                nAngles.z = MKDFloat(-HULL_LOOK_ROLL_FACTOR) * nAngles.y
+//            }
+//            else if nAngles.y < -MKDFloat(M_PI/2.0) && nAngles.y > -MKDFloat(M_PI) {
+//                NSLog("+")
+//                nAngles.z = MKDFloat(-HULL_LOOK_ROLL_FACTOR) * nAngles.y
+//            }
             
             hullOuterNode?.eulerAngles = nAngles
         }
@@ -425,6 +435,10 @@ public class Character {
         
         crosshairRNode!.geometry!.materials = [crosshairRMaterial]
         crosshairLNode!.geometry!.materials = [crosshairLMaterial]
+        
+        // doesn't seem to work
+        crosshairRNode?.renderingOrder = 10;
+        crosshairLNode?.renderingOrder = 10;
         
         hullInnerNode!.addChildNode(crosshairRNode!)
         hullInnerNode!.addChildNode(crosshairLNode!)

@@ -14,7 +14,7 @@ let CLIENT_WINDOW_SIZE =                    CGSize(width: 800, height: 600)
 let SERVER_WINDOW_SIZE =                    CGSize(width: 320, height: 240)
 let SCN_DEBUG_OPTIONS: SCNDebugOptions =    [.ShowPhysicsShapes, .ShowBoundingBoxes, .ShowWireframe]
 
-let PHYSICS_TIMESTEP =                      MKDFloat(480.0) // Hz
+let PHYSICS_TIMESTEP =                      MKDFloat(60*10) // Hz
 
 //let PREFERRED_COMPUTATION_RATE =            MKDFloat(60.0) // Hz
 //let PREFERRED_COMPUTATION_RATE_TOLERANCE =  MKDFloat(0.10) // %
